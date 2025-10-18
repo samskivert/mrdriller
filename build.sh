@@ -4,7 +4,7 @@ NAME=mrdriller
 rm -rf $NAME
 mkdir $NAME
 cp public/index.html $NAME
-npx esbuild src/index.ts \
+npx esbuild src/index.tsx \
   --minify --sourcemap \
   --bundle --outfile=$NAME/index.js
 rm -f $NAME.zip

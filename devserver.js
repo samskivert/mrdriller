@@ -3,7 +3,7 @@ import { createServer } from "esbuild-server"
 const server = createServer(
   {
     bundle: true,
-    entryPoints: ["src/index.ts"],
+    entryPoints: ["src/index.tsx"],
   },
   {
     static: "public",
