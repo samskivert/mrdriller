@@ -57,8 +57,7 @@ export const measure = (...strokes: (Stroke | undefined)[]): Measure =>
 
 /** A section is a collection of measures, with an optional label. The measures in a section are
  * rendered in a single horizontal line, with the label above it, and all surrounded by a box.
- * Sections may be repeated one or more times. Sections can be arranged more flexibly on the screen
- * to represent an entire drill. */
+ * Sections may be repeated one or more times. */
 export type Section = {
   label?: string
   measures: Measure[]
@@ -71,7 +70,10 @@ export const section = (
   ...measures: Measure[]
 ) => ({ label, measures, repeat })
 
+/** A row is a collection of sections that are displayed horizontally in a single row. */
+export type Row = Section[]
+
 export type Drill = {
   title: string
-  sections: Section[]
+  rows: Row[]
 }

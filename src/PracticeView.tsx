@@ -5,6 +5,7 @@ import { MetronomeSounds } from "./MetronomeSounds"
 
 type State = {
   playing: boolean
+  row: number
   section: number
   measure: number
   beat: number
@@ -13,6 +14,7 @@ type State = {
 
 const NotPlaying: State = {
   playing: false,
+  row: 0,
   section: 0,
   measure: 0,
   beat: 0,
@@ -62,7 +64,8 @@ export function PracticeView({
     if (state.playing) {
       intervalRef.current = setInterval(() => {
         setState((prev) => {
-          const section = drill.sections[prev.section]
+          const row = drill.rows[prev.row]
+          const section = row[prev.section]
           const measure = section.measures[prev.measure]
           const nextBeat = prev.beat + 1
 
@@ -79,9 +82,9 @@ export function PracticeView({
               if (nextRepeat < section.repeat) {
                 return { ...prev, repeat: nextRepeat, measure: 0, beat: 0 }
               } else {
-                // Move to next section
+                // Move to next section in the same row
                 const nextSection = prev.section + 1
-                if (nextSection < drill.sections.length) {
+                if (nextSection < row.length) {
                   return {
                     ...prev,
                     section: nextSection,
@@ -90,8 +93,21 @@ export function PracticeView({
                     repeat: 0,
                   }
                 } else {
-                  // Finished all sections
-                  return NotPlaying
+                  // Move to next row
+                  const nextRow = prev.row + 1
+                  if (nextRow < drill.rows.length) {
+                    return {
+                      ...prev,
+                      row: nextRow,
+                      section: 0,
+                      measure: 0,
+                      beat: 0,
+                      repeat: 0,
+                    }
+                  } else {
+                    // Finished all rows
+                    return NotPlaying
+                  }
                 }
               }
             }
@@ -112,13 +128,20 @@ export function PracticeView({
         intervalRef.current = null
       }
     }
-  }, [state, bpm, drill.sections.length])
+  }, [state, bpm, drill.rows.length])
 
   const handleStartStop = () => {
     if (state.playing) {
       setState(NotPlaying)
     } else {
-      setState({ playing: true, section: 0, measure: 0, beat: 0, repeat: 0 })
+      setState({
+        playing: true,
+        row: 0,
+        section: 0,
+        measure: 0,
+        beat: 0,
+        repeat: 0,
+      })
     }
   }
 

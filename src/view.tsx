@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Stroke, Beat, Measure, Section, Drill } from "./model"
+import { Stroke, Measure, Section, Row, Drill } from "./model"
 
 export function strokeView(stroke: Stroke, isHighlighted: boolean = false) {
   const color = stroke.hand === "R" ? "#0072B8" : "#FF9A00"
@@ -119,10 +119,11 @@ export function strokeView(stroke: Stroke, isHighlighted: boolean = false) {
   }
 }
 
-type Highlight = { section: number; measure: number; beat: number }
+type Highlight = { row: number; section: number; measure: number; beat: number }
 
 export function measureView(
   measure: Measure,
+  rowIndex: number,
   sectionIndex: number,
   measureIndex: number,
   highlight?: Highlight,
@@ -137,6 +138,7 @@ export function measureView(
         }
 
         const isBeatHighlighted =
+          highlight?.row === rowIndex &&
           highlight?.section === sectionIndex &&
           highlight?.measure === measureIndex &&
           highlight?.beat === beatIndex
@@ -176,10 +178,12 @@ export function measureView(
 
 export function sectionView(
   section: Section,
+  rowIndex: number,
   sectionIndex: number,
   highlight?: Highlight,
 ) {
-  const isHighlighted = highlight?.section === sectionIndex
+  const isHighlighted =
+    highlight?.row === rowIndex && highlight?.section === sectionIndex
 
   return (
     <div
@@ -200,9 +204,19 @@ export function sectionView(
       )}
       <div style={{ display: "flex", flexDirection: "row" }}>
         {section.measures.map((measure, measureIndex) =>
-          measureView(measure, sectionIndex, measureIndex, highlight),
+          measureView(measure, rowIndex, sectionIndex, measureIndex, highlight),
         )}
       </div>
+    </div>
+  )
+}
+
+export function rowView(row: Row, rowIndex: number, highlight?: Highlight) {
+  return (
+    <div style={{ display: "flex", flexDirection: "row", gap: 8 }}>
+      {row.map((section, sectionIndex) =>
+        sectionView(section, rowIndex, sectionIndex, highlight),
+      )}
     </div>
   )
 }
@@ -212,9 +226,7 @@ export function drillView(drill: Drill, highlight?: Highlight) {
     <>
       <h1>{drill.title}</h1>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {drill.sections.map((section, sectionIndex) =>
-          sectionView(section, sectionIndex, highlight),
-        )}
+        {drill.rows.map((row, rowIndex) => rowView(row, rowIndex, highlight))}
       </div>
     </>
   )
