@@ -128,18 +128,13 @@ export function beatView(beat: Beat, isHighlighted: boolean = false) {
   )
 }
 
+type Highlight = { section: number, measure :number, beat :number }
+
 export function measureView(
   measure: Measure,
   sectionIndex: number,
   measureIndex: number,
-  highlighting?: {
-    highlightedSection: number | null
-    highlightedBeat: {
-      sectionIndex: number
-      measureIndex: number
-      beatIndex: number
-    } | null
-  },
+  highlight?: Highlight
 ) {
   const hasAnyLabels = measure.some((beat) => beat?.label)
 
@@ -151,9 +146,9 @@ export function measureView(
         }
 
         const isBeatHighlighted =
-          highlighting?.highlightedBeat?.sectionIndex === sectionIndex &&
-          highlighting?.highlightedBeat?.measureIndex === measureIndex &&
-          highlighting?.highlightedBeat?.beatIndex === beatIndex
+          highlight?.section === sectionIndex &&
+          highlight?.measure === measureIndex &&
+          highlight?.beat === beatIndex
 
         return (
           <div
@@ -186,19 +181,8 @@ export function measureView(
   )
 }
 
-export function sectionView(
-  section: Section,
-  sectionIndex: number,
-  highlighting?: {
-    highlightedSection: number | null
-    highlightedBeat: {
-      sectionIndex: number
-      measureIndex: number
-      beatIndex: number
-    } | null
-  },
-) {
-  const isHighlighted = highlighting?.highlightedSection === sectionIndex
+export function sectionView(section: Section, sectionIndex: number, highlight?: Highlight) {
+  const isHighlighted = highlight?.section === sectionIndex
 
   return (
     <div
@@ -219,30 +203,20 @@ export function sectionView(
       )}
       <div style={{ display: "flex", flexDirection: "row" }}>
         {section.measures.map((measure, measureIndex) =>
-          measureView(measure, sectionIndex, measureIndex, highlighting),
+          measureView(measure, sectionIndex, measureIndex, highlight),
         )}
       </div>
     </div>
   )
 }
 
-export function drillView(
-  drill: Drill,
-  highlighting?: {
-    highlightedSection: number | null
-    highlightedBeat: {
-      sectionIndex: number
-      measureIndex: number
-      beatIndex: number
-    } | null
-  },
-) {
+export function drillView(drill: Drill, highlight?: Highlight) {
   return (
     <>
       <h1>{drill.title}</h1>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {drill.sections.map((section, sectionIndex) =>
-          sectionView(section, sectionIndex, highlighting),
+          sectionView(section, sectionIndex, highlight),
         )}
       </div>
     </>

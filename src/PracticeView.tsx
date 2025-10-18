@@ -2,6 +2,22 @@ import * as React from "react"
 import { Drill, Section } from "./model"
 import { drillView } from "./view"
 
+type State = {
+  playing: boolean
+  section: number
+  measure: number
+  beat: number
+  repeat: number
+}
+
+const NotPlaying: State = {
+  playing: false,
+  section: 0,
+  measure: 0,
+  beat: 0,
+  repeat: 0,
+}
+
 export function PracticeView({
   drill,
   onBack,
@@ -10,19 +26,7 @@ export function PracticeView({
   onBack: () => void
 }) {
   const [bpm, setBpm] = React.useState(60)
-  const [isPlaying, setIsPlaying] = React.useState(false)
-  const [currentSectionIndex, setCurrentSectionIndex] = React.useState(0)
-  const [currentMeasureIndex, setCurrentMeasureIndex] = React.useState(0)
-  const [currentBeatIndex, setCurrentBeatIndex] = React.useState(0)
-  const [currentRepeat, setCurrentRepeat] = React.useState(0)
-  const [highlightedSection, setHighlightedSection] = React.useState<
-    number | null
-  >(null)
-  const [highlightedBeat, setHighlightedBeat] = React.useState<{
-    sectionIndex: number
-    measureIndex: number
-    beatIndex: number
-  } | null>(null)
+  const [state, setState] = React.useState<State>(NotPlaying)
 
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null)
 
@@ -30,80 +34,57 @@ export function PracticeView({
   const quarterNoteDuration = (60 * 1000) / bpm / 4
 
   React.useEffect(() => {
-    if (isPlaying) {
+    if (state.playing) {
       intervalRef.current = setInterval(() => {
-        setCurrentBeatIndex((prev) => {
-          const currentSection = drill.sections[currentSectionIndex]
+        setState((prev) => {
+          const currentSection = drill.sections[prev.section]
 
           // Safety check for current section
           if (!currentSection) {
             console.error("Current section is undefined")
-            setIsPlaying(false)
-            return prev
+            return NotPlaying
           }
 
-          const currentMeasure = currentSection.measures[currentMeasureIndex]
+          const currentMeasure = currentSection.measures[prev.measure]
 
           // Safety check for current measure
           if (!currentMeasure) {
-            console.error("Current measure is undefined", {
-              sectionIndex: currentSectionIndex,
-              measureIndex: currentMeasureIndex,
-              sectionMeasures: currentSection.measures.length,
-            })
-            setIsPlaying(false)
-            return prev
+            return NotPlaying
           }
 
-          const nextBeat = prev + 1
+          const nextBeat = prev.beat + 1
 
           // Check if we've finished all beats in current measure
           if (nextBeat >= currentMeasure.length) {
             // Move to next measure or handle section completion
-            const nextMeasureIndex = currentMeasureIndex + 1
+            const nextMeasureIndex = prev.measure + 1
             if (nextMeasureIndex < currentSection.measures.length) {
               // Move to next measure in same section
-              setCurrentMeasureIndex(nextMeasureIndex)
-              return 0
+              return { ...prev, measure: nextMeasureIndex, beat: 0 }
             } else {
               // Finished all measures in section, move to next repeat or next section
-              console.log("Finished all measures in section", {
-                sectionIndex: currentSectionIndex,
-                currentRepeat,
-                sectionRepeat: currentSection.repeat,
-              })
-
-              const nextRepeat = currentRepeat + 1
+              const nextRepeat = prev.repeat + 1
               if (nextRepeat < currentSection.repeat) {
-                console.log("Moving to next repeat")
-                setCurrentRepeat(nextRepeat)
-                setCurrentMeasureIndex(0)
-                return 0
+                return { ...prev, repeat: nextRepeat, measure: 0, beat: 0 }
               } else {
                 // Move to next section
-                console.log("Moving to next section", {
-                  currentSectionIndex,
-                  totalSections: drill.sections.length,
-                })
-
-                const nextSectionIndex = currentSectionIndex + 1
+                const nextSectionIndex = prev.section + 1
                 if (nextSectionIndex < drill.sections.length) {
-                  setCurrentSectionIndex(nextSectionIndex)
-                  setCurrentMeasureIndex(0)
-                  setCurrentRepeat(0)
-                  return 0
+                  return {
+                    ...prev,
+                    section: nextSectionIndex,
+                    measure: 0,
+                    beat: 0,
+                    repeat: 0,
+                  }
                 } else {
                   // Finished all sections
-                  console.log("Finished all sections")
-                  setIsPlaying(false)
-                  setHighlightedSection(null)
-                  setHighlightedBeat(null)
-                  return 0
+                  return NotPlaying
                 }
               }
             }
           }
-          return nextBeat
+          return { ...prev, beat: nextBeat }
         })
       }, quarterNoteDuration)
     } else {
@@ -119,53 +100,13 @@ export function PracticeView({
         intervalRef.current = null
       }
     }
-  }, [
-    isPlaying,
-    bpm,
-    currentSectionIndex,
-    currentMeasureIndex,
-    currentRepeat,
-    drill.sections.length,
-  ])
-
-  // Update highlighting based on current position
-  React.useEffect(() => {
-    console.log("Highlighting update:", {
-      sectionIndex: currentSectionIndex,
-      measureIndex: currentMeasureIndex,
-      beatIndex: currentBeatIndex,
-    })
-    setHighlightedSection(currentSectionIndex)
-    setHighlightedBeat({
-      sectionIndex: currentSectionIndex,
-      measureIndex: currentMeasureIndex,
-      beatIndex: currentBeatIndex,
-    })
-  }, [currentSectionIndex, currentMeasureIndex, currentBeatIndex])
-
-  // Clear highlighting when not playing
-  React.useEffect(() => {
-    if (!isPlaying) {
-      setHighlightedSection(null)
-      setHighlightedBeat(null)
-    }
-  }, [isPlaying])
+  }, [state, bpm, drill.sections.length])
 
   const handleStartStop = () => {
-    if (isPlaying) {
-      setIsPlaying(false)
-      setCurrentSectionIndex(0)
-      setCurrentMeasureIndex(0)
-      setCurrentBeatIndex(0)
-      setCurrentRepeat(0)
-      setHighlightedSection(null)
-      setHighlightedBeat(null)
+    if (state.playing) {
+      setState(NotPlaying)
     } else {
-      setIsPlaying(true)
-      setCurrentSectionIndex(0)
-      setCurrentMeasureIndex(0)
-      setCurrentBeatIndex(0)
-      setCurrentRepeat(0)
+      setState({ playing: true, section: 0, measure: 0, beat: 0, repeat: 0 })
     }
   }
 
@@ -186,7 +127,7 @@ export function PracticeView({
       </button>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {drillView(drill, { highlightedSection, highlightedBeat })}
+        {drillView(drill, state.playing ? state : undefined)}
       </div>
 
       <div
@@ -225,12 +166,12 @@ export function PracticeView({
             cursor: "pointer",
             border: "1px solid #ccc",
             borderRadius: 4,
-            backgroundColor: isPlaying ? "#ff6b6b" : "#4ecdc4",
+            backgroundColor: state.playing ? "#ff6b6b" : "#4ecdc4",
             color: "white",
             fontWeight: 600,
           }}
         >
-          {isPlaying ? "Stop" : "Start"}
+          {state.playing ? "Stop" : "Start"}
         </button>
       </div>
     </div>
