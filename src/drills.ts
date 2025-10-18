@@ -1,18 +1,4 @@
-import {
-  Drill,
-  section,
-  measure,
-  beat,
-  labeledBeat,
-  R,
-  r,
-  rd,
-  ru,
-  L,
-  l,
-  ld,
-  lu,
-} from "./model"
+import { Drill, section, measure, beat, labeledBeat, R, r, rd, ru, L, l, ld, lu } from "./model"
 
 const su = undefined
 
@@ -257,56 +243,32 @@ export const iceSkater: Drill = {
   bpm: 8,
   rows: [
     [
-      section(
-        "Four",
-        2,
-        measure(r, su, r, su, r, su, r, su, l, su, l, su, l, su, l, su),
-      ),
+      section("Four", 2, measure(r, su, r, su, r, su, r, su, l, su, l, su, l, su, l, su)),
       section("Three", 2, measure(r, su, r, su, r, su, l, su, l, su, l, su)),
       section("Four", 1, measure(r, su, r, su, r, su, r, su)),
     ],
     [
-      section(
-        "Four",
-        2,
-        measure(l, su, l, su, l, su, l, su, r, su, r, su, r, su, r, su),
-      ),
+      section("Four", 2, measure(l, su, l, su, l, su, l, su, r, su, r, su, r, su, r, su)),
       section("Three", 2, measure(l, su, l, su, l, su, r, su, r, su, r, su)),
       section("Four", 1, measure(l, su, l, su, l, su, l, su)),
     ],
     [
-      section(
-        "Four + 1",
-        2,
-        measure(r, l, r, su, r, su, r, su, l, r, l, su, l, su, l, su),
-      ),
+      section("Four + 1", 2, measure(r, l, r, su, r, su, r, su, l, r, l, su, l, su, l, su)),
       section("Three + 1", 2, measure(r, l, r, su, r, su, l, r, l, su, l, su)),
       section("Four + 1", 1, measure(r, l, r, su, r, su, r, su)),
     ],
     [
-      section(
-        "Four + 1",
-        2,
-        measure(l, r, l, su, l, su, l, su, r, l, r, su, r, su, r, su),
-      ),
+      section("Four + 1", 2, measure(l, r, l, su, l, su, l, su, r, l, r, su, r, su, r, su)),
       section("Three + 1", 2, measure(l, r, l, su, l, su, r, l, r, su, r, su)),
       section("Four + 1", 1, measure(l, r, l, su, l, su, l, su)),
     ],
     [
-      section(
-        "Four + 2",
-        2,
-        measure(r, l, r, l, r, su, r, su, l, r, l, r, l, su, l, su),
-      ),
+      section("Four + 2", 2, measure(r, l, r, l, r, su, r, su, l, r, l, r, l, su, l, su)),
       section("Three + 2", 2, measure(r, l, r, l, r, su, l, r, l, r, l, su)),
       section("Four + 2", 1, measure(r, l, r, l, r, su, r, su)),
     ],
     [
-      section(
-        "Four + 2",
-        2,
-        measure(l, r, l, r, l, su, l, su, r, l, r, l, r, su, r, su),
-      ),
+      section("Four + 2", 2, measure(l, r, l, r, l, su, l, su, r, l, r, l, r, su, r, su)),
       section("Three + 2", 2, measure(l, r, l, r, l, su, r, l, r, l, r, su)),
       section("Four + 2", 1, measure(l, r, l, r, l, su, l, su)),
     ],
@@ -333,9 +295,7 @@ export const triplets: Drill = {
 export const threeAgainstTwo: Drill = {
   title: "Three against Two",
   bpm: 6,
-  rows: [
-    [section("A", 4, [beat(r, l), su, beat(r), beat(su, l), beat(r), su])],
-  ],
+  rows: [[section("A", 4, [beat(r, l), su, beat(r), beat(su, l), beat(r), su])]],
 }
 
 export const drills = [

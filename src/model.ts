@@ -45,10 +45,7 @@ export type Beat = {
 type StrokeOrRest = Stroke | undefined
 
 export const beat = (...strokes: StrokeOrRest[]): Beat => ({ strokes })
-export const labeledBeat = (
-  label: string,
-  ...strokes: StrokeOrRest[]
-): Beat => ({
+export const labeledBeat = (label: string, ...strokes: StrokeOrRest[]): Beat => ({
   label,
   strokes,
 })
@@ -70,11 +67,11 @@ export type Section = {
   repeat: number
 }
 
-export const section = (
-  label: string,
-  repeat: number,
-  ...measures: Measure[]
-) => ({ label, measures, repeat })
+export const section = (label: string, repeat: number, ...measures: Measure[]) => ({
+  label,
+  measures,
+  repeat,
+})
 
 /** A row is a collection of sections that are displayed horizontally in a single row. */
 export type Row = Section[]

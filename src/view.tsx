@@ -1,6 +1,6 @@
 import * as React from "react"
-import { Section, Row, Drill } from "./model"
 import { MeasureView } from "./MeasureView"
+import { Section, Row, Drill } from "./model"
 
 export type Pos = {
   row: number
@@ -11,17 +11,8 @@ export type Pos = {
 }
 const Zero = { row: 0, section: 0, measure: 0, offset: 0, repeat: 0 }
 
-function SectionView({
-  section,
-  pos,
-  highlight,
-}: {
-  section: Section
-  pos: Pos
-  highlight?: Pos
-}) {
-  const isHighlighted =
-    pos.row === highlight?.row && pos.section === highlight?.section
+function SectionView({ section, pos, highlight }: { section: Section; pos: Pos; highlight?: Pos }) {
+  const isHighlighted = pos.row === highlight?.row && pos.section === highlight?.section
 
   // Show current repeat position if highlighted, otherwise show total repeats
   const repeatDisplay =
@@ -63,9 +54,7 @@ function SectionView({
             key={measureIndex}
             measure={measure}
             highlightBeat={
-              isHighlighted && highlight.measure == measureIndex
-                ? highlight.offset
-                : undefined
+              isHighlighted && highlight.measure == measureIndex ? highlight.offset : undefined
             }
           />
         ))}
@@ -74,15 +63,7 @@ function SectionView({
   )
 }
 
-function RowView({
-  row,
-  rowIndex,
-  highlight,
-}: {
-  row: Row
-  rowIndex: number
-  highlight?: Pos
-}) {
+function RowView({ row, rowIndex, highlight }: { row: Row; rowIndex: number; highlight?: Pos }) {
   return (
     <div
       style={{
@@ -104,24 +85,13 @@ function RowView({
   )
 }
 
-export function DrillView({
-  drill,
-  highlight,
-}: {
-  drill: Drill
-  highlight?: Pos
-}) {
+export function DrillView({ drill, highlight }: { drill: Drill; highlight?: Pos }) {
   return (
     <>
       <h1>{drill.title}</h1>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {drill.rows.map((row, rowIndex) => (
-          <RowView
-            key={rowIndex}
-            row={row}
-            rowIndex={rowIndex}
-            highlight={highlight}
-          />
+          <RowView key={rowIndex} row={row} rowIndex={rowIndex} highlight={highlight} />
         ))}
       </div>
     </>

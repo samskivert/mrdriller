@@ -1,7 +1,7 @@
 import * as React from "react"
+import { MetronomeSounds } from "./MetronomeSounds"
 import { Drill } from "./model"
 import { DrillView } from "./view"
-import { MetronomeSounds } from "./MetronomeSounds"
 
 type State = {
   playing: boolean
@@ -23,13 +23,9 @@ const NotPlaying: State = {
   repeat: 0,
 }
 
-export function PracticeView({
-  drill,
-  onBack,
-}: {
-  drill: Drill
-  onBack: () => void
-}) {
+const Playing = { ...NotPlaying, playing: true }
+
+export function PracticeView({ drill, onBack }: { drill: Drill; onBack: () => void }) {
   const [bpm, setBpm] = React.useState(60)
   const [state, setState] = React.useState<State>(NotPlaying)
 
@@ -70,65 +66,54 @@ export function PracticeView({
           const row = drill.rows[prev.row]
           const section = row[prev.section]
           const measure = section.measures[prev.measure]
-          const nextOffset = prev.offset + 1
 
           // Check if we've finished all beats in current measure
-          if (nextOffset >= measure.length) {
-            // Move to next measure or handle section completion
-            const nextMeasure = prev.measure + 1
-            if (nextMeasure < section.measures.length) {
-              // Move to next measure in same section
-              return {
-                ...prev,
-                beat: nextBeat,
-                measure: nextMeasure,
-                offset: 0,
-              }
-            } else {
-              // Finished all measures in section, move to next repeat or next section
-              const nextRepeat = prev.repeat + 1
-              if (nextRepeat < section.repeat) {
-                return {
-                  ...prev,
-                  beat: nextBeat,
-                  repeat: nextRepeat,
-                  measure: 0,
-                  offset: 0,
-                }
-              } else {
-                // Move to next section in the same row
-                const nextSection = prev.section + 1
-                if (nextSection < row.length) {
-                  return {
-                    ...prev,
-                    beat: nextBeat,
-                    section: nextSection,
-                    measure: 0,
-                    offset: 0,
-                    repeat: 0,
-                  }
-                } else {
-                  // Move to next row
-                  const nextRow = prev.row + 1
-                  if (nextRow < drill.rows.length) {
-                    return {
-                      ...prev,
-                      beat: nextBeat,
-                      row: nextRow,
-                      section: 0,
-                      measure: 0,
-                      offset: 0,
-                      repeat: 0,
-                    }
-                  } else {
-                    // Finished all rows
-                    return NotPlaying
-                  }
-                }
-              }
+          const nextOffset = prev.offset + 1
+          if (nextOffset < measure.length) {
+            return { ...prev, beat: nextBeat, offset: nextOffset }
+          }
+          // Move to next measure or handle section completion
+          const nextMeasure = prev.measure + 1
+          if (nextMeasure < section.measures.length) {
+            return {
+              ...prev,
+              beat: nextBeat,
+              measure: nextMeasure,
+              offset: 0,
             }
           }
-          return { ...prev, beat: nextBeat, offset: nextOffset }
+          // Finished all measures in section, move to next repeat or next section
+          const nextRepeat = prev.repeat + 1
+          if (nextRepeat < section.repeat) {
+            return {
+              ...prev,
+              beat: nextBeat,
+              repeat: nextRepeat,
+              measure: 0,
+              offset: 0,
+            }
+          }
+          // Move to next section in the same row
+          const nextSection = prev.section + 1
+          if (nextSection < row.length) {
+            return {
+              ...Playing,
+              beat: nextBeat,
+              row: prev.row,
+              section: nextSection,
+            }
+          }
+          // Move to next row
+          const nextRow = prev.row + 1
+          if (nextRow < drill.rows.length) {
+            return {
+              ...Playing,
+              beat: nextBeat,
+              row: nextRow,
+            }
+          }
+          // Finished all rows
+          return NotPlaying
         })
       }, quarterNoteDuration)
     } else {
@@ -147,11 +132,7 @@ export function PracticeView({
   }, [state, bpm, drill.rows.length])
 
   const handleStartStop = () => {
-    if (state.playing) {
-      setState(NotPlaying)
-    } else {
-      setState({ ...NotPlaying, playing: true })
-    }
+    setState(state.playing ? Playing : NotPlaying)
   }
 
   return (
@@ -171,10 +152,7 @@ export function PracticeView({
       </button>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        <DrillView
-          drill={drill}
-          highlight={state.playing ? state : undefined}
-        />
+        <DrillView drill={drill} highlight={state.playing ? state : undefined} />
       </div>
 
       <div
