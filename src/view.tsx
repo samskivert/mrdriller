@@ -225,7 +225,7 @@ export function sectionView(
           {repeatDisplay && <div>{repeatDisplay}</div>}
         </div>
       )}
-      <div style={{ display: "flex", flexDirection: "row" }}>
+      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
         {section.measures.map((measure, measureIndex) =>
           measureView(measure, rowIndex, sectionIndex, measureIndex, highlight),
         )}
@@ -236,7 +236,14 @@ export function sectionView(
 
 export function rowView(row: Row, rowIndex: number, highlight?: Highlight) {
   return (
-    <div style={{ display: "flex", flexDirection: "row", gap: 8 }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        gap: 8,
+      }}
+    >
       {row.map((section, sectionIndex) =>
         sectionView(section, rowIndex, sectionIndex, highlight),
       )}
