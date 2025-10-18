@@ -119,7 +119,13 @@ export function strokeView(stroke: Stroke, isHighlighted: boolean = false) {
   }
 }
 
-type Highlight = { row: number; section: number; measure: number; beat: number }
+type Highlight = {
+  row: number
+  section: number
+  measure: number
+  beat: number
+  repeat: number
+}
 
 export function measureView(
   measure: Measure,
@@ -185,6 +191,14 @@ export function sectionView(
   const isHighlighted =
     highlight?.row === rowIndex && highlight?.section === sectionIndex
 
+  // Show current repeat position if highlighted, otherwise show total repeats
+  const repeatDisplay =
+    isHighlighted && section.repeat > 1
+      ? `${highlight.repeat + 1}/${section.repeat}`
+      : section.repeat > 1
+        ? `x${section.repeat}`
+        : null
+
   return (
     <div
       style={{
@@ -197,9 +211,18 @@ export function sectionView(
         boxSizing: "border-box",
       }}
     >
-      {section.label && (
-        <div style={{ textAlign: "center", fontWeight: 600, marginBottom: 8 }}>
-          {section.label}
+      {(section.label || repeatDisplay) && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            fontWeight: 600,
+            marginBottom: 8,
+            minHeight: 20,
+          }}
+        >
+          <div>{section.label || ""}</div>
+          {repeatDisplay && <div>{repeatDisplay}</div>}
         </div>
       )}
       <div style={{ display: "flex", flexDirection: "row" }}>
