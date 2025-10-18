@@ -1,16 +1,11 @@
 import * as React from "react"
 import { Stroke, Measure, Section, Row, Drill } from "./model"
 
-export function strokeView(stroke: Stroke, isHighlighted: boolean = false) {
-  const color = stroke.hand === "R" ? "#0072B8" : "#FF9A00"
-  const isAccented = stroke.accent
-  const size = 28 // isAccented ? 32 : 28
-
-  // Determine shape based on direction
-  const isDownStroke = stroke.dir === "D"
-  const isUpStroke = stroke.dir === "U"
-  const isDirectional = isDownStroke || isUpStroke
-
+export function strokeView(
+  stroke: Stroke | undefined,
+  isHighlighted: boolean = false,
+) {
+  const size = 28
   const containerStyle = {
     width: size,
     height: size,
@@ -20,6 +15,19 @@ export function strokeView(stroke: Stroke, isHighlighted: boolean = false) {
     margin: 4,
     position: "relative" as const,
   }
+
+  // Return empty space for undefined strokes
+  if (!stroke) {
+    return <div style={containerStyle} />
+  }
+
+  const color = stroke.hand === "R" ? "#0072B8" : "#FF9A00"
+  const isAccented = stroke.accent
+
+  // Determine shape based on direction
+  const isDownStroke = stroke.dir === "D"
+  const isUpStroke = stroke.dir === "U"
+  const isDirectional = isDownStroke || isUpStroke
 
   if (isDirectional) {
     // SVG half-circle + triangle
@@ -171,9 +179,11 @@ export function measureView(
               </div>
             )}
             <div style={{ display: "flex", flexDirection: "column" }}>
-              {beat.strokes.map((stroke) =>
-                strokeView(stroke, isBeatHighlighted),
-              )}
+              {beat.strokes.map((stroke, strokeIndex) => (
+                <React.Fragment key={strokeIndex}>
+                  {strokeView(stroke, isBeatHighlighted)}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         )

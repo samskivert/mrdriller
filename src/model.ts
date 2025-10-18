@@ -35,14 +35,20 @@ export const lu = upStroke("L")
 
 /** A beat contains everything that happens on a particular beat. Usually this is just a single
  * strike, but some drills break out one hand doing the up stroke on a beat while another does the
- * down stroke on that beat. And a beat can be labeled (which is shown above the strokes). */
+ * down stroke on that beat. And a beat can be labeled (which is shown above the strokes).
+ * Strokes can be undefined, which will leave an empty space in the visualization. */
 export type Beat = {
   label?: string
-  strokes: Stroke[]
+  strokes: (Stroke | undefined)[]
 }
 
-export const beat = (...strokes: Stroke[]): Beat => ({ strokes })
-export const labeledBeat = (label: string, ...strokes: Stroke[]): Beat => ({
+type StrokeOrRest = Stroke | undefined
+
+export const beat = (...strokes: StrokeOrRest[]): Beat => ({ strokes })
+export const labeledBeat = (
+  label: string,
+  ...strokes: StrokeOrRest[]
+): Beat => ({
   label,
   strokes,
 })
@@ -52,7 +58,7 @@ export const labeledBeat = (label: string, ...strokes: Stroke[]): Beat => ({
 export type Measure = (Beat | undefined)[]
 
 /** Creates a simple measure that has a single unlabeled stroke on every beat. */
-export const measure = (...strokes: (Stroke | undefined)[]): Measure =>
+export const measure = (...strokes: StrokeOrRest[]): Measure =>
   strokes.map((stroke) => (stroke ? beat(stroke) : undefined))
 
 /** A section is a collection of measures, with an optional label. The measures in a section are
