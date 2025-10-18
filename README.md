@@ -11,6 +11,12 @@ This is mainly just a React app with a few extra bits. Built by esbuild, with fe
 whistles. There's a `build.sh` script you can use which will generate a `mrdriller.zip` file that
 you can unpack somewhere to serve up the app.
 
+## Testing
+
+You can run a local development version easily. Install the dependencies via `npm install` and then
+run `node devserver.js` to start the `esbuild` development server. It will start up a test instance
+on `http://localhost:8080`.
+
 ## Adding drills
 
 The drills are defined in `drills.ts` and are hopefully reasonably self-explanatory. There are a
