@@ -5,19 +5,21 @@ import { MetronomeSounds } from "./MetronomeSounds"
 
 type State = {
   playing: boolean
+  beat: number
   row: number
   section: number
   measure: number
-  beat: number
+  offset: number
   repeat: number
 }
 
 const NotPlaying: State = {
   playing: false,
+  beat: 0,
   row: 0,
   section: 0,
   measure: 0,
-  beat: 0,
+  offset: 0,
   repeat: 0,
 }
 
@@ -43,17 +45,17 @@ export function PracticeView({
   }, [])
 
   // Calculate quarter note duration in milliseconds (1/4 beat)
-  const quarterNoteDuration = (60 * 1000) / bpm / 4
+  const quarterNoteDuration = (60 * 1000) / bpm / drill.bpm
 
   // Play metronome sound when beat changes
   React.useEffect(() => {
     if (state.playing && soundsRef.current) {
       // Play sound based on current beat (beat 0 = 1st beat, beat 2 = 3rd beat)
-      const beatInMeasure = state.beat % 4
+      const beatInMeasure = state.beat % drill.bpm
       if (beatInMeasure === 0) {
         // Beat 1: higher pitch beep
         soundsRef.current.playBeep()
-      } else if (beatInMeasure === 2) {
+      } else if (beatInMeasure === drill.bpm / 2) {
         // Beat 3: lower pitch boop
         soundsRef.current.playBoop()
       }
@@ -64,32 +66,45 @@ export function PracticeView({
     if (state.playing) {
       intervalRef.current = setInterval(() => {
         setState((prev) => {
+          const nextBeat = prev.beat + 1
           const row = drill.rows[prev.row]
           const section = row[prev.section]
           const measure = section.measures[prev.measure]
-          const nextBeat = prev.beat + 1
+          const nextOffset = prev.offset + 1
 
           // Check if we've finished all beats in current measure
-          if (nextBeat >= measure.length) {
+          if (nextOffset >= measure.length) {
             // Move to next measure or handle section completion
             const nextMeasure = prev.measure + 1
             if (nextMeasure < section.measures.length) {
               // Move to next measure in same section
-              return { ...prev, measure: nextMeasure, beat: 0 }
+              return {
+                ...prev,
+                beat: nextBeat,
+                measure: nextMeasure,
+                offset: 0,
+              }
             } else {
               // Finished all measures in section, move to next repeat or next section
               const nextRepeat = prev.repeat + 1
               if (nextRepeat < section.repeat) {
-                return { ...prev, repeat: nextRepeat, measure: 0, beat: 0 }
+                return {
+                  ...prev,
+                  beat: nextBeat,
+                  repeat: nextRepeat,
+                  measure: 0,
+                  offset: 0,
+                }
               } else {
                 // Move to next section in the same row
                 const nextSection = prev.section + 1
                 if (nextSection < row.length) {
                   return {
                     ...prev,
+                    beat: nextBeat,
                     section: nextSection,
                     measure: 0,
-                    beat: 0,
+                    offset: 0,
                     repeat: 0,
                   }
                 } else {
@@ -98,10 +113,11 @@ export function PracticeView({
                   if (nextRow < drill.rows.length) {
                     return {
                       ...prev,
+                      beat: nextBeat,
                       row: nextRow,
                       section: 0,
                       measure: 0,
-                      beat: 0,
+                      offset: 0,
                       repeat: 0,
                     }
                   } else {
@@ -112,7 +128,7 @@ export function PracticeView({
               }
             }
           }
-          return { ...prev, beat: nextBeat }
+          return { ...prev, beat: nextBeat, offset: nextOffset }
         })
       }, quarterNoteDuration)
     } else {
@@ -134,14 +150,7 @@ export function PracticeView({
     if (state.playing) {
       setState(NotPlaying)
     } else {
-      setState({
-        playing: true,
-        row: 0,
-        section: 0,
-        measure: 0,
-        beat: 0,
-        repeat: 0,
-      })
+      setState({ ...NotPlaying, playing: true })
     }
   }
 

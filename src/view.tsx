@@ -123,7 +123,7 @@ type Highlight = {
   row: number
   section: number
   measure: number
-  beat: number
+  offset: number
   repeat: number
 }
 
@@ -147,7 +147,7 @@ export function measureView(
           highlight?.row === rowIndex &&
           highlight?.section === sectionIndex &&
           highlight?.measure === measureIndex &&
-          highlight?.beat === beatIndex
+          highlight?.offset === beatIndex
 
         return (
           <div

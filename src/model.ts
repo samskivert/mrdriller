@@ -75,5 +75,6 @@ export type Row = Section[]
 
 export type Drill = {
   title: string
+  bpm: number // beats per measure
   rows: Row[]
 }
