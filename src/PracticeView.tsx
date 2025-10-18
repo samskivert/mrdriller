@@ -62,42 +62,29 @@ export function PracticeView({
     if (state.playing) {
       intervalRef.current = setInterval(() => {
         setState((prev) => {
-          const currentSection = drill.sections[prev.section]
-
-          // Safety check for current section
-          if (!currentSection) {
-            console.error("Current section is undefined")
-            return NotPlaying
-          }
-
-          const currentMeasure = currentSection.measures[prev.measure]
-
-          // Safety check for current measure
-          if (!currentMeasure) {
-            return NotPlaying
-          }
-
+          const section = drill.sections[prev.section]
+          const measure = section.measures[prev.measure]
           const nextBeat = prev.beat + 1
 
           // Check if we've finished all beats in current measure
-          if (nextBeat >= currentMeasure.length) {
+          if (nextBeat >= measure.length) {
             // Move to next measure or handle section completion
-            const nextMeasureIndex = prev.measure + 1
-            if (nextMeasureIndex < currentSection.measures.length) {
+            const nextMeasure = prev.measure + 1
+            if (nextMeasure < section.measures.length) {
               // Move to next measure in same section
-              return { ...prev, measure: nextMeasureIndex, beat: 0 }
+              return { ...prev, measure: nextMeasure, beat: 0 }
             } else {
               // Finished all measures in section, move to next repeat or next section
               const nextRepeat = prev.repeat + 1
-              if (nextRepeat < currentSection.repeat) {
+              if (nextRepeat < section.repeat) {
                 return { ...prev, repeat: nextRepeat, measure: 0, beat: 0 }
               } else {
                 // Move to next section
-                const nextSectionIndex = prev.section + 1
-                if (nextSectionIndex < drill.sections.length) {
+                const nextSection = prev.section + 1
+                if (nextSection < drill.sections.length) {
                   return {
                     ...prev,
-                    section: nextSectionIndex,
+                    section: nextSection,
                     measure: 0,
                     beat: 0,
                     repeat: 0,
