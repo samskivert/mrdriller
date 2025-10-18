@@ -14,15 +14,15 @@ you can unpack somewhere to serve up the app.
 ## Testing
 
 You can run a local development version easily. Install the dependencies via `npm install` and then
-run `node devserver.js` to start the `esbuild` development server. It will start up a test instance
+run `node devserver.js` to start the esbuild development server. It will start up a test instance
 on `http://localhost:8080`.
 
 ## Adding drills
 
-The drills are defined in `drills.ts` and are hopefully reasonably self-explanatory. There are a
-bunch of existing drills as examples. If your drill doesn't do anything esoteric, you can probably
-add it easily, and if it does do something fancy then fire up your favorite vibe coder and add
-support for what you need. The AIs love to work on simple React web projects.
+The drills are defined in `src/drills.ts` and are hopefully reasonably self-explanatory. There are
+a bunch of existing drills as examples. If your drill doesn't do anything esoteric, you can
+probably add it easily, and if it does do something fancy then fire up your favorite vibe coder and
+add support for what you need. The AIs love to work on simple React web projects.
 
 ## License
 
