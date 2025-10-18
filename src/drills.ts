@@ -23,6 +23,10 @@ export const kodoParadiddle: Drill = {
       section("Accent on R", 2, measure(R, l, R, R), measure(l, R, l, l)),
       section("Accent on L", 2, measure(r, L, r, r), measure(L, r, L, L)),
     ],
+    [
+      section("Accent on R", 2, measure(R, l, R, R), measure(l, R, l, l)),
+      section("Accent on L", 2, measure(r, L, r, r), measure(L, r, L, L)),
+    ],
     [section("Accent on 4", 4, measure(r, l, r, R), measure(l, r, l, L))],
   ],
 }
