@@ -132,7 +132,7 @@ export function PracticeView({ drill, onBack }: { drill: Drill; onBack: () => vo
   }, [state, bpm, drill.rows.length])
 
   const handleStartStop = () => {
-    setState(state.playing ? Playing : NotPlaying)
+    setState(state.playing ? NotPlaying : Playing)
   }
 
   return (
