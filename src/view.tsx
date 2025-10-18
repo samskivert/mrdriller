@@ -119,22 +119,13 @@ export function strokeView(stroke: Stroke, isHighlighted: boolean = false) {
   }
 }
 
-export function beatView(beat: Beat, isHighlighted: boolean = false) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
-      {beat.label && <div>{beat.label}</div>}
-      {beat.strokes.map((stroke) => strokeView(stroke, isHighlighted))}
-    </div>
-  )
-}
-
-type Highlight = { section: number, measure :number, beat :number }
+type Highlight = { section: number; measure: number; beat: number }
 
 export function measureView(
   measure: Measure,
   sectionIndex: number,
   measureIndex: number,
-  highlight?: Highlight
+  highlight?: Highlight,
 ) {
   const hasAnyLabels = measure.some((beat) => beat?.label)
 
@@ -172,7 +163,9 @@ export function measureView(
               </div>
             )}
             <div style={{ display: "flex", flexDirection: "column" }}>
-              {beatView(beat, isBeatHighlighted)}
+              {beat.strokes.map((stroke) =>
+                strokeView(stroke, isBeatHighlighted),
+              )}
             </div>
           </div>
         )
@@ -181,7 +174,11 @@ export function measureView(
   )
 }
 
-export function sectionView(section: Section, sectionIndex: number, highlight?: Highlight) {
+export function sectionView(
+  section: Section,
+  sectionIndex: number,
+  highlight?: Highlight,
+) {
   const isHighlighted = highlight?.section === sectionIndex
 
   return (
