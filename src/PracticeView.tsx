@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Drill } from "./model"
-import { drillView } from "./view"
+import { DrillView } from "./view"
 import { MetronomeSounds } from "./MetronomeSounds"
 
 type State = {
@@ -171,7 +171,10 @@ export function PracticeView({
       </button>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {drillView(drill, state.playing ? state : undefined)}
+        <DrillView
+          drill={drill}
+          highlight={state.playing ? state : undefined}
+        />
       </div>
 
       <div

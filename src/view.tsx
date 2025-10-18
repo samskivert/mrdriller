@@ -1,205 +1,27 @@
 import * as React from "react"
-import { Stroke, Measure, Section, Row, Drill } from "./model"
+import { Section, Row, Drill } from "./model"
+import { MeasureView } from "./MeasureView"
 
-export function strokeView(
-  stroke: Stroke | undefined,
-  isHighlighted: boolean = false,
-) {
-  const size = 28
-  const containerStyle = {
-    width: size,
-    height: size,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 4,
-    position: "relative" as const,
-  }
-
-  // Return empty space for undefined strokes
-  if (!stroke) {
-    return <div style={containerStyle} />
-  }
-
-  const color = stroke.hand === "R" ? "#0072B8" : "#FF9A00"
-  const isAccented = stroke.accent
-
-  // Determine shape based on direction
-  const isDownStroke = stroke.dir === "D"
-  const isUpStroke = stroke.dir === "U"
-  const isDirectional = isDownStroke || isUpStroke
-
-  if (isDirectional) {
-    // SVG half-circle + triangle
-    const halfSize = size / 2
-    const strokePadding = 2 // Extra space for stroke width
-    const svgSize = size + strokePadding * 2
-    let pathData = ""
-
-    if (isDownStroke) {
-      // Half circle on top, triangle pointing down
-      pathData = `M ${strokePadding} ${halfSize + strokePadding} A ${halfSize} ${halfSize} 0 0 1 ${size + strokePadding} ${halfSize + strokePadding} L ${halfSize + strokePadding} ${size + strokePadding} Z`
-    } else {
-      // Half circle on bottom, triangle pointing up
-      pathData = `M ${strokePadding} ${halfSize + strokePadding} L ${halfSize + strokePadding} ${strokePadding} L ${size + strokePadding} ${halfSize + strokePadding} A ${halfSize} ${halfSize} 0 0 1 ${strokePadding} ${halfSize + strokePadding} Z`
-    }
-
-    return (
-      <div style={containerStyle}>
-        <svg
-          width={svgSize}
-          height={svgSize}
-          style={{
-            position: "absolute",
-            left: -strokePadding,
-            top: -strokePadding,
-            pointerEvents: "none",
-          }}
-        >
-          <path
-            d={pathData}
-            fill={isHighlighted ? color : "transparent"}
-            stroke={color}
-            strokeWidth={isAccented ? 4 : 2}
-          />
-        </svg>
-        <div
-          style={{
-            position: "relative",
-            zIndex: 1,
-            color: isHighlighted ? "white" : color,
-            fontWeight: 600,
-            fontSize: "12px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          {stroke.hand}
-        </div>
-      </div>
-    )
-  } else {
-    // Circle shape (no direction)
-    const strokePadding = 2 // Extra space for stroke width
-    const svgSize = size + strokePadding * 2
-
-    return (
-      <div style={containerStyle}>
-        <svg
-          width={svgSize}
-          height={svgSize}
-          style={{
-            position: "absolute",
-            left: -strokePadding,
-            top: -strokePadding,
-            pointerEvents: "none",
-          }}
-        >
-          <circle
-            cx={size / 2 + strokePadding}
-            cy={size / 2 + strokePadding}
-            r={size / 2 - 1}
-            fill={isHighlighted ? color : "transparent"}
-            stroke={color}
-            strokeWidth={isAccented ? 4 : 2}
-          />
-        </svg>
-        <div
-          style={{
-            position: "relative",
-            zIndex: 1,
-            color: isHighlighted ? "white" : color,
-            fontWeight: 600,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          {stroke.hand}
-        </div>
-      </div>
-    )
-  }
-}
-
-type Highlight = {
+export type Pos = {
   row: number
   section: number
   measure: number
   offset: number
   repeat: number
 }
+const Zero = { row: 0, section: 0, measure: 0, offset: 0, repeat: 0 }
 
-export function measureView(
-  measure: Measure,
-  rowIndex: number,
-  sectionIndex: number,
-  measureIndex: number,
-  highlight?: Highlight,
-) {
-  const hasAnyLabels = measure.some((beat) => beat?.label)
-
-  return (
-    <div style={{ display: "flex", flexDirection: "row" }}>
-      {measure.map((beat, beatIndex) => {
-        if (!beat) {
-          return <div key={beatIndex} style={{ width: 36 }} />
-        }
-
-        const isBeatHighlighted =
-          highlight?.row === rowIndex &&
-          highlight?.section === sectionIndex &&
-          highlight?.measure === measureIndex &&
-          highlight?.offset === beatIndex
-
-        return (
-          <div
-            key={beatIndex}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            {hasAnyLabels && (
-              <div
-                style={{
-                  height: 20,
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: 4,
-                }}
-              >
-                {beat.label && <div>{beat.label}</div>}
-              </div>
-            )}
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              {beat.strokes.map((stroke, strokeIndex) => (
-                <React.Fragment key={strokeIndex}>
-                  {strokeView(stroke, isBeatHighlighted)}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-export function sectionView(
-  section: Section,
-  rowIndex: number,
-  sectionIndex: number,
-  highlight?: Highlight,
-) {
+function SectionView({
+  section,
+  pos,
+  highlight,
+}: {
+  section: Section
+  pos: Pos
+  highlight?: Pos
+}) {
   const isHighlighted =
-    highlight?.row === rowIndex && highlight?.section === sectionIndex
+    pos.row === highlight?.row && pos.section === highlight?.section
 
   // Show current repeat position if highlighted, otherwise show total repeats
   const repeatDisplay =
@@ -236,15 +58,31 @@ export function sectionView(
         </div>
       )}
       <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
-        {section.measures.map((measure, measureIndex) =>
-          measureView(measure, rowIndex, sectionIndex, measureIndex, highlight),
-        )}
+        {section.measures.map((measure, measureIndex) => (
+          <MeasureView
+            key={measureIndex}
+            measure={measure}
+            highlightBeat={
+              isHighlighted && highlight.measure == measureIndex
+                ? highlight.offset
+                : undefined
+            }
+          />
+        ))}
       </div>
     </div>
   )
 }
 
-export function rowView(row: Row, rowIndex: number, highlight?: Highlight) {
+function RowView({
+  row,
+  rowIndex,
+  highlight,
+}: {
+  row: Row
+  rowIndex: number
+  highlight?: Pos
+}) {
   return (
     <div
       style={{
@@ -254,19 +92,37 @@ export function rowView(row: Row, rowIndex: number, highlight?: Highlight) {
         gap: 8,
       }}
     >
-      {row.map((section, sectionIndex) =>
-        sectionView(section, rowIndex, sectionIndex, highlight),
-      )}
+      {row.map((section, sectionIndex) => (
+        <SectionView
+          key={sectionIndex}
+          section={section}
+          pos={{ ...Zero, row: rowIndex, section: sectionIndex }}
+          highlight={highlight}
+        />
+      ))}
     </div>
   )
 }
 
-export function drillView(drill: Drill, highlight?: Highlight) {
+export function DrillView({
+  drill,
+  highlight,
+}: {
+  drill: Drill
+  highlight?: Pos
+}) {
   return (
     <>
       <h1>{drill.title}</h1>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {drill.rows.map((row, rowIndex) => rowView(row, rowIndex, highlight))}
+        {drill.rows.map((row, rowIndex) => (
+          <RowView
+            key={rowIndex}
+            row={row}
+            rowIndex={rowIndex}
+            highlight={highlight}
+          />
+        ))}
       </div>
     </>
   )
