@@ -1,6 +1,7 @@
 import * as React from "react"
-import { Drill, Section } from "./model"
+import { Drill } from "./model"
 import { drillView } from "./view"
+import { MetronomeSounds } from "./MetronomeSounds"
 
 type State = {
   playing: boolean
@@ -29,9 +30,33 @@ export function PracticeView({
   const [state, setState] = React.useState<State>(NotPlaying)
 
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null)
+  const soundsRef = React.useRef<MetronomeSounds | null>(null)
+
+  // Initialize metronome sounds
+  React.useEffect(() => {
+    soundsRef.current = new MetronomeSounds()
+    return () => {
+      soundsRef.current?.dispose()
+    }
+  }, [])
 
   // Calculate quarter note duration in milliseconds (1/4 beat)
   const quarterNoteDuration = (60 * 1000) / bpm / 4
+
+  // Play metronome sound when beat changes
+  React.useEffect(() => {
+    if (state.playing && soundsRef.current) {
+      // Play sound based on current beat (beat 0 = 1st beat, beat 2 = 3rd beat)
+      const beatInMeasure = state.beat % 4
+      if (beatInMeasure === 0) {
+        // Beat 1: higher pitch beep
+        soundsRef.current.playBeep()
+      } else if (beatInMeasure === 2) {
+        // Beat 3: lower pitch boop
+        soundsRef.current.playBoop()
+      }
+    }
+  }, [state.playing, state.beat])
 
   React.useEffect(() => {
     if (state.playing) {

@@ -9,7 +9,7 @@ export default [
   js.configs.recommended,
   prettierConfig,
   {
-    files: ["src/**/*.ts"],
+    files: ["src/**/*.ts", "src/**/*.tsx"],
     languageOptions: {
       parser: tsparser,
       parserOptions: {
@@ -21,6 +21,9 @@ export default [
         console: "readonly",
         window: "readonly",
         document: "readonly",
+        AudioContext: "readonly",
+        GainNode: "readonly",
+        OscillatorNode: "readonly",
       },
     },
     plugins: {
