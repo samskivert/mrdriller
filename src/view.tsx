@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Stroke, Beat, Measure, Section, Drill } from "./model"
 
-export function strokeView(stroke: Stroke) {
+export function strokeView(stroke: Stroke, isHighlighted: boolean = false) {
   const color = stroke.hand === "R" ? "#0072B8" : "#FF9A00"
   const isAccented = stroke.accent
   const size = 28 // isAccented ? 32 : 28
@@ -50,7 +50,7 @@ export function strokeView(stroke: Stroke) {
         >
           <path
             d={pathData}
-            fill="transparent"
+            fill={isHighlighted ? color : "transparent"}
             stroke={color}
             strokeWidth={isAccented ? 4 : 2}
           />
@@ -59,7 +59,7 @@ export function strokeView(stroke: Stroke) {
           style={{
             position: "relative",
             zIndex: 1,
-            color: color,
+            color: isHighlighted ? "white" : color,
             fontWeight: 600,
             fontSize: "12px",
             display: "flex",
@@ -94,7 +94,7 @@ export function strokeView(stroke: Stroke) {
             cx={size / 2 + strokePadding}
             cy={size / 2 + strokePadding}
             r={size / 2 - 1}
-            fill="transparent"
+            fill={isHighlighted ? color : "transparent"}
             stroke={color}
             strokeWidth={isAccented ? 4 : 2}
           />
@@ -103,7 +103,7 @@ export function strokeView(stroke: Stroke) {
           style={{
             position: "relative",
             zIndex: 1,
-            color: color,
+            color: isHighlighted ? "white" : color,
             fontWeight: 600,
             display: "flex",
             alignItems: "center",
@@ -119,28 +119,45 @@ export function strokeView(stroke: Stroke) {
   }
 }
 
-export function beatView(beat: Beat) {
+export function beatView(beat: Beat, isHighlighted: boolean = false) {
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       {beat.label && <div>{beat.label}</div>}
-      {beat.strokes.map(strokeView)}
+      {beat.strokes.map((stroke) => strokeView(stroke, isHighlighted))}
     </div>
   )
 }
 
-export function measureView(measure: Measure) {
+export function measureView(
+  measure: Measure,
+  sectionIndex: number,
+  measureIndex: number,
+  highlighting?: {
+    highlightedSection: number | null
+    highlightedBeat: {
+      sectionIndex: number
+      measureIndex: number
+      beatIndex: number
+    } | null
+  },
+) {
   const hasAnyLabels = measure.some((beat) => beat?.label)
 
   return (
     <div style={{ display: "flex", flexDirection: "row" }}>
-      {measure.map((beat, index) => {
+      {measure.map((beat, beatIndex) => {
         if (!beat) {
-          return <div key={index} style={{ width: 36 }} />
+          return <div key={beatIndex} style={{ width: 36 }} />
         }
+
+        const isBeatHighlighted =
+          highlighting?.highlightedBeat?.sectionIndex === sectionIndex &&
+          highlighting?.highlightedBeat?.measureIndex === measureIndex &&
+          highlighting?.highlightedBeat?.beatIndex === beatIndex
 
         return (
           <div
-            key={index}
+            key={beatIndex}
             style={{
               display: "flex",
               flexDirection: "column",
@@ -160,7 +177,7 @@ export function measureView(measure: Measure) {
               </div>
             )}
             <div style={{ display: "flex", flexDirection: "column" }}>
-              {beat.strokes.map(strokeView)}
+              {beatView(beat, isBeatHighlighted)}
             </div>
           </div>
         )
@@ -169,7 +186,20 @@ export function measureView(measure: Measure) {
   )
 }
 
-export function sectionView(section: Section) {
+export function sectionView(
+  section: Section,
+  sectionIndex: number,
+  highlighting?: {
+    highlightedSection: number | null
+    highlightedBeat: {
+      sectionIndex: number
+      measureIndex: number
+      beatIndex: number
+    } | null
+  },
+) {
+  const isHighlighted = highlighting?.highlightedSection === sectionIndex
+
   return (
     <div
       style={{
@@ -177,6 +207,9 @@ export function sectionView(section: Section) {
         flexDirection: "column",
         border: "2px solid #333333",
         padding: 8,
+        backgroundColor: isHighlighted ? "#f0f8ff" : "transparent",
+        boxShadow: isHighlighted ? "0 0 0 2px #4ecdc4" : "none",
+        boxSizing: "border-box",
       }}
     >
       {section.label && (
@@ -185,86 +218,33 @@ export function sectionView(section: Section) {
         </div>
       )}
       <div style={{ display: "flex", flexDirection: "row" }}>
-        {section.measures.map(measureView)}
+        {section.measures.map((measure, measureIndex) =>
+          measureView(measure, sectionIndex, measureIndex, highlighting),
+        )}
       </div>
     </div>
   )
 }
 
-export function drillView(drill: Drill) {
+export function drillView(
+  drill: Drill,
+  highlighting?: {
+    highlightedSection: number | null
+    highlightedBeat: {
+      sectionIndex: number
+      measureIndex: number
+      beatIndex: number
+    } | null
+  },
+) {
   return (
     <>
       <h1>{drill.title}</h1>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {drill.sections.map(sectionView)}
+        {drill.sections.map((section, sectionIndex) =>
+          sectionView(section, sectionIndex, highlighting),
+        )}
       </div>
     </>
-  )
-}
-
-export function PracticeView({
-  drill,
-  onBack,
-}: {
-  drill: Drill
-  onBack: () => void
-}) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <button
-        onClick={onBack}
-        style={{
-          padding: "8px 16px",
-          fontSize: 16,
-          cursor: "pointer",
-          border: "1px solid #ccc",
-          borderRadius: 4,
-          backgroundColor: "#f5f5f5",
-        }}
-      >
-        ← Back to Menu
-      </button>
-      {drillView(drill)}
-    </div>
-  )
-}
-
-export function MenuView({
-  drills,
-  onSelectDrill,
-}: {
-  drills: Drill[]
-  onSelectDrill: (drill: Drill) => void
-}) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 16,
-        alignItems: "center",
-      }}
-    >
-      <h1>Mr. Driller</h1>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {drills.map((drill, index) => (
-          <button
-            key={index}
-            onClick={() => onSelectDrill(drill)}
-            style={{
-              padding: "12px 24px",
-              fontSize: 16,
-              cursor: "pointer",
-              border: "1px solid #ccc",
-              borderRadius: 4,
-              backgroundColor: "#f9f9f9",
-              minWidth: 200,
-            }}
-          >
-            {drill.title}
-          </button>
-        ))}
-      </div>
-    </div>
   )
 }

@@ -2,7 +2,8 @@ import * as React from "react"
 import { StrictMode, useState } from "react"
 import { createRoot } from "react-dom/client"
 import { Drill } from "./model"
-import { MenuView, PracticeView } from "./view"
+import { PracticeView } from "./PracticeView"
+import { MenuView } from "./MenuView"
 import { drills } from "./drills"
 
 function App() {
