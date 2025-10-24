@@ -1,12 +1,12 @@
+import { Theme, Container, Box } from "@radix-ui/themes"
 import * as React from "react"
 import { StrictMode, useState } from "react"
 import { createRoot } from "react-dom/client"
-import { Theme, Container, Box } from "@radix-ui/themes"
 import "@radix-ui/themes/styles.css"
-import { Drill } from "./model"
-import { PracticeView } from "./PracticeView"
-import { MenuView } from "./MenuView"
 import { drills } from "./drills"
+import { DrillView } from "./DrillView"
+import { MenuView } from "./MenuView"
+import { Drill } from "./model"
 
 function App() {
   const [selectedDrill, setSelectedDrill] = useState<Drill | null>(null)
@@ -20,15 +20,17 @@ function App() {
   }
 
   return (
-    <Container size="4" p="4">
-      <Box style={{ width: "fit-content", margin: "0 auto" }}>
-        {selectedDrill ? (
-          <PracticeView drill={selectedDrill} onBack={handleBackToMenu} />
-        ) : (
-          <MenuView drills={drills} onSelectDrill={handleSelectDrill} />
-        )}
-      </Box>
-    </Container>
+    <>
+      {selectedDrill ? (
+        <DrillView drill={selectedDrill} onBack={handleBackToMenu} />
+      ) : (
+        <Container size="4" p="4">
+          <Box style={{ width: "fit-content", margin: "0 auto" }}>
+            <MenuView drills={drills} onSelectDrill={handleSelectDrill} />
+          </Box>
+        </Container>
+      )}
+    </>
   )
 }
 

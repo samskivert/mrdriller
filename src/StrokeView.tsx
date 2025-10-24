@@ -4,11 +4,12 @@ import { Stroke } from "./model"
 export function StrokeView({
   stroke,
   highlight = false,
+  size = 28,
 }: {
   stroke: Stroke | undefined
   highlight?: boolean
+  size?: number
 }) {
-  const size = 28
   const containerStyle = {
     width: size,
     height: size,

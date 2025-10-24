@@ -81,3 +81,10 @@ export type Drill = {
   bpm: number // beats per measure
   rows: Row[]
 }
+export type Pos = {
+  row: number
+  section: number
+  measure: number
+  offset: number
+  repeat: number
+}

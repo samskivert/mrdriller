@@ -296,11 +296,12 @@ export const threeAgainstTwo: Drill = {
   title: "Three against Two",
   bpm: 6,
   rows: [
-    [section("A", 4, [beat(r, l), su, beat(r), beat(su, l), beat(r), su]),
-     section("B", 4, [beat(r), beat(su, l), beat(r), su, beat(r, l), su]),
-     section("C", 4, [beat(r, l), su, beat(su, l), beat(r), beat(su, l), su]),
-     section("D", 4, [beat(su, l), beat(r), beat(su, l), su, beat(r, l), su]),
-     ]
+    [
+      section("A", 4, [beat(r, l), su, beat(r), beat(su, l), beat(r), su]),
+      section("B", 4, [beat(r), beat(su, l), beat(r), su, beat(r, l), su]),
+      section("C", 4, [beat(r, l), su, beat(su, l), beat(r), beat(su, l), su]),
+      section("D", 4, [beat(su, l), beat(r), beat(su, l), su, beat(r, l), su]),
+    ],
   ],
 }
 

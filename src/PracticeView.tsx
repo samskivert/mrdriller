@@ -1,8 +1,8 @@
-import { Button, Flex, TextField, Text, Card, Box } from "@radix-ui/themes"
+import { Button, Flex, TextField, Text, Box } from "@radix-ui/themes"
 import * as React from "react"
 import { MetronomeSounds } from "./MetronomeSounds"
-import { Drill } from "./model"
-import { DrillView } from "./view"
+import { Drill, Section } from "./model"
+import { SectionView } from "./SectionView"
 
 type State = {
   playing: boolean
@@ -26,12 +26,13 @@ const NotPlaying: State = {
 
 const Playing = { ...NotPlaying, playing: true }
 
-export function PracticeView({ drill, onBack }: { drill: Drill; onBack: () => void }) {
+export function PracticeView({ drill }: { drill: Drill }) {
   const [bpm, setBpm] = React.useState(60)
   const [state, setState] = React.useState<State>(NotPlaying)
 
   const intervalRef = React.useRef<number | null>(null)
   const soundsRef = React.useRef<MetronomeSounds | null>(null)
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null)
 
   // Initialize metronome sounds
   React.useEffect(() => {
@@ -58,6 +59,35 @@ export function PracticeView({ drill, onBack }: { drill: Drill; onBack: () => vo
       }
     }
   }, [state.playing, state.beat])
+
+  // Auto-scroll to active section
+  React.useEffect(() => {
+    if (state.playing && scrollContainerRef.current) {
+      const activeSectionElement = scrollContainerRef.current.querySelector(
+        `[data-section-index="${state.section}"][data-row-index="${state.row}"]`,
+      )
+      if (activeSectionElement) {
+        // Get the scrollable container (the div with overflow: auto)
+        const scrollableContainer = scrollContainerRef.current.parentElement
+        if (scrollableContainer) {
+          const containerRect = scrollableContainer.getBoundingClientRect()
+          const elementRect = activeSectionElement.getBoundingClientRect()
+
+          // Calculate the scroll position to center the element
+          const scrollTop =
+            scrollableContainer.scrollTop +
+            (elementRect.top - containerRect.top) -
+            containerRect.height / 2 +
+            elementRect.height / 2
+
+          scrollableContainer.scrollTo({
+            top: scrollTop,
+            behavior: "smooth",
+          })
+        }
+      }
+    }
+  }, [state.playing, state.section, state.row])
 
   React.useEffect(() => {
     if (state.playing) {
@@ -136,17 +166,44 @@ export function PracticeView({ drill, onBack }: { drill: Drill; onBack: () => vo
     setState(state.playing ? NotPlaying : Playing)
   }
 
-  return (
-    <Flex direction="column" gap="4">
-      <Button variant="soft" onClick={onBack}>
-        ← Back to Menu
-      </Button>
+  function mkSectionView(section: Section, rowIndex: number, sectionIndex: number) {
+    const isHighlighted = state.playing && state.row === rowIndex && state.section === sectionIndex
+    const repeatDisplay =
+      isHighlighted && section.repeat > 1
+        ? `${state.repeat + 1}/${section.repeat}`
+        : section.repeat > 1
+          ? `x${section.repeat}`
+          : undefined
 
-      <Box>
-        <DrillView drill={drill} highlight={state.playing ? state : undefined} />
+    return (
+      <Box
+        key={`${rowIndex}-${sectionIndex}`}
+        data-section-index={sectionIndex}
+        data-row-index={rowIndex}
+      >
+        <SectionView
+          section={section}
+          isHighlighted={isHighlighted}
+          repeatDisplay={repeatDisplay}
+          highlight={state.playing ? state : undefined}
+        />
       </Box>
+    )
+  }
 
-      <Card>
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      {/* Scrollable sections area */}
+      <div style={{ flex: "1", overflow: "auto", padding: "16px" }}>
+        <Flex direction="column" gap="4" ref={scrollContainerRef}>
+          {drill.rows.flatMap((row, rowIndex) =>
+            row.map((section, sectionIndex) => mkSectionView(section, rowIndex, sectionIndex)),
+          )}
+        </Flex>
+      </div>
+
+      {/* Controls at bottom - natural height */}
+      <div style={{ minHeight: "100px", padding: "16px", borderTop: "1px solid var(--gray-6)" }}>
         <Flex align="center" gap="3">
           <Text size="2" weight="medium">
             BPM:
@@ -165,7 +222,7 @@ export function PracticeView({ drill, onBack }: { drill: Drill; onBack: () => vo
             {state.playing ? "Stop" : "Start"}
           </Button>
         </Flex>
-      </Card>
-    </Flex>
+      </div>
+    </div>
   )
 }
