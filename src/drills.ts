@@ -35,7 +35,7 @@ export const paradiddleInversions: Drill = {
 
 export const bachiHakobi: Drill = {
   id: "bachi-hakobi",
-  title: "Bachi Hakobi (桴運び)",
+  title: "Bachi Hakobi - 桴運び",
   bpm: 4,
   rows: [
     [
@@ -289,10 +289,81 @@ export const threeAgainstTwo: Drill = {
   beeps: [1, 3, 5],
   rows: [
     [
-      section("A", 4, [beat(r, l), su, beat(r), beat(su, l), beat(r), su]),
-      section("B", 4, [beat(r), beat(su, l), beat(r), su, beat(r, l), su]),
-      section("C", 4, [beat(r, l), su, beat(su, l), beat(r), beat(su, l), su]),
-      section("D", 4, [beat(su, l), beat(r), beat(su, l), su, beat(r, l), su]),
+      section("A", 8, [beat(r, l), su, beat(r), beat(su, l), beat(r), su]),
+      section("B", 8, [beat(r), beat(su, l), beat(r), su, beat(r, l), su]),
+    ],
+    [
+      section("C", 8, [beat(r, l), su, beat(su, l), beat(r), beat(su, l), su]),
+      section("D", 8, [beat(su, l), beat(r), beat(su, l), su, beat(r, l), su]),
+    ],
+  ],
+}
+
+export const fourAgainstThree: Drill = {
+  id: "four-against-three",
+  title: "Four against Three",
+  bpm: 12,
+  beeps: [1, 4, 7, 10],
+  rows: [
+    [
+      section("A", 8, [
+        beat(r, l),
+        su,
+        su,
+        beat(r),
+        beat(su, l),
+        su,
+        beat(r),
+        su,
+        beat(su, l),
+        beat(r),
+        su,
+        su,
+      ]),
+      section("B", 8, [
+        beat(r),
+        beat(su, l),
+        su,
+        beat(r),
+        su,
+        beat(su, l),
+        beat(r),
+        su,
+        su,
+        beat(r, l),
+        su,
+        su,
+      ]),
+    ],
+    [
+      section("C", 8, [
+        beat(r, l),
+        su,
+        su,
+        beat(su, l),
+        beat(r),
+        su,
+        beat(su, l),
+        su,
+        beat(r),
+        beat(su, l),
+        su,
+        su,
+      ]),
+      section("D", 8, [
+        beat(su, l),
+        beat(r),
+        su,
+        beat(su, l),
+        su,
+        beat(r),
+        beat(su, l),
+        su,
+        su,
+        beat(r, l),
+        su,
+        su,
+      ]),
     ],
   ],
 }
@@ -305,4 +376,5 @@ export const drills = [
   iceSkater,
   triplets,
   threeAgainstTwo,
+  fourAgainstThree,
 ]
