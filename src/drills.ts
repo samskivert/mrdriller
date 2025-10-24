@@ -299,6 +299,10 @@ export const threeAgainstTwo: Drill = {
   ],
 }
 
+const beatRL = beat(r, l)
+const beatR = beat(r)
+const beatL = beat(su, l)
+
 export const fourAgainstThree: Drill = {
   id: "four-against-three",
   title: "Four against Three",
@@ -306,64 +310,47 @@ export const fourAgainstThree: Drill = {
   beeps: [1, 4, 7, 10],
   rows: [
     [
-      section("A", 8, [
-        beat(r, l),
-        su,
-        su,
-        beat(r),
-        beat(su, l),
-        su,
-        beat(r),
-        su,
-        beat(su, l),
-        beat(r),
-        su,
-        su,
-      ]),
-      section("B", 8, [
-        beat(r),
-        beat(su, l),
-        su,
-        beat(r),
-        su,
-        beat(su, l),
-        beat(r),
-        su,
-        su,
-        beat(r, l),
-        su,
-        su,
-      ]),
+      section("A", 8, [beatRL, su, su, beatR, beatL, su, beatR, su, beatL, beatR, su, su]),
+      section("B", 8, [beatR, beatL, su, beatR, su, beatL, beatR, su, su, beatRL, su, su]),
     ],
     [
-      section("C", 8, [
-        beat(r, l),
-        su,
-        su,
-        beat(su, l),
-        beat(r),
-        su,
-        beat(su, l),
-        su,
-        beat(r),
-        beat(su, l),
-        su,
-        su,
-      ]),
-      section("D", 8, [
-        beat(su, l),
-        beat(r),
-        su,
-        beat(su, l),
-        su,
-        beat(r),
-        beat(su, l),
-        su,
-        su,
-        beat(r, l),
-        su,
-        su,
-      ]),
+      section("C", 8, [beatRL, su, su, beatL, beatR, su, beatL, su, beatR, beatL, su, su]),
+      section("D", 8, [beatL, beatR, su, beatL, su, beatR, beatL, su, su, beatRL, su, su]),
+    ],
+  ],
+}
+
+const right8 = [beatRL, beatR, beatR, beatR, beatR, beatR, beatR, beatR]
+const left8 = [beatRL, beatL, beatL, beatL, beatL, beatL, beatL, beatL]
+const right4 = [beatRL, beatR, beatR, beatR]
+const left4 = [beatRL, beatL, beatL, beatL]
+const right2 = [beatRL, beatR]
+const left2 = [beatRL, beatL]
+const jan3 = [beatRL, beatRL, beatRL, su]
+
+export const dexter: Drill = {
+  id: "dexter",
+  title: "Dexter",
+  bpm: 4,
+  rows: [
+    [
+      section("Right 8s", 2, right8),
+      section("Right 4s", 2, [...right4, ...right4]),
+      section("Right 2s", 2, [...right2, ...right2, ...right2]),
+      section("Jan Jan Jan", 1, jan3),
+    ],
+    [
+      section("Left 8s", 2, left8),
+      section("Left 4s", 2, [...left4, ...left4]),
+      section("Left 2s", 2, [...left2, ...left2, ...left2]),
+      section("Jan Jan Jan", 1, jan3),
+    ],
+    [
+      section("Right 8", 1, right8),
+      section("Left 8", 1, left8),
+      section("Alt 4s", 2, [...right4, ...left4]),
+      section("Alt 2s", 3, [...right2, ...left2]),
+      section("Jan Jan Jan", 1, jan3),
     ],
   ],
 }
@@ -377,4 +364,5 @@ export const drills = [
   triplets,
   threeAgainstTwo,
   fourAgainstThree,
+  dexter,
 ]
