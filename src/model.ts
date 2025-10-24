@@ -79,6 +79,7 @@ export type Row = Section[]
 export type Drill = {
   title: string
   bpm: number // beats per measure
+  beeps?: number[] // beats on which to beep
   rows: Row[]
 }
 export type Pos = {

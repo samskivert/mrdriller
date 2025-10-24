@@ -86,12 +86,20 @@ export function PracticeView({ drill }: { drill: Drill }) {
     if (state.playing && soundsRef.current) {
       // Play sound based on current beat (beat 0 = 1st beat, beat 2 = 3rd beat)
       const beatInMeasure = state.beat % drill.bpm
-      if (beatInMeasure === 0) {
-        // Beat 1: higher pitch beep
-        soundsRef.current.playBeep()
-      } else if (beatInMeasure === drill.bpm / 2) {
-        // Beat 3: lower pitch boop
-        soundsRef.current.playBoop()
+      const beeps = drill.beeps
+      if (beeps) {
+        if (beeps.includes(beatInMeasure + 1)) {
+          if (beatInMeasure + 1 === beeps[0]) soundsRef.current.playBeep()
+          else soundsRef.current.playBoop()
+        }
+      } else {
+        if (beatInMeasure === 0) {
+          // Beat 1: higher pitch beep
+          soundsRef.current.playBeep()
+        } else if (beatInMeasure === drill.bpm / 2) {
+          // Beat 3: lower pitch boop
+          soundsRef.current.playBoop()
+        }
       }
     }
   }, [state.playing, state.beat])

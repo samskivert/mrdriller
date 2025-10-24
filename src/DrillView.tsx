@@ -23,7 +23,7 @@ export function DrillView({ drill, onBack }: { drill: Drill; onBack: () => void 
         >
           <Flex align="center" gap="4" style={{ marginBottom: "12px" }}>
             <Button variant="soft" onClick={onBack}>
-              ← Back to Menu
+              ← Back to Drills
             </Button>
             <div style={{ flex: "1" }} /> {/* Spacer to push tabs to center */}
             <Tabs.List>

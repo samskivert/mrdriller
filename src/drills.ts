@@ -279,6 +279,7 @@ export const triplets: Drill = {
 export const threeAgainstTwo: Drill = {
   title: "Three against Two",
   bpm: 6,
+  beeps: [1, 3, 5],
   rows: [
     [
       section("A", 4, [beat(r, l), su, beat(r), beat(su, l), beat(r), su]),
