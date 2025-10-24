@@ -90,7 +90,8 @@ export function StrokeView({
     // Circle shape (no direction) or square shape (accented)
     const strokePadding = 2 // Extra space for stroke width
     const svgSize = size + strokePadding * 2
-
+    const shrink = isAccented ? 0 : size / 8
+    const strokeWidth = isAccented ? 4 : 2
     return (
       <div style={containerStyle}>
         <svg
@@ -103,28 +104,14 @@ export function StrokeView({
             pointerEvents: "none",
           }}
         >
-          {isAccented ? (
-            // Square for accented strokes
-            <rect
-              x={strokePadding + 1}
-              y={strokePadding + 1}
-              width={size - 2}
-              height={size - 2}
-              fill={highlight ? color : "transparent"}
-              stroke={color}
-              strokeWidth={4}
-            />
-          ) : (
-            // Circle for regular strokes
-            <circle
-              cx={size / 2 + strokePadding}
-              cy={size / 2 + strokePadding}
-              r={size / 2 - 1}
-              fill={highlight ? color : "transparent"}
-              stroke={color}
-              strokeWidth={2}
-            />
-          )}
+          <circle
+            cx={size / 2 + strokePadding}
+            cy={size / 2 + strokePadding}
+            r={size / 2 - 1 - shrink}
+            fill={highlight ? color : "transparent"}
+            stroke={color}
+            strokeWidth={strokeWidth}
+          />
         </svg>
         <div
           style={{
