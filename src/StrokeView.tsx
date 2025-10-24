@@ -27,6 +27,7 @@ export function StrokeView({
 
   const color = stroke.hand === "R" ? "#0072B8" : "#FF9A00"
   const isAccented = stroke.accent
+  const fontSize = `${Math.max(10, size * 0.4)}px`
 
   // Determine shape based on direction
   const isDownStroke = stroke.dir === "D"
@@ -73,7 +74,7 @@ export function StrokeView({
             zIndex: 1,
             color: highlight ? "white" : color,
             fontWeight: 600,
-            fontSize: "12px",
+            fontSize: fontSize,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -117,6 +118,7 @@ export function StrokeView({
             zIndex: 1,
             color: highlight ? "white" : color,
             fontWeight: 600,
+            fontSize: fontSize,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

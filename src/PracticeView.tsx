@@ -67,24 +67,20 @@ export function PracticeView({ drill }: { drill: Drill }) {
         `[data-section-index="${state.section}"][data-row-index="${state.row}"]`,
       )
       if (activeSectionElement) {
-        // Get the scrollable container (the div with overflow: auto)
-        const scrollableContainer = scrollContainerRef.current.parentElement
-        if (scrollableContainer) {
-          const containerRect = scrollableContainer.getBoundingClientRect()
-          const elementRect = activeSectionElement.getBoundingClientRect()
+        const containerRect = scrollContainerRef.current.getBoundingClientRect()
+        const elementRect = activeSectionElement.getBoundingClientRect()
 
-          // Calculate the scroll position to center the element
-          const scrollTop =
-            scrollableContainer.scrollTop +
-            (elementRect.top - containerRect.top) -
-            containerRect.height / 2 +
-            elementRect.height / 2
+        // Calculate the scroll position to center the element
+        const scrollTop =
+          scrollContainerRef.current.scrollTop +
+          (elementRect.top - containerRect.top) -
+          containerRect.height / 2 +
+          elementRect.height / 2
 
-          scrollableContainer.scrollTo({
-            top: scrollTop,
-            behavior: "smooth",
-          })
-        }
+        scrollContainerRef.current.scrollTo({
+          top: scrollTop,
+          behavior: "smooth",
+        })
       }
     }
   }, [state.playing, state.section, state.row])
@@ -194,12 +190,14 @@ export function PracticeView({ drill }: { drill: Drill }) {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {/* Scrollable sections area */}
-      <div style={{ flex: "1", overflow: "auto", padding: "16px" }}>
-        <Flex direction="column" gap="4" ref={scrollContainerRef}>
-          {drill.rows.flatMap((row, rowIndex) =>
-            row.map((section, sectionIndex) => mkSectionView(section, rowIndex, sectionIndex)),
-          )}
-        </Flex>
+      <div ref={scrollContainerRef} style={{ flex: "1", overflow: "auto", padding: "16px" }}>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Flex direction="column" gap="4" style={{ width: "fit-content" }}>
+            {drill.rows.flatMap((row, rowIndex) =>
+              row.map((section, sectionIndex) => mkSectionView(section, rowIndex, sectionIndex)),
+            )}
+          </Flex>
+        </div>
       </div>
 
       {/* Controls at bottom - natural height */}

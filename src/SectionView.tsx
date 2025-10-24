@@ -21,18 +21,17 @@ export function SectionView({
         border: isHighlighted ? "3px solid var(--accent-9)" : "2px solid var(--gray-9)",
         backgroundColor: isHighlighted ? "var(--accent-2)" : "var(--gray-2)",
         boxShadow: isHighlighted ? "0 0 0 3px var(--accent-6)" : "none",
-        minHeight: "200px",
         padding: "24px",
       }}
     >
       <Flex direction="column" gap="4">
         {(section.label || repeatDisplay) && (
           <Flex justify="between" align="center">
-            <Text size="4" weight="bold">
+            <Text size="6" weight="bold">
               {section.label || ""}
             </Text>
             {repeatDisplay && (
-              <Text size="3" weight="bold" color="blue">
+              <Text size="6" weight="bold" color="blue">
                 {repeatDisplay}
               </Text>
             )}
@@ -43,7 +42,7 @@ export function SectionView({
             <Box key={measureIndex} style={{ minWidth: "200px" }}>
               <MeasureView
                 measure={measure}
-                strokeSize={42}
+                strokeSize={64}
                 highlightBeat={
                   isHighlighted && highlight && highlight.measure === measureIndex
                     ? highlight.offset

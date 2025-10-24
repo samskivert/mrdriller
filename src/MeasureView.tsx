@@ -52,7 +52,7 @@ export function MeasureView({
             strokeSize={strokeSize}
           />
         ) : (
-          <Box key={beatIndex} style={{ width: 36 }} />
+          <Box key={beatIndex} style={{ minWidth: strokeSize + 8 }} />
         ),
       )}
     </Flex>

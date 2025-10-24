@@ -16,7 +16,7 @@ function SectionView({ section }: { section: Section; pos: Pos; highlight?: Pos 
             </Text>
           </Flex>
         )}
-        <Flex direction="row" wrap="wrap" gap="1">
+        <Flex direction="row" wrap="wrap" gap="1" justify="start">
           {section.measures.map((measure, measureIndex) => (
             <MeasureView key={measureIndex} measure={measure} />
           ))}
@@ -28,7 +28,7 @@ function SectionView({ section }: { section: Section; pos: Pos; highlight?: Pos 
 
 function RowView({ row, rowIndex, highlight }: { row: Row; rowIndex: number; highlight?: Pos }) {
   return (
-    <Flex direction="row" wrap="wrap" gap="2">
+    <Flex direction="row" wrap="wrap" gap="2" justify="start">
       {row.map((section, sectionIndex) => (
         <SectionView
           key={sectionIndex}
@@ -43,10 +43,12 @@ function RowView({ row, rowIndex, highlight }: { row: Row; rowIndex: number; hig
 
 export function DrillOverView({ drill }: { drill: Drill }) {
   return (
-    <Flex direction="column" gap="2">
-      {drill.rows.map((row, rowIndex) => (
-        <RowView key={rowIndex} row={row} rowIndex={rowIndex} />
-      ))}
-    </Flex>
+    <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+      <Flex direction="column" gap="2" style={{ width: "fit-content" }}>
+        {drill.rows.map((row, rowIndex) => (
+          <RowView key={rowIndex} row={row} rowIndex={rowIndex} />
+        ))}
+      </Flex>
+    </div>
   )
 }
