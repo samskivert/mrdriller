@@ -1,4 +1,4 @@
-import { Button, Flex, TextField, Text, Box } from "@radix-ui/themes"
+import { Button, Flex, TextField, Text, Box, Card } from "@radix-ui/themes"
 import * as React from "react"
 import { MetronomeSounds } from "./MetronomeSounds"
 import { Drill, Section } from "./model"
@@ -6,6 +6,7 @@ import { SectionView } from "./SectionView"
 
 type State = {
   playing: boolean
+  intro: boolean
   beat: number
   row: number
   section: number
@@ -17,6 +18,7 @@ type State = {
 
 const NotPlaying: State = {
   playing: false,
+  intro: false,
   beat: 0,
   row: 0,
   section: 0,
@@ -26,7 +28,39 @@ const NotPlaying: State = {
   drillRepeat: 0,
 }
 
-const Playing = { ...NotPlaying, playing: true }
+const Playing = { ...NotPlaying, playing: true, intro: true }
+
+const IntroText = ["Ichi", "Ni", "So", "Re"]
+
+function IntroView({ drill, state }: { drill: Drill; state: State }) {
+  const isHighlighted = state.playing && state.intro
+  const measure = Math.floor(state.beat / drill.bpm)
+  const introText =
+    measure >= IntroText.length ? "Drill!" : state.intro ? IntroText[measure] : "Get ready..."
+  return (
+    <Card
+      variant="surface"
+      style={{
+        border: isHighlighted ? "3px solid var(--accent-9)" : "2px solid var(--gray-9)",
+        backgroundColor: isHighlighted ? "var(--accent-2)" : "var(--gray-2)",
+        boxShadow: isHighlighted ? "0 0 0 3px var(--accent-6)" : "none",
+        minHeight: 100,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Text
+        size="9"
+        weight="bold"
+        color={isHighlighted ? "blue" : "gray"}
+        style={{ textAlign: "center" }}
+      >
+        {introText}
+      </Text>
+    </Card>
+  )
+}
 
 export function PracticeView({ drill }: { drill: Drill }) {
   const [bpm, setBpm] = React.useState(60)
@@ -97,6 +131,11 @@ export function PracticeView({ drill }: { drill: Drill }) {
           const section = row[prev.section]
           const measure = section.measures[prev.measure]
 
+          // Check whether the intro is over
+          if (prev.intro && next.beat < drill.bpm * 4) return next
+          next.intro = false
+          if (next.beat == drill.bpm * 4) return next
+
           // Check if we've finished all beats in current measure
           next.offset = prev.offset + 1
           if (next.offset < measure.length) return next
@@ -150,7 +189,8 @@ export function PracticeView({ drill }: { drill: Drill }) {
   }
 
   function mkSectionView(section: Section, rowIndex: number, sectionIndex: number) {
-    const isHighlighted = state.playing && state.row === rowIndex && state.section === sectionIndex
+    const isHighlighted =
+      state.playing && !state.intro && state.row === rowIndex && state.section === sectionIndex
     const repeatDisplay =
       isHighlighted && section.repeat > 1
         ? `${state.repeat + 1}/${section.repeat}`
@@ -180,6 +220,7 @@ export function PracticeView({ drill }: { drill: Drill }) {
       <div ref={scrollContainerRef} style={{ flex: "1", overflow: "auto", padding: "16px" }}>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <Flex direction="column" gap="4" style={{ width: "fit-content" }}>
+            <IntroView drill={drill} state={state} />
             {drill.rows.flatMap((row, rowIndex) =>
               row.map((section, sectionIndex) => mkSectionView(section, rowIndex, sectionIndex)),
             )}
