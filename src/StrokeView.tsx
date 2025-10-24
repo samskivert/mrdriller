@@ -25,7 +25,7 @@ export function StrokeView({
     return <div style={containerStyle} />
   }
 
-  const color = stroke.hand === "R" ? "#0072B8" : "#FF9A00"
+  const color = stroke.hand === "R" ? "#0072B7" : "#FF9A00"
   const isAccented = stroke.accent
   const fontSize = `${Math.max(10, size * 0.4)}px`
 

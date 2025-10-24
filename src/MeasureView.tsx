@@ -1,5 +1,6 @@
 import { Flex, Box } from "@radix-ui/themes"
 import * as React from "react"
+import { EmptyBeatPlaceholder } from "./components"
 import { Beat, Measure } from "./model"
 import { StrokeView } from "./StrokeView"
 
@@ -52,7 +53,7 @@ export function MeasureView({
             strokeSize={strokeSize}
           />
         ) : (
-          <Box key={beatIndex} style={{ minWidth: strokeSize + 8 }} />
+          <EmptyBeatPlaceholder key={beatIndex} strokeSize={strokeSize} />
         ),
       )}
     </Flex>

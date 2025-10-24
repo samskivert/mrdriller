@@ -1,5 +1,6 @@
 import { Flex, Text, Card } from "@radix-ui/themes"
 import * as React from "react"
+import { CenteredContainer } from "./components"
 import { MeasureView } from "./MeasureView"
 import { Section, Row, Drill, Pos } from "./model"
 
@@ -43,12 +44,10 @@ function RowView({ row, rowIndex, highlight }: { row: Row; rowIndex: number; hig
 
 export function DrillOverView({ drill }: { drill: Drill }) {
   return (
-    <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
-      <Flex direction="column" gap="2" style={{ width: "fit-content" }}>
-        {drill.rows.map((row, rowIndex) => (
-          <RowView key={rowIndex} row={row} rowIndex={rowIndex} />
-        ))}
-      </Flex>
-    </div>
+    <CenteredContainer>
+      {drill.rows.map((row, rowIndex) => (
+        <RowView key={rowIndex} row={row} rowIndex={rowIndex} />
+      ))}
+    </CenteredContainer>
   )
 }

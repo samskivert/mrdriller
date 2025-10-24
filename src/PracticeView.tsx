@@ -1,6 +1,6 @@
-import { Button, Flex, TextField, Text, Box } from "@radix-ui/themes"
+import { Button, Flex, Text, Box } from "@radix-ui/themes"
 import * as React from "react"
-import { HighlightedCard } from "./components"
+import { HighlightedCard, NumberInput, CenteredContainer } from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
 import { Drill, Section } from "./model"
 import { SectionView } from "./SectionView"
@@ -31,7 +31,7 @@ const NotPlaying: State = {
 
 const Playing = { ...NotPlaying, playing: true, intro: true }
 
-const IntroText = ["Ichi - いち", "Ni - に", "So - そ", "Re - れ"]
+const IntroText = ["Ichi - いち", "Ni - に", "So - そ〜", "Re - れ！"]
 
 function IntroView({ drill, state }: { drill: Drill; state: State }) {
   const isHighlighted = state.playing && state.intro
@@ -208,43 +208,26 @@ export function PracticeView({ drill }: { drill: Drill }) {
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {/* Scrollable sections area */}
       <div ref={scrollContainerRef} style={{ flex: "1", overflow: "auto", padding: "16px" }}>
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <Flex direction="column" gap="4" style={{ width: "fit-content" }}>
-            <IntroView drill={drill} state={state} />
-            {drill.rows.flatMap((row, rowIndex) =>
-              row.map((section, sectionIndex) => mkSectionView(section, rowIndex, sectionIndex)),
-            )}
-          </Flex>
-        </div>
+        <CenteredContainer>
+          <IntroView drill={drill} state={state} />
+          {drill.rows.flatMap((row, rowIndex) =>
+            row.map((section, sectionIndex) => mkSectionView(section, rowIndex, sectionIndex)),
+          )}
+        </CenteredContainer>
       </div>
 
       {/* Controls at bottom - natural height */}
       <div style={{ minHeight: "100px", padding: "16px", borderTop: "1px solid var(--gray-6)" }}>
         <Flex align="center" gap="3">
-          <Text size="2" weight="medium">
-            BPM:
-          </Text>
-          <TextField.Root
-            type="number"
-            value={bpm.toString()}
-            onChange={(e) => setBpm(parseInt(e.target.value) || 60)}
-            min="30"
-            max="200"
-            style={{ width: 60 }}
-            size="2"
-          />
+          <NumberInput label="BPM" value={bpm} onChange={setBpm} min={30} max={200} width={60} />
 
-          <Text size="2" weight="medium">
-            Repeat:
-          </Text>
-          <TextField.Root
-            type="number"
-            value={drillRepeat.toString()}
-            onChange={(e) => setDrillRepeat(parseInt(e.target.value) || 1)}
-            min="1"
-            max="10"
-            style={{ width: 60 }}
-            size="2"
+          <NumberInput
+            label="Repeat"
+            value={drillRepeat}
+            onChange={setDrillRepeat}
+            min={1}
+            max={10}
+            width={60}
           />
 
           <Button onClick={handleStartStop} color={state.playing ? "red" : "green"} size="2">
