@@ -1,6 +1,6 @@
-import { Flex, Text, Card } from "@radix-ui/themes"
+import { Flex, Card } from "@radix-ui/themes"
 import * as React from "react"
-import { CenteredContainer } from "./components"
+import { CenteredContainer, SectionHeader } from "./components"
 import { MeasureView } from "./MeasureView"
 import { Section, Row, Drill, Pos } from "./model"
 
@@ -10,13 +10,11 @@ function SectionView({ section }: { section: Section; pos: Pos; highlight?: Pos 
   return (
     <Card>
       <Flex direction="column" gap="2">
-        {section.label && (
-          <Flex justify="between" align="center" style={{ minHeight: 20 }}>
-            <Text size="2" weight="bold">
-              {section.label || ""}
-            </Text>
-          </Flex>
-        )}
+        <SectionHeader
+          label={section.label}
+          repeatDisplay={section.repeat > 1 ? `x${section.repeat}` : undefined}
+          size="2"
+        />
         <Flex direction="row" wrap="wrap" gap="1" justify="start">
           {section.measures.map((measure, measureIndex) => (
             <MeasureView key={measureIndex} measure={measure} />

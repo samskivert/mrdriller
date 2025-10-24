@@ -80,21 +80,23 @@ export function NumberInput({
 export function SectionHeader({
   label,
   repeatDisplay,
+  size = "6",
 }: {
   label?: string
   repeatDisplay?: string
+  size?: "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 }) {
   if (!label && !repeatDisplay) return null
 
   return (
     <Flex justify="between" align="center">
       {label && (
-        <Text size="6" weight="bold">
+        <Text size={size} weight="bold">
           {label}
         </Text>
       )}
       {repeatDisplay && (
-        <Text size="6" weight="bold" color="blue">
+        <Text size={size} weight="bold" color="blue">
           {repeatDisplay}
         </Text>
       )}
