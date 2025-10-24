@@ -15,6 +15,8 @@ type State = {
   offset: number
   repeat: number
   drillRepeat: number
+  bpm: number
+  bpmIncrease: number
 }
 
 const NotPlaying: State = {
@@ -27,6 +29,8 @@ const NotPlaying: State = {
   offset: 0,
   repeat: 0,
   drillRepeat: 0,
+  bpm: 60,
+  bpmIncrease: 0,
 }
 
 const Playing = { ...NotPlaying, playing: true, intro: true }
@@ -37,7 +41,11 @@ function IntroView({ drill, state }: { drill: Drill; state: State }) {
   const isHighlighted = state.playing && state.intro
   const measure = Math.floor(state.beat / drill.bpm)
   const introText =
-    measure >= IntroText.length ? "Drill!" : state.intro ? IntroText[measure] : "Get ready..."
+    measure >= IntroText.length
+      ? `${state.bpm} bpm, go!`
+      : state.intro
+        ? IntroText[measure]
+        : "Get ready..."
   return (
     <HighlightedCard isHighlighted={isHighlighted} minHeight={100}>
       <Text
@@ -54,6 +62,7 @@ function IntroView({ drill, state }: { drill: Drill; state: State }) {
 
 export function PracticeView({ drill }: { drill: Drill }) {
   const [bpm, setBpm] = React.useState(60)
+  const [bpmIncrease, setBpmIncrease] = React.useState(0)
   const [drillRepeat, setDrillRepeat] = React.useState(1)
   const [state, setState] = React.useState<State>(NotPlaying)
 
@@ -70,7 +79,7 @@ export function PracticeView({ drill }: { drill: Drill }) {
   }, [])
 
   // Calculate quarter note duration in milliseconds (1/4 beat)
-  const quarterNoteDuration = (60 * 1000) / bpm / drill.bpm
+  const quarterNoteDuration = (60 * 1000) / state.bpm / drill.bpm
 
   // Play metronome sound when beat changes
   React.useEffect(() => {
@@ -153,7 +162,16 @@ export function PracticeView({ drill }: { drill: Drill }) {
 
           // Finished all rows - check if we should repeat the drill
           next.drillRepeat = prev.drillRepeat + 1
-          if (next.drillRepeat < drillRepeat) return next
+          if (next.drillRepeat < drillRepeat) {
+            // Increase BPM by the bpmIncrease amount for the next repeat
+            next.bpm = Math.min(200, prev.bpm + prev.bpmIncrease)
+            // If we're increasing BPM, show the intro again to establish the new time
+            if (prev.bpmIncrease > 0) {
+              next.beat = 0
+              next.intro = true
+            }
+            return next
+          }
 
           // Finished all drill repeats
           return NotPlaying
@@ -172,10 +190,19 @@ export function PracticeView({ drill }: { drill: Drill }) {
         intervalRef.current = null
       }
     }
-  }, [state, bpm, drill.rows.length, drillRepeat])
+  }, [state, drill.rows.length, drillRepeat])
 
   const handleStartStop = () => {
-    setState(state.playing ? NotPlaying : Playing)
+    if (state.playing) {
+      setState(NotPlaying)
+    } else {
+      // Copy current BPM and BPM Increase values into state when starting
+      setState({
+        ...Playing,
+        bpm: bpm,
+        bpmIncrease: bpmIncrease,
+      })
+    }
   }
 
   function mkSectionView(section: Section, rowIndex: number, sectionIndex: number) {
@@ -220,6 +247,15 @@ export function PracticeView({ drill }: { drill: Drill }) {
       <div style={{ minHeight: "100px", padding: "16px", borderTop: "1px solid var(--gray-6)" }}>
         <Flex align="center" gap="3">
           <NumberInput label="BPM" value={bpm} onChange={setBpm} min={30} max={200} width={60} />
+
+          <NumberInput
+            label="BPM Increase"
+            value={bpmIncrease}
+            onChange={setBpmIncrease}
+            min={0}
+            max={50}
+            width={80}
+          />
 
           <NumberInput
             label="Repeat"
