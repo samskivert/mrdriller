@@ -60,7 +60,7 @@ export function NumberInput({
   width?: number
 }) {
   return (
-    <>
+    <Flex align="center" gap="2">
       <Text size="2" weight="medium">
         {label}:
       </Text>
@@ -73,7 +73,7 @@ export function NumberInput({
         style={{ width }}
         size="2"
       />
-    </>
+    </Flex>
   )
 }
 

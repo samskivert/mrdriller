@@ -245,7 +245,7 @@ export function PracticeView({ drill }: { drill: Drill }) {
 
       {/* Controls at bottom - natural height */}
       <div style={{ minHeight: "100px", padding: "16px", borderTop: "1px solid var(--gray-6)" }}>
-        <Flex align="center" gap="3">
+        <Flex align="center" justify="center" gap="9">
           <NumberInput label="BPM" value={bpm} onChange={setBpm} min={30} max={200} width={60} />
 
           <NumberInput
