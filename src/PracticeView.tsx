@@ -1,5 +1,6 @@
-import { Button, Flex, TextField, Text, Box, Card } from "@radix-ui/themes"
+import { Button, Flex, TextField, Text, Box } from "@radix-ui/themes"
 import * as React from "react"
+import { HighlightedCard } from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
 import { Drill, Section } from "./model"
 import { SectionView } from "./SectionView"
@@ -30,7 +31,7 @@ const NotPlaying: State = {
 
 const Playing = { ...NotPlaying, playing: true, intro: true }
 
-const IntroText = ["Ichi", "Ni", "So", "Re"]
+const IntroText = ["Ichi - いち", "Ni - に", "So - そ", "Re - れ"]
 
 function IntroView({ drill, state }: { drill: Drill; state: State }) {
   const isHighlighted = state.playing && state.intro
@@ -38,18 +39,7 @@ function IntroView({ drill, state }: { drill: Drill; state: State }) {
   const introText =
     measure >= IntroText.length ? "Drill!" : state.intro ? IntroText[measure] : "Get ready..."
   return (
-    <Card
-      variant="surface"
-      style={{
-        border: isHighlighted ? "3px solid var(--accent-9)" : "2px solid var(--gray-9)",
-        backgroundColor: isHighlighted ? "var(--accent-2)" : "var(--gray-2)",
-        boxShadow: isHighlighted ? "0 0 0 3px var(--accent-6)" : "none",
-        minHeight: 100,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
+    <HighlightedCard isHighlighted={isHighlighted} minHeight={100}>
       <Text
         size="9"
         weight="bold"
@@ -58,7 +48,7 @@ function IntroView({ drill, state }: { drill: Drill; state: State }) {
       >
         {introText}
       </Text>
-    </Card>
+    </HighlightedCard>
   )
 }
 

@@ -1,5 +1,6 @@
-import { Card, Flex, Text, Box } from "@radix-ui/themes"
+import { Flex, Text, Box } from "@radix-ui/themes"
 import * as React from "react"
+import { HighlightedCard } from "./components"
 import { MeasureView } from "./MeasureView"
 import { Pos, Section } from "./model"
 
@@ -15,16 +16,8 @@ export function SectionView({
   highlight?: Pos
 }) {
   return (
-    <Card
-      variant={isHighlighted ? "surface" : "classic"}
-      style={{
-        border: isHighlighted ? "3px solid var(--accent-9)" : "2px solid var(--gray-9)",
-        backgroundColor: isHighlighted ? "var(--accent-2)" : "var(--gray-2)",
-        boxShadow: isHighlighted ? "0 0 0 3px var(--accent-6)" : "none",
-        padding: "24px",
-      }}
-    >
-      <Flex direction="column" gap="4">
+    <HighlightedCard isHighlighted={isHighlighted}>
+      <Flex direction="column" gap="4" style={{ padding: "24px" }}>
         {(section.label || repeatDisplay) && (
           <Flex justify="between" align="center">
             <Text size="6" weight="bold">
@@ -53,6 +46,6 @@ export function SectionView({
           ))}
         </Flex>
       </Flex>
-    </Card>
+    </HighlightedCard>
   )
 }
