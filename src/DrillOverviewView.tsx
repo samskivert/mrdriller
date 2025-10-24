@@ -28,7 +28,7 @@ function SectionView({ section }: { section: Section; pos: Pos; highlight?: Pos 
 
 function RowView({ row, rowIndex, highlight }: { row: Row; rowIndex: number; highlight?: Pos }) {
   return (
-    <Flex direction="row" wrap="wrap" gap="2" justify="start">
+    <Flex direction="row" wrap="wrap" gap="2" justify="center">
       {row.map((section, sectionIndex) => (
         <SectionView
           key={sectionIndex}
