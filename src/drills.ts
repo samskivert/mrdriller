@@ -3,6 +3,7 @@ import { Drill, section, measure, beat, labeledBeat, R, r, rd, ru, L, l, ld, lu 
 const su = undefined
 
 export const kodoParadiddle: Drill = {
+  id: "kodo-paradiddle",
   title: "Paradiddle Drill",
   bpm: 4,
   rows: [
@@ -21,6 +22,7 @@ export const kodoParadiddle: Drill = {
 }
 
 export const paradiddleInversions: Drill = {
+  id: "paradiddle-inversions",
   title: "Paradiddle Inversions",
   bpm: 4,
   rows: [
@@ -32,6 +34,7 @@ export const paradiddleInversions: Drill = {
 }
 
 export const bachiHakobi: Drill = {
+  id: "bachi-hakobi",
   title: "Bachi Hakobi (桴運び)",
   bpm: 4,
   rows: [
@@ -194,6 +197,7 @@ export const bachiHakobi: Drill = {
 }
 
 export const oneEAndA: Drill = {
+  id: "one-e-and-a",
   title: "One e and a (1e+a)",
   bpm: 4,
   rows: [
@@ -223,6 +227,7 @@ export const oneEAndA: Drill = {
 }
 
 export const iceSkater: Drill = {
+  id: "ice-skater",
   title: "Ice Skater",
   bpm: 8,
   rows: [
@@ -260,6 +265,7 @@ export const iceSkater: Drill = {
 }
 
 export const triplets: Drill = {
+  id: "triplets",
   title: "Triplets",
   bpm: 3,
   rows: [
@@ -277,6 +283,7 @@ export const triplets: Drill = {
 }
 
 export const threeAgainstTwo: Drill = {
+  id: "three-against-two",
   title: "Three against Two",
   bpm: 6,
   beeps: [1, 3, 5],

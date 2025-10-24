@@ -77,6 +77,7 @@ export const section = (label: string, repeat: number, ...measures: Measure[]) =
 export type Row = Section[]
 
 export type Drill = {
+  id: string
   title: string
   bpm: number // beats per measure
   beeps?: number[] // beats on which to beep

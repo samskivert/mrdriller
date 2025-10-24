@@ -60,11 +60,55 @@ function IntroView({ drill, state }: { drill: Drill; state: State }) {
   )
 }
 
+type DrillConfig = {
+  bpm: number
+  bpmIncrease: number
+  drillRepeat: number
+}
+
+// Load config from localStorage or use defaults
+function loadConfig(drillId: string): DrillConfig {
+  try {
+    const saved = localStorage.getItem(`config.${drillId}`)
+    if (saved) {
+      return JSON.parse(saved)
+    }
+  } catch (error) {
+    console.warn("Failed to load drill config:", error)
+  }
+  return { bpm: 60, bpmIncrease: 0, drillRepeat: 1 }
+}
+
+function saveConfig(drillId: string, config: DrillConfig) {
+  try {
+    localStorage.setItem(`config.${drillId}`, JSON.stringify(config))
+  } catch (error) {
+    console.warn("Failed to save drill config:", error)
+  }
+}
+
 export function PracticeView({ drill }: { drill: Drill }) {
   const [bpm, setBpm] = React.useState(60)
   const [bpmIncrease, setBpmIncrease] = React.useState(0)
   const [drillRepeat, setDrillRepeat] = React.useState(1)
   const [state, setState] = React.useState<State>(NotPlaying)
+  const [configLoaded, setConfigLoaded] = React.useState(false)
+
+  // Load config on mount
+  React.useEffect(() => {
+    const config = loadConfig(drill.id)
+    setBpm(config.bpm)
+    setBpmIncrease(config.bpmIncrease)
+    setDrillRepeat(config.drillRepeat)
+    setConfigLoaded(true)
+  }, [drill.id])
+
+  // Save config whenever values change (but only after config has been loaded)
+  React.useEffect(() => {
+    if (configLoaded) {
+      saveConfig(drill.id, { bpm, bpmIncrease, drillRepeat })
+    }
+  }, [bpm, bpmIncrease, drillRepeat, drill.id, configLoaded])
 
   const intervalRef = React.useRef<number | null>(null)
   const soundsRef = React.useRef<MetronomeSounds | null>(null)
