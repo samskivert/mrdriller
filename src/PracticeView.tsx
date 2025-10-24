@@ -12,6 +12,7 @@ type State = {
   measure: number
   offset: number
   repeat: number
+  drillRepeat: number
 }
 
 const NotPlaying: State = {
@@ -22,12 +23,14 @@ const NotPlaying: State = {
   measure: 0,
   offset: 0,
   repeat: 0,
+  drillRepeat: 0,
 }
 
 const Playing = { ...NotPlaying, playing: true }
 
 export function PracticeView({ drill }: { drill: Drill }) {
   const [bpm, setBpm] = React.useState(60)
+  const [drillRepeat, setDrillRepeat] = React.useState(1)
   const [state, setState] = React.useState<State>(NotPlaying)
 
   const intervalRef = React.useRef<number | null>(null)
@@ -89,57 +92,41 @@ export function PracticeView({ drill }: { drill: Drill }) {
     if (state.playing) {
       intervalRef.current = window.setInterval(() => {
         setState((prev) => {
-          const nextBeat = prev.beat + 1
+          const next = { ...prev, beat: prev.beat + 1 }
           const row = drill.rows[prev.row]
           const section = row[prev.section]
           const measure = section.measures[prev.measure]
 
           // Check if we've finished all beats in current measure
-          const nextOffset = prev.offset + 1
-          if (nextOffset < measure.length) {
-            return { ...prev, beat: nextBeat, offset: nextOffset }
-          }
+          next.offset = prev.offset + 1
+          if (next.offset < measure.length) return next
+          next.offset = 0
+
           // Move to next measure or handle section completion
-          const nextMeasure = prev.measure + 1
-          if (nextMeasure < section.measures.length) {
-            return {
-              ...prev,
-              beat: nextBeat,
-              measure: nextMeasure,
-              offset: 0,
-            }
-          }
+          next.measure = prev.measure + 1
+          if (next.measure < section.measures.length) return next
+          next.measure = 0
+
           // Finished all measures in section, move to next repeat or next section
-          const nextRepeat = prev.repeat + 1
-          if (nextRepeat < section.repeat) {
-            return {
-              ...prev,
-              beat: nextBeat,
-              repeat: nextRepeat,
-              measure: 0,
-              offset: 0,
-            }
-          }
+          next.repeat = prev.repeat + 1
+          if (next.repeat < section.repeat) return next
+          next.repeat = 0
+
           // Move to next section in the same row
-          const nextSection = prev.section + 1
-          if (nextSection < row.length) {
-            return {
-              ...Playing,
-              beat: nextBeat,
-              row: prev.row,
-              section: nextSection,
-            }
-          }
+          next.section = prev.section + 1
+          if (next.section < row.length) return next
+          next.section = 0
+
           // Move to next row
-          const nextRow = prev.row + 1
-          if (nextRow < drill.rows.length) {
-            return {
-              ...Playing,
-              beat: nextBeat,
-              row: nextRow,
-            }
-          }
-          // Finished all rows
+          next.row = prev.row + 1
+          if (next.row < drill.rows.length) return next
+          next.row = 0
+
+          // Finished all rows - check if we should repeat the drill
+          next.drillRepeat = prev.drillRepeat + 1
+          if (next.drillRepeat < drillRepeat) return next
+
+          // Finished all drill repeats
           return NotPlaying
         })
       }, quarterNoteDuration)
@@ -156,7 +143,7 @@ export function PracticeView({ drill }: { drill: Drill }) {
         intervalRef.current = null
       }
     }
-  }, [state, bpm, drill.rows.length])
+  }, [state, bpm, drill.rows.length, drillRepeat])
 
   const handleStartStop = () => {
     setState(state.playing ? NotPlaying : Playing)
@@ -212,6 +199,19 @@ export function PracticeView({ drill }: { drill: Drill }) {
             onChange={(e) => setBpm(parseInt(e.target.value) || 60)}
             min="30"
             max="200"
+            style={{ width: 60 }}
+            size="2"
+          />
+
+          <Text size="2" weight="medium">
+            Repeat:
+          </Text>
+          <TextField.Root
+            type="number"
+            value={drillRepeat.toString()}
+            onChange={(e) => setDrillRepeat(parseInt(e.target.value) || 1)}
+            min="1"
+            max="10"
             style={{ width: 60 }}
             size="2"
           />
