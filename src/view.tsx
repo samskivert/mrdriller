@@ -1,3 +1,4 @@
+import { Flex, Text, Card, Heading } from "@radix-ui/themes"
 import * as React from "react"
 import { MeasureView } from "./MeasureView"
 import { Section, Row, Drill } from "./model"
@@ -23,56 +24,46 @@ function SectionView({ section, pos, highlight }: { section: Section; pos: Pos; 
         : null
 
   return (
-    <div
+    <Card
+      variant={isHighlighted ? "surface" : "classic"}
       style={{
-        display: "flex",
-        flexDirection: "column",
-        border: "2px solid #333333",
-        padding: 8,
-        backgroundColor: isHighlighted ? "#f0f8ff" : "transparent",
-        boxShadow: isHighlighted ? "0 0 0 2px #4ecdc4" : "none",
-        boxSizing: "border-box",
+        border: isHighlighted ? "2px solid var(--accent-9)" : "2px solid var(--gray-9)",
+        backgroundColor: isHighlighted ? "var(--accent-2)" : "transparent",
+        boxShadow: isHighlighted ? "0 0 0 2px var(--accent-6)" : "none",
       }}
     >
-      {(section.label || repeatDisplay) && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            fontWeight: 600,
-            marginBottom: 8,
-            minHeight: 20,
-          }}
-        >
-          <div>{section.label || ""}</div>
-          {repeatDisplay && <div>{repeatDisplay}</div>}
-        </div>
-      )}
-      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
-        {section.measures.map((measure, measureIndex) => (
-          <MeasureView
-            key={measureIndex}
-            measure={measure}
-            highlightBeat={
-              isHighlighted && highlight.measure == measureIndex ? highlight.offset : undefined
-            }
-          />
-        ))}
-      </div>
-    </div>
+      <Flex direction="column" gap="2">
+        {(section.label || repeatDisplay) && (
+          <Flex justify="between" align="center" style={{ minHeight: 20 }}>
+            <Text size="2" weight="bold">
+              {section.label || ""}
+            </Text>
+            {repeatDisplay && (
+              <Text size="2" weight="bold">
+                {repeatDisplay}
+              </Text>
+            )}
+          </Flex>
+        )}
+        <Flex direction="row" wrap="wrap" gap="1">
+          {section.measures.map((measure, measureIndex) => (
+            <MeasureView
+              key={measureIndex}
+              measure={measure}
+              highlightBeat={
+                isHighlighted && highlight.measure == measureIndex ? highlight.offset : undefined
+              }
+            />
+          ))}
+        </Flex>
+      </Flex>
+    </Card>
   )
 }
 
 function RowView({ row, rowIndex, highlight }: { row: Row; rowIndex: number; highlight?: Pos }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        flexWrap: "wrap",
-        gap: 8,
-      }}
-    >
+    <Flex direction="row" wrap="wrap" gap="2">
       {row.map((section, sectionIndex) => (
         <SectionView
           key={sectionIndex}
@@ -81,19 +72,19 @@ function RowView({ row, rowIndex, highlight }: { row: Row; rowIndex: number; hig
           highlight={highlight}
         />
       ))}
-    </div>
+    </Flex>
   )
 }
 
 export function DrillView({ drill, highlight }: { drill: Drill; highlight?: Pos }) {
   return (
-    <>
-      <h1>{drill.title}</h1>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+    <Flex direction="column" gap="3">
+      <Heading size="6">{drill.title}</Heading>
+      <Flex direction="column" gap="2">
         {drill.rows.map((row, rowIndex) => (
           <RowView key={rowIndex} row={row} rowIndex={rowIndex} highlight={highlight} />
         ))}
-      </div>
-    </>
+      </Flex>
+    </Flex>
   )
 }

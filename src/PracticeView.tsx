@@ -1,3 +1,4 @@
+import { Button, Flex, TextField, Text, Card, Box } from "@radix-ui/themes"
 import * as React from "react"
 import { MetronomeSounds } from "./MetronomeSounds"
 import { Drill } from "./model"
@@ -29,7 +30,7 @@ export function PracticeView({ drill, onBack }: { drill: Drill; onBack: () => vo
   const [bpm, setBpm] = React.useState(60)
   const [state, setState] = React.useState<State>(NotPlaying)
 
-  const intervalRef = React.useRef<NodeJS.Timeout | null>(null)
+  const intervalRef = React.useRef<number | null>(null)
   const soundsRef = React.useRef<MetronomeSounds | null>(null)
 
   // Initialize metronome sounds
@@ -60,7 +61,7 @@ export function PracticeView({ drill, onBack }: { drill: Drill; onBack: () => vo
 
   React.useEffect(() => {
     if (state.playing) {
-      intervalRef.current = setInterval(() => {
+      intervalRef.current = window.setInterval(() => {
         setState((prev) => {
           const nextBeat = prev.beat + 1
           const row = drill.rows[prev.row]
@@ -118,14 +119,14 @@ export function PracticeView({ drill, onBack }: { drill: Drill; onBack: () => vo
       }, quarterNoteDuration)
     } else {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current)
+        window.clearInterval(intervalRef.current)
         intervalRef.current = null
       }
     }
 
     return () => {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current)
+        window.clearInterval(intervalRef.current)
         intervalRef.current = null
       }
     }
@@ -136,69 +137,35 @@ export function PracticeView({ drill, onBack }: { drill: Drill; onBack: () => vo
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <button
-        onClick={onBack}
-        style={{
-          padding: "8px 16px",
-          fontSize: 16,
-          cursor: "pointer",
-          border: "1px solid #ccc",
-          borderRadius: 4,
-          backgroundColor: "#f5f5f5",
-        }}
-      >
+    <Flex direction="column" gap="4">
+      <Button variant="soft" onClick={onBack}>
         ← Back to Menu
-      </button>
+      </Button>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <Box>
         <DrillView drill={drill} highlight={state.playing ? state : undefined} />
-      </div>
+      </Box>
 
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          padding: "12px",
-          border: "1px solid #ddd",
-          borderRadius: 4,
-          backgroundColor: "#f9f9f9",
-        }}
-      >
-        <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          BPM:
-          <input
+      <Card>
+        <Flex align="center" gap="3">
+          <Text size="2" weight="medium">
+            BPM:
+          </Text>
+          <TextField.Root
             type="number"
-            value={bpm}
+            value={bpm.toString()}
             onChange={(e) => setBpm(parseInt(e.target.value) || 60)}
             min="30"
             max="200"
-            style={{
-              width: 60,
-              padding: "4px 8px",
-              border: "1px solid #ccc",
-              borderRadius: 4,
-            }}
+            style={{ width: 60 }}
+            size="2"
           />
-        </label>
 
-        <button
-          onClick={handleStartStop}
-          style={{
-            padding: "8px 16px",
-            fontSize: 16,
-            cursor: "pointer",
-            border: "1px solid #ccc",
-            borderRadius: 4,
-            backgroundColor: state.playing ? "#ff6b6b" : "#4ecdc4",
-            color: "white",
-            fontWeight: 600,
-          }}
-        >
-          {state.playing ? "Stop" : "Start"}
-        </button>
-      </div>
-    </div>
+          <Button onClick={handleStartStop} color={state.playing ? "red" : "green"} size="2">
+            {state.playing ? "Stop" : "Start"}
+          </Button>
+        </Flex>
+      </Card>
+    </Flex>
   )
 }

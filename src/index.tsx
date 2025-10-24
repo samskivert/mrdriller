@@ -1,6 +1,8 @@
 import * as React from "react"
 import { StrictMode, useState } from "react"
 import { createRoot } from "react-dom/client"
+import { Theme, Container, Box } from "@radix-ui/themes"
+import "@radix-ui/themes/styles.css"
 import { Drill } from "./model"
 import { PracticeView } from "./PracticeView"
 import { MenuView } from "./MenuView"
@@ -18,34 +20,23 @@ function App() {
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        padding: 20,
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 8,
-          width: "fit-content",
-        }}
-      >
+    <Container size="4" p="4">
+      <Box style={{ width: "fit-content", margin: "0 auto" }}>
         {selectedDrill ? (
           <PracticeView drill={selectedDrill} onBack={handleBackToMenu} />
         ) : (
           <MenuView drills={drills} onSelectDrill={handleSelectDrill} />
         )}
-      </div>
-    </div>
+      </Box>
+    </Container>
   )
 }
 
 const root = createRoot(document.getElementById("root") as HTMLElement)
 root.render(
   <StrictMode>
-    <App />
+    <Theme>
+      <App />
+    </Theme>
   </StrictMode>,
 )
