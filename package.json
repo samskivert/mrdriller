@@ -13,8 +13,8 @@
   "scripts": {
     "compile": "tsc -p .",
     "test": "jest",
-    "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix"
+    "lint": "eslint src/**/*.{ts,tsx}",
+    "lint:fix": "eslint src/**/*.{ts,tsx} --fix"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",
