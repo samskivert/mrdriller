@@ -46,6 +46,7 @@ export function DrillOverView({ drill }: { drill: Drill }) {
       {drill.rows.map((row, rowIndex) => (
         <RowView key={rowIndex} row={row} rowIndex={rowIndex} />
       ))}
+      <span style={{ height: 20 }} />
     </CenteredContainer>
   )
 }

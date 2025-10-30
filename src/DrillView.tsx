@@ -21,7 +21,7 @@ export function DrillView({ drill, onBack }: { drill: Drill; onBack: () => void 
           defaultValue="overview"
           style={{ display: "flex", flexDirection: "column", height: "100%" }}
         >
-          <Flex align="center" gap="4" style={{ marginBottom: "12px" }}>
+          <Flex align="center" gap="4" style={{ flex: "0 0 auto", marginBottom: "12px" }}>
             <Button variant="soft" onClick={onBack}>
               ← Back to Drills
             </Button>
@@ -35,7 +35,7 @@ export function DrillView({ drill, onBack }: { drill: Drill; onBack: () => void 
           </Flex>
 
           {/* Scrollable Content Area */}
-          <Tabs.Content value="overview">
+          <Tabs.Content value="overview" style={{ flex: "1 1 auto", overflow: "auto" }}>
             <DrillOverView drill={drill} />
           </Tabs.Content>
 
