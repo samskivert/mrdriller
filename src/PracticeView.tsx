@@ -123,7 +123,8 @@ export function PracticeView({ drill }: { drill: Drill }) {
   }, [])
 
   // Calculate quarter note duration in milliseconds (1/4 beat)
-  const quarterNoteDuration = (60 * 1000) / state.bpm / drill.bpm
+  const noteDuration = (60 * 1000) / state.bpm / 4
+  const tickDelay = noteDuration * (drill.scale ?? 1)
 
   // Play metronome sound when beat changes
   React.useEffect(() => {
@@ -137,13 +138,10 @@ export function PracticeView({ drill }: { drill: Drill }) {
           else soundsRef.current.playBoop()
         }
       } else {
-        if (beatInMeasure === 0) {
-          // Beat 1: higher pitch beep
-          soundsRef.current.playBeep()
-        } else if (beatInMeasure === drill.bpm / 2) {
-          // Beat 3: lower pitch boop
-          soundsRef.current.playBoop()
-        }
+        // Beat 1: higher pitch beep
+        if (beatInMeasure === 0) soundsRef.current.playBeep()
+        // Every other beat: lower pitch boop
+        else soundsRef.current.playBoop()
       }
     }
   }, [state.playing, state.beat])
@@ -228,7 +226,7 @@ export function PracticeView({ drill }: { drill: Drill }) {
           // Finished all drill repeats
           return NotPlaying
         })
-      }, quarterNoteDuration)
+      }, tickDelay)
     } else {
       if (intervalRef.current) {
         window.clearInterval(intervalRef.current)

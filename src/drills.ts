@@ -37,6 +37,7 @@ export const bachiHakobi: Drill = {
   id: "bachi-hakobi",
   title: "Bachi Hakobi - 桴運び",
   bpm: 4,
+  beeps: [1, 3],
   rows: [
     [
       section("Three - R", 1, [
@@ -230,6 +231,8 @@ export const iceSkater: Drill = {
   id: "ice-skater",
   title: "Ice Skater",
   bpm: 8,
+  beeps: [1, 3, 5, 7],
+  scale: 0.5,
   rows: [
     [
       section("Four", 2, measure(r, su, r, su, r, su, r, su, l, su, l, su, l, su, l, su)),
@@ -307,7 +310,8 @@ export const fourAgainstThree: Drill = {
   id: "four-against-three",
   title: "Four against Three",
   bpm: 12,
-  beeps: [1, 4, 7, 10],
+  beeps: [1, 5, 9],
+  scale: 0.5,
   rows: [
     [
       section("A", 8, [beatRL, su, su, beatR, beatL, su, beatR, su, beatL, beatR, su, su]),

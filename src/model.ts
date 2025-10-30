@@ -81,6 +81,7 @@ export type Drill = {
   title: string
   bpm: number // beats per measure
   beeps?: number[] // beats on which to beep
+  scale?: number // scales the quarter note duration (default is 1)
   rows: Row[]
 }
 export type Pos = {
