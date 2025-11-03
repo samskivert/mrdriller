@@ -255,15 +255,18 @@ export function PracticeView({ drill }: { drill: Drill }) {
     }
   }
 
+  const empty = "○"
+  function mkRepeat(current :number, total :number) {
+    return "●".repeat(current+1) + empty.repeat(total-current-1)
+  }
+
   function mkSectionView(section: Section, rowIndex: number, sectionIndex: number) {
     const isHighlighted =
       state.playing && !state.intro && state.row === rowIndex && state.section === sectionIndex
     const repeatDisplay =
-      isHighlighted && section.repeat > 1
-        ? `${state.repeat + 1}/${section.repeat}`
-        : section.repeat > 1
-          ? `x${section.repeat}`
-          : undefined
+      isHighlighted
+        ? mkRepeat(state.repeat, section.repeat ?? 1)
+        : empty.repeat(section.repeat ?? 1)
 
     return (
       <Box
