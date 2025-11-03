@@ -324,6 +324,32 @@ export const fourAgainstThree: Drill = {
   ],
 }
 
+export const allAgainstThree: Drill = {
+  id: "all-against-three",
+  title: "1, 2, 3, 4 against Three",
+  bpm: 12,
+  beeps: [1, 5, 9],
+  scale: 0.5,
+  rows: [
+    [
+      section("1 v 3 - R", 4, [beatRL, su, su, su, beatR, su, su, su, beatR, su, su, su]),
+      section("2 v 3 - R", 4, [beatRL, su, su, su, beatR, su, beatL, su, beatR, su, su, su]),
+    ],
+    [
+      section("3 v 3 - R", 4, [beatRL, su, su, su, beatRL, su, su, su, beatRL, su, su, su]),
+      section("4 v 3 - R", 4, [beatRL, su, su, beatL, beatR, su, beatL, su, beatR, beatL, su, su]),
+    ],
+    [
+      section("1 v 3 - L", 4, [beatRL, su, su, su, beatL, su, su, su, beatL, su, su, su]),
+      section("2 v 3 - L", 4, [beatRL, su, su, su, beatL, su, beatR, su, beatL, su, su, su]),
+    ],
+    [
+      section("3 v 3 - L", 4, [beatRL, su, su, su, beatRL, su, su, su, beatRL, su, su, su]),
+      section("4 v 3 - L", 4, [beatRL, su, su, beatR, beatL, su, beatR, su, beatL, beatR, su, su]),
+    ],
+  ],
+}
+
 const dright8 = [beatRL, beatR, beatR, beatR, beatR, beatR, beatR, beatR]
 const dleft8 = [beatRL, beatL, beatL, beatL, beatL, beatL, beatL, beatL]
 const dright4 = [beatRL, beatR, beatR, beatR]
@@ -423,6 +449,7 @@ export const drills = [
   triplets,
   threeAgainstTwo,
   fourAgainstThree,
+  allAgainstThree,
   dexter,
   sixteens,
 ]
