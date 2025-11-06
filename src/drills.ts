@@ -202,7 +202,6 @@ export const oneEAndA: Drill = {
   title: "One e and a (1e+a)",
   bpm: 4,
   rows: [
-    [section("0", 4, measure(r, l, r, l))],
     [
       section("1A", 4, measure(R, l, r, l)),
       section("1B", 4, measure(r, L, r, l)),
@@ -224,6 +223,35 @@ export const oneEAndA: Drill = {
       section("3D", 4, measure(R, L, r, L)),
     ],
     [section("4", 4, measure(R, L, R, L))],
+  ],
+}
+
+export const diddleAndA: Drill = {
+  id: "diddle-and-a",
+  title: "Diddle and a",
+  bpm: 4,
+  rows: [
+    [
+      section("1A", 2, measure(R, l, r, r), measure(L, r, l, l)),
+      section("1B", 2, measure(r, L, r, r), measure(l, R, l, l)),
+      section("1C", 2, measure(r, l, R, r), measure(l, r, L, l)),
+      section("1D", 2, measure(r, l, r, R), measure(l, r, l, L)),
+    ],
+    [
+      section("2A", 2, measure(R, L, r, r), measure(L, R, l, l)),
+      section("2B", 2, measure(r, L, R, r), measure(l, R, L, l)),
+      section("2C", 2, measure(r, l, R, R), measure(l, r, L, L)),
+      section("2D", 2, measure(R, l, r, R), measure(L, r, l, L)),
+      section("2E", 2, measure(R, l, R, r), measure(L, r, L, l)),
+      section("2F", 2, measure(r, L, r, R), measure(l, R, l, L)),
+    ],
+    [
+      section("3A", 2, measure(R, L, R, r), measure(L, R, L, l)),
+      section("3B", 2, measure(r, L, R, R), measure(l, R, L, L)),
+      section("3C", 2, measure(R, l, R, R), measure(L, r, L, L)),
+      section("3D", 2, measure(R, L, r, R), measure(L, R, l, L)),
+    ],
+    [section("4", 2, measure(R, L, R, R), measure(L, R, L, L))],
   ],
 }
 
@@ -444,6 +472,7 @@ export const drills = [
   oneEAndA,
   kodoParadiddle,
   paradiddleInversions,
+  diddleAndA,
   bachiHakobi,
   iceSkater,
   triplets,
