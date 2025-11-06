@@ -82,6 +82,7 @@ export type Drill = {
   bpm: number // beats per measure
   beeps?: number[] // beats on which to beep
   scale?: number // scales the quarter note duration (default is 1)
+  forceIntro?: boolean // always show ichi-ni-so-re (vs only on BPM increase)
   rows: Row[]
 }
 export type Pos = {

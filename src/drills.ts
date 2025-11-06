@@ -201,6 +201,7 @@ export const oneEAndA: Drill = {
   id: "one-e-and-a",
   title: "One e and a (1e+a)",
   bpm: 4,
+  forceIntro: true,
   rows: [
     [
       section("1A", 4, measure(R, l, r, l)),
@@ -230,6 +231,7 @@ export const diddleAndA: Drill = {
   id: "diddle-and-a",
   title: "Diddle and a",
   bpm: 4,
+  forceIntro: true,
   rows: [
     [
       section("1A", 2, measure(R, l, r, r), measure(L, r, l, l)),

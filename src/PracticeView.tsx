@@ -216,7 +216,7 @@ export function PracticeView({ drill }: { drill: Drill }) {
             // Increase BPM by the bpmIncrease amount for the next repeat
             next.bpm = Math.min(200, prev.bpm + prev.bpmIncrease)
             // If we're increasing BPM, show the intro again to establish the new time
-            if (prev.bpmIncrease > 0) {
+            if (prev.bpmIncrease > 0 || drill.forceIntro) {
               next.beat = 0
               next.intro = true
             }
