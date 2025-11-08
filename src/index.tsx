@@ -24,7 +24,7 @@ function App() {
       {selectedDrill ? (
         <DrillView drill={selectedDrill} onBack={handleBackToMenu} />
       ) : (
-        <Container size="4" p="4">
+        <Container size="4" p="4" style={{ height: "100dvh", overflow: "auto" }}>
           <Box style={{ width: "fit-content", margin: "0 auto" }}>
             <MenuView drills={drills} onSelectDrill={handleSelectDrill} />
           </Box>
