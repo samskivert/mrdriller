@@ -315,6 +315,41 @@ export const triplets: Drill = {
   ],
 }
 
+export const dondoko: Drill = {
+  id: "dondoko",
+  title: "Dondoko",
+  bpm: 4,
+  beeps: [1, 3],
+  rows: [
+    [
+      section(
+        "8s",
+        1,
+        measure(r, su, r, l, r, su, r, l),
+        measure(r, su, r, l, r, su, r, l),
+        measure(r, su, r, l, r, su, r, l),
+        measure(r, su, r, l, r, su, l, r),
+        measure(l, su, l, r, l, su, l, r),
+        measure(l, su, l, r, l, su, l, r),
+        measure(l, su, l, r, l, su, l, r),
+        measure(l, su, l, r, l, su, r, l)
+      ),
+    ],
+    [
+      section(
+        "4s",
+        2,
+        measure(r, su, r, l, r, su, r, l),
+        measure(r, su, r, l, r, su, l, r),
+        measure(l, su, l, r, l, su, l, r),
+        measure(l, su, l, r, l, su, r, l)),
+    ],
+    [
+      section("2s", 4, measure(r, su, r, l, r, su, l, r), measure(l, su, l, r, l, su, r, l)),
+    ],
+  ],
+}
+
 export const threeAgainstTwo: Drill = {
   id: "three-against-two",
   title: "Three against Two",
@@ -477,6 +512,7 @@ export const drills = [
   diddleAndA,
   bachiHakobi,
   iceSkater,
+  dondoko,
   triplets,
   threeAgainstTwo,
   fourAgainstThree,
