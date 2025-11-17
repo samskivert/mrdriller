@@ -1,4 +1,4 @@
-import { Button, Flex, Heading } from "@radix-ui/themes"
+import { Button, Flex, Grid, Heading } from "@radix-ui/themes"
 import * as React from "react"
 import { Drill } from "./model"
 
@@ -14,13 +14,13 @@ export function MenuView({
       <Heading align="center" size="8">
         Mr. Driller
       </Heading>
-      <Flex direction="column" gap="4">
+      <Grid columns={{ initial: "1", sm: "2" }} gap="4">
         {drills.map((drill, index) => (
           <Button key={index} onClick={() => onSelectDrill(drill)} size="4">
             {drill.title}
           </Button>
         ))}
-      </Flex>
+      </Grid>
     </Flex>
   )
 }

@@ -1,8 +1,8 @@
-import { Button, Flex, Text, Box } from "@radix-ui/themes"
+import { Button, Flex, Text, Box, Switch } from "@radix-ui/themes"
 import * as React from "react"
 import { HighlightedCard, NumberInput, CenteredContainer } from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
-import { Drill, Section } from "./model"
+import { Drill, Section, swapSectionHands } from "./model"
 import { SectionView } from "./SectionView"
 
 type State = {
@@ -91,6 +91,7 @@ export function PracticeView({ drill }: { drill: Drill }) {
   const [bpm, setBpm] = React.useState(60)
   const [bpmIncrease, setBpmIncrease] = React.useState(0)
   const [drillRepeat, setDrillRepeat] = React.useState(1)
+  const [swapHands, setSwapHands] = React.useState(false)
   const [state, setState] = React.useState<State>(NotPlaying)
   const [configLoaded, setConfigLoaded] = React.useState(false)
 
@@ -112,8 +113,6 @@ export function PracticeView({ drill }: { drill: Drill }) {
 
   const intervalRef = React.useRef<number | null>(null)
   const soundsRef = React.useRef<MetronomeSounds | null>(null)
-  const scrollContainerRef = React.useRef<HTMLDivElement>(null)
-
   // Initialize metronome sounds
   React.useEffect(() => {
     soundsRef.current = new MetronomeSounds()
@@ -148,27 +147,12 @@ export function PracticeView({ drill }: { drill: Drill }) {
 
   // Auto-scroll to active section
   React.useEffect(() => {
-    if (state.playing && scrollContainerRef.current) {
-      const activeSectionElement = scrollContainerRef.current.querySelector(
-        `[data-section-index="${state.section}"][data-row-index="${state.row}"]`,
-      )
-      if (activeSectionElement) {
-        const containerRect = scrollContainerRef.current.getBoundingClientRect()
-        const elementRect = activeSectionElement.getBoundingClientRect()
+    if (!state.playing) return
+    if (typeof window === "undefined") return
 
-        // Calculate the scroll position to center the element
-        const scrollTop =
-          scrollContainerRef.current.scrollTop +
-          (elementRect.top - containerRect.top) -
-          containerRect.height / 2 +
-          elementRect.height / 2
-
-        scrollContainerRef.current.scrollTo({
-          top: scrollTop,
-          behavior: "smooth",
-        })
-      }
-    }
+    const selector = `[data-section-index="${state.section}"][data-row-index="${state.row}"]`
+    const activeSectionElement = document.querySelector<HTMLElement>(selector)
+    activeSectionElement?.scrollIntoView({ behavior: "smooth", block: "center" })
   }, [state.playing, state.section, state.row])
 
   React.useEffect(() => {
@@ -256,17 +240,16 @@ export function PracticeView({ drill }: { drill: Drill }) {
   }
 
   const empty = "○"
-  function mkRepeat(current :number, total :number) {
-    return "●".repeat(current+1) + empty.repeat(total-current-1)
+  function mkRepeat(current: number, total: number) {
+    return "●".repeat(current + 1) + empty.repeat(total - current - 1)
   }
 
   function mkSectionView(section: Section, rowIndex: number, sectionIndex: number) {
     const isHighlighted =
       state.playing && !state.intro && state.row === rowIndex && state.section === sectionIndex
-    const repeatDisplay =
-      isHighlighted
-        ? mkRepeat(state.repeat, section.repeat ?? 1)
-        : empty.repeat(section.repeat ?? 1)
+    const repeatDisplay = isHighlighted
+      ? mkRepeat(state.repeat, section.repeat ?? 1)
+      : empty.repeat(section.repeat ?? 1)
 
     return (
       <Box
@@ -285,45 +268,44 @@ export function PracticeView({ drill }: { drill: Drill }) {
   }
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      {/* Scrollable sections area */}
-      <div ref={scrollContainerRef} style={{ flex: "1", overflow: "auto", padding: "16px" }}>
-        <CenteredContainer>
-          <IntroView drill={drill} state={state} />
-          {drill.rows.flatMap((row, rowIndex) =>
-            row.map((section, sectionIndex) => mkSectionView(section, rowIndex, sectionIndex)),
-          )}
-        </CenteredContainer>
-      </div>
+    <CenteredContainer>
+      <Flex align="center" justify="center" wrap="wrap" gap="6">
+        <NumberInput label="BPM" value={bpm} onChange={setBpm} min={30} max={200} width={60} />
 
-      {/* Controls at bottom - natural height */}
-      <div style={{ minHeight: "100px", padding: "16px", borderTop: "1px solid var(--gray-6)" }}>
-        <Flex align="center" justify="center" gap="9">
-          <NumberInput label="BPM" value={bpm} onChange={setBpm} min={30} max={200} width={60} />
+        <NumberInput
+          label="BPM Increase"
+          value={bpmIncrease}
+          onChange={setBpmIncrease}
+          min={0}
+          max={50}
+          width={80}
+        />
 
-          <NumberInput
-            label="BPM Increase"
-            value={bpmIncrease}
-            onChange={setBpmIncrease}
-            min={0}
-            max={50}
-            width={80}
-          />
+        <NumberInput
+          label="Repeat"
+          value={drillRepeat}
+          onChange={setDrillRepeat}
+          min={1}
+          max={10}
+          width={60}
+        />
 
-          <NumberInput
-            label="Repeat"
-            value={drillRepeat}
-            onChange={setDrillRepeat}
-            min={1}
-            max={10}
-            width={60}
-          />
+        <Text as="label">
+          <Flex gap="2">
+            <Switch size="3" checked={swapHands} onCheckedChange={setSwapHands} />
+            L↔︎R
+          </Flex>
+        </Text>
 
-          <Button onClick={handleStartStop} color={state.playing ? "red" : "green"} size="2">
-            {state.playing ? "Stop" : "Start"}
-          </Button>
-        </Flex>
-      </div>
-    </div>
+        <Button onClick={handleStartStop} color={state.playing ? "red" : "green"} size="2">
+          {state.playing ? "Stop" : "Start"}
+        </Button>
+      </Flex>
+
+      <IntroView drill={drill} state={state} />
+      {drill.rows.flatMap((row, rowIndex) => row.map((section, sectionIndex) => mkSectionView(
+         swapHands ? swapSectionHands(section) : section, rowIndex, sectionIndex
+       )))}
+    </CenteredContainer>
   )
 }

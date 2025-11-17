@@ -1,49 +1,42 @@
-import { Button, Flex, Heading, Tabs } from "@radix-ui/themes"
+import { Button, Flex, Heading } from "@radix-ui/themes"
 import * as React from "react"
 import { DrillOverView } from "./DrillOverviewView"
 import { Drill } from "./model"
 import { PracticeView } from "./PracticeView"
 
 export function DrillView({ drill, onBack }: { drill: Drill; onBack: () => void }) {
+  const [view, setView] = React.useState<"practice" | "overview">("practice")
+
   return (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      {/* Fixed Header with back button, title, and tabs all in one row */}
-      <div
-        style={{
-          padding: "16px",
-          borderBottom: "1px solid var(--gray-6)",
-          flex: "0 0 auto", // Fixed size, don't grow or shrink
-          backgroundColor: "var(--color-background)",
-          height: "100%",
-        }}
-      >
-        <Tabs.Root
-          defaultValue="overview"
-          style={{ display: "flex", flexDirection: "column", height: "100%" }}
-        >
-          <Flex align="center" gap="4" style={{ flex: "0 0 auto", marginBottom: "12px" }}>
-            <Button variant="soft" onClick={onBack}>
-              ← Back to Drills
+    <div style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "24px" }}>
+      {view === "practice" ? (
+        <>
+          <Flex align="center" justify="between" wrap="wrap" gap="3">
+            <Button variant="soft" onClick={onBack} style={{ flexShrink: 0 }}>
+              ← Back
             </Button>
-            <div style={{ flex: "1" }} /> {/* Spacer to push tabs to center */}
-            <Tabs.List>
-              <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
-              <Tabs.Trigger value="practice">Practice</Tabs.Trigger>
-            </Tabs.List>
-            <div style={{ flex: "1" }} /> {/* Spacer to push title to right */}
-            <Heading size="6">{drill.title}</Heading>
+            <Heading size="6" style={{ flex: 1, textAlign: "center" }}>
+              {drill.title}
+            </Heading>
+            <Button onClick={() => setView("overview")} style={{ flexShrink: 0 }}>
+              Overview
+            </Button>
           </Flex>
-
-          {/* Scrollable Content Area */}
-          <Tabs.Content value="overview" style={{ flex: "1 1 auto", overflow: "auto" }}>
-            <DrillOverView drill={drill} />
-          </Tabs.Content>
-
-          <Tabs.Content value="practice" style={{ height: "100%" }}>
-            <PracticeView drill={drill} />
-          </Tabs.Content>
-        </Tabs.Root>
-      </div>
+          <PracticeView drill={drill} />
+        </>
+      ) : (
+        <>
+          <Flex align="center" gap="3" wrap="wrap">
+            <Button variant="soft" onClick={() => setView("practice")} style={{ flexShrink: 0 }}>
+              ← Back
+            </Button>
+            <Heading size="6" style={{ flex: 1, textAlign: "center" }}>
+              {drill.title}
+            </Heading>
+          </Flex>
+          <DrillOverView drill={drill} />
+        </>
+      )}
     </div>
   )
 }
