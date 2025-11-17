@@ -92,3 +92,19 @@ export type Pos = {
   offset: number
   repeat: number
 }
+
+const swapHand = (hand :Hand) :Hand => hand == "L" ? "R" : "L"
+const swapStrokeHands = (stroke :Stroke|undefined) :Stroke|undefined =>
+  stroke === undefined ? undefined : ({ ...stroke, hand: swapHand(stroke.hand) })
+const swapBeatHands = (beat :Beat|undefined) :Beat|undefined => beat === undefined ? undefined :
+  ({ ...beat, strokes: beat.strokes.map(swapStrokeHands) })
+const swapMeasureHands = (measure :Measure) :Measure => measure.map(swapBeatHands)
+
+/** Swaps the L and R hands in a section. */
+export const swapSectionHands = (section :Section) :Section =>
+  ({ ...section, measures: section.measures.map(swapMeasureHands) })
+
+const swapRowHands = (row: Row) :Row => row.map(swapSectionHands)
+
+/** Swaps the L and R hands in a drill. */
+export const swapHands = (drill :Drill) :Drill => ({ ...drill, rows: drill.rows.map(swapRowHands) })
