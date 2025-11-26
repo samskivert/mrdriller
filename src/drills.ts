@@ -33,6 +33,18 @@ export const paradiddleInversions: Drill = {
   ],
 }
 
+export const paradiddles: Drill = {
+  id: "paradiddles",
+  title: "Paradiddles",
+  bpm: 4,
+  rows: [
+    [section("Pa-ra-did-dle", 4,
+             measure(R, l, r, r), measure(L, r, l, l),
+             measure(R, l, r, r), measure(L, r, l, l),
+             measure(R, l, r, r), measure(L, r, l, l))],
+  ],
+}
+
 export const bachiHakobi: Drill = {
   id: "bachi-hakobi",
   title: "Bachi Hakobi - 桴運び",
@@ -507,6 +519,7 @@ export const sixteens: Drill = {
 
 export const drills = [
   oneEAndA,
+  paradiddles,
   kodoParadiddle,
   paradiddleInversions,
   diddleAndA,
