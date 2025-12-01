@@ -37,25 +37,42 @@ const Playing = { ...NotPlaying, playing: true, intro: true }
 
 const IntroText = ["Ichi - いち", "Ni - に", "So - そ〜", "Re - れ！"]
 
-function IntroView({ drill, state }: { drill: Drill; state: State }) {
+function IntroView({
+  drill,
+  state,
+  drillRepeat,
+}: {
+  drill: Drill
+  state: State
+  drillRepeat: number
+}) {
   const isHighlighted = state.playing && state.intro
   const measure = Math.floor(state.beat / drill.bpm)
   const introText =
     measure >= IntroText.length
-      ? `${state.bpm} bpm, go!`
+      ? `${state.bpm} bpm`
       : state.intro
         ? IntroText[measure]
         : "Get ready..."
+  const drillProgress =
+    measure >= IntroText.length && drillRepeat > 1 ? (
+      <Text size="9" weight="bold" color="gray">
+        {state.drillRepeat + 1} / {drillRepeat}
+      </Text>
+    ) : undefined
   return (
     <HighlightedCard isHighlighted={isHighlighted} minHeight={100}>
-      <Text
-        size="9"
-        weight="bold"
-        color={isHighlighted ? "blue" : "gray"}
-        style={{ textAlign: "center" }}
-      >
-        {introText}
-      </Text>
+      <Flex align="center" justify="center" gap="8">
+        <Text
+          size="9"
+          weight="bold"
+          color={isHighlighted ? "blue" : "gray"}
+          style={{ textAlign: "center" }}
+        >
+          {introText}
+        </Text>
+        {drillProgress}
+      </Flex>
     </HighlightedCard>
   )
 }
@@ -302,10 +319,12 @@ export function PracticeView({ drill }: { drill: Drill }) {
         </Button>
       </Flex>
 
-      <IntroView drill={drill} state={state} />
-      {drill.rows.flatMap((row, rowIndex) => row.map((section, sectionIndex) => mkSectionView(
-         swapHands ? swapSectionHands(section) : section, rowIndex, sectionIndex
-       )))}
+      <IntroView drill={drill} state={state} drillRepeat={drillRepeat} />
+      {drill.rows.flatMap((row, rowIndex) =>
+        row.map((section, sectionIndex) =>
+          mkSectionView(swapHands ? swapSectionHands(section) : section, rowIndex, sectionIndex),
+        ),
+      )}
     </CenteredContainer>
   )
 }
