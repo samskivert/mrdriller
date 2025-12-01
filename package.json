@@ -14,7 +14,9 @@
     "compile": "tsc -p .",
     "test": "jest",
     "lint": "eslint src/**/*.{ts,tsx}",
-    "lint:fix": "eslint src/**/*.{ts,tsx} --fix"
+    "lint:fix": "eslint src/**/*.{ts,tsx} --fix",
+    "format": "prettier --check src/**/*.{ts,tsx}",
+    "format:fix": "prettier --write src/**/*.{ts,tsx}"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",
