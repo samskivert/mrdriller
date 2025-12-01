@@ -38,10 +38,18 @@ export const paradiddles: Drill = {
   title: "Paradiddles",
   bpm: 4,
   rows: [
-    [section("Pa-ra-did-dle", 4,
-             measure(R, l, r, r), measure(L, r, l, l),
-             measure(R, l, r, r), measure(L, r, l, l),
-             measure(R, l, r, r), measure(L, r, l, l))],
+    [
+      section(
+        "Pa-ra-did-dle",
+        4,
+        measure(R, l, r, r),
+        measure(L, r, l, l),
+        measure(R, l, r, r),
+        measure(L, r, l, l),
+        measure(R, l, r, r),
+        measure(L, r, l, l),
+      ),
+    ],
   ],
 }
 
@@ -287,12 +295,22 @@ export const iceSkater: Drill = {
       section("Four", 1, measure(l, su, l, su, l, su, l, su)),
     ],
     [
-      section("Four + 1", 2, measure(r, l, r, su, r, su, r, su), measure(l, r, l, su, l, su, l, su)),
+      section(
+        "Four + 1",
+        2,
+        measure(r, l, r, su, r, su, r, su),
+        measure(l, r, l, su, l, su, l, su),
+      ),
       section("Three + 1", 2, measure(r, l, r, su, r, su), measure(l, r, l, su, l, su)),
       section("Four + 1", 1, measure(r, l, r, su, r, su, r, su)),
     ],
     [
-      section("Four + 1", 2, measure(l, r, l, su, l, su, l, su), measure(r, l, r, su, r, su, r, su)),
+      section(
+        "Four + 1",
+        2,
+        measure(l, r, l, su, l, su, l, su),
+        measure(r, l, r, su, r, su, r, su),
+      ),
       section("Three + 1", 2, measure(l, r, l, su, l, su), measure(r, l, r, su, r, su)),
       section("Four + 1", 1, measure(l, r, l, su, l, su, l, su)),
     ],
@@ -344,7 +362,7 @@ export const dondoko: Drill = {
         measure(l, su, l, r, l, su, l, r),
         measure(l, su, l, r, l, su, l, r),
         measure(l, su, l, r, l, su, l, r),
-        measure(l, su, l, r, l, su, r, l)
+        measure(l, su, l, r, l, su, r, l),
       ),
     ],
     [
@@ -354,11 +372,10 @@ export const dondoko: Drill = {
         measure(r, su, r, l, r, su, r, l),
         measure(r, su, r, l, r, su, l, r),
         measure(l, su, l, r, l, su, l, r),
-        measure(l, su, l, r, l, su, r, l)),
+        measure(l, su, l, r, l, su, r, l),
+      ),
     ],
-    [
-      section("2s", 4, measure(r, su, r, l, r, su, l, r), measure(l, su, l, r, l, su, r, l)),
-    ],
+    [section("2s", 4, measure(r, su, r, l, r, su, l, r), measure(l, su, l, r, l, su, r, l))],
   ],
 }
 

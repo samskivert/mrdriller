@@ -84,7 +84,7 @@ export function SectionHeader({
 }: {
   label?: string
   repeatDisplay?: string
-  overview :boolean
+  overview: boolean
 }) {
   if (!label && !repeatDisplay) return null
 
