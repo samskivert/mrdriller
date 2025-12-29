@@ -39,6 +39,41 @@ const Playing = { ...NotPlaying, playing: true, intro: true, mode: "listen" }
 
 const BEATS_PER_MEASURE = 4
 
+type PatternTrainerConfig = {
+  bpm: number
+  difficulty: Difficulty
+  numPatterns: number
+  swapHands: boolean
+  sectionVisibility: SectionVisibility
+}
+
+// Load config from localStorage or use defaults
+function loadConfig(): PatternTrainerConfig {
+  try {
+    const saved = localStorage.getItem("config.pattern-trainer")
+    if (saved) {
+      return JSON.parse(saved)
+    }
+  } catch (error) {
+    console.warn("Failed to load pattern trainer config:", error)
+  }
+  return {
+    bpm: 60,
+    difficulty: "easy",
+    numPatterns: 5,
+    swapHands: false,
+    sectionVisibility: "show-all",
+  }
+}
+
+function saveConfig(config: PatternTrainerConfig) {
+  try {
+    localStorage.setItem("config.pattern-trainer", JSON.stringify(config))
+  } catch (error) {
+    console.warn("Failed to save pattern trainer config:", error)
+  }
+}
+
 // ModeView component to show Listen/Repeat mode
 function ModeView({ mode }: { mode: Mode }) {
   const modeText = mode === "listen" ? "Listen" : "Repeat"
@@ -124,6 +159,25 @@ export function PatternTrainerView({ onBack }: { onBack: () => void }) {
   const [sectionVisibility, setSectionVisibility] = React.useState<SectionVisibility>("show-all")
   const [state, setState] = React.useState<State>(NotPlaying)
   const [patterns, setPatterns] = React.useState<Section[]>([])
+  const [configLoaded, setConfigLoaded] = React.useState(false)
+
+  // Load config on mount
+  React.useEffect(() => {
+    const config = loadConfig()
+    setBpm(config.bpm)
+    setDifficulty(config.difficulty)
+    setNumPatterns(config.numPatterns)
+    setSwapHands(config.swapHands)
+    setSectionVisibility(config.sectionVisibility)
+    setConfigLoaded(true)
+  }, [])
+
+  // Save config whenever values change (but only after config has been loaded)
+  React.useEffect(() => {
+    if (configLoaded) {
+      saveConfig({ bpm, difficulty, numPatterns, swapHands, sectionVisibility })
+    }
+  }, [bpm, difficulty, numPatterns, swapHands, sectionVisibility, configLoaded])
 
   const intervalRef = React.useRef<number | null>(null)
   const soundsRef = React.useRef<MetronomeSounds | null>(null)
