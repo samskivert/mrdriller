@@ -2,7 +2,7 @@ import { Button, Flex, Text, Box, Switch, Select, Heading } from "@radix-ui/them
 import * as React from "react"
 import { NumberInput, CenteredContainer, IntroView, HighlightedCard } from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
-import { Section, Measure, hit, Pos, beat, swapSectionHands } from "./model"
+import { Stroke, Section, Measure, hit, Pos, beat, swapSectionHands } from "./model"
 import { SectionView } from "./SectionView"
 
 type Difficulty = "easy" | "medium" | "hard"
@@ -190,6 +190,16 @@ export function PatternTrainerView({ onBack }: { onBack: () => void }) {
     }
   }, [])
 
+  function playStroke(stroke: Stroke | undefined) {
+    if (soundsRef.current && stroke) {
+      if (stroke.accent) {
+        soundsRef.current.playBeep()
+      } else {
+        soundsRef.current.playBoop()
+      }
+    }
+  }
+
   // Calculate quarter note duration in milliseconds (1/4 beat)
   const noteDuration = (60 * 1000) / state.bpm / 4
   const tickDelay = noteDuration
@@ -221,14 +231,13 @@ export function PatternTrainerView({ onBack }: { onBack: () => void }) {
             next.mode = "listen" as Mode
             next.measure = 0
             next.offset = 0
+            // Play sound for the first beat of the first pattern
+            playStroke(patterns[prev.pattern].measures[0][0]?.strokes[0])
             return next
           }
 
           const currentPattern = patterns[prev.pattern]
-          if (!currentPattern) return NotPlaying
-
           const currentMeasure = currentPattern.measures[prev.measure]
-          if (!currentMeasure) return NotPlaying
 
           // Calculate next position
           let nextOffset = prev.offset + 1
@@ -261,24 +270,8 @@ export function PatternTrainerView({ onBack }: { onBack: () => void }) {
 
           // Play sound for the beat we're moving to (only in Listen mode, not Repeat mode)
           if (!next.intro && nextMode === "listen") {
-            const patternToPlay = patterns[nextPattern]
-            if (patternToPlay) {
-              const measureToPlay = patternToPlay.measures[nextMeasure]
-              if (measureToPlay) {
-                const beatToPlay = measureToPlay[nextOffset]
-                if (beatToPlay && beatToPlay.strokes.length > 0 && soundsRef.current) {
-                  const stroke = beatToPlay.strokes[0]
-                  if (stroke) {
-                    // High pitch for accented hits, low pitch for unaccented hits
-                    if (stroke.accent) {
-                      soundsRef.current.playBeep()
-                    } else {
-                      soundsRef.current.playBoop()
-                    }
-                  }
-                }
-              }
-            }
+            const measureToPlay = patterns[nextPattern].measures[nextMeasure]
+            playStroke(measureToPlay[nextOffset]?.strokes[0])
           }
 
           // Update state
