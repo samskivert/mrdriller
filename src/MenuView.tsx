@@ -1,13 +1,15 @@
-import { Button, Flex, Grid, Heading } from "@radix-ui/themes"
+import { Button, Flex, Grid, Heading, Separator } from "@radix-ui/themes"
 import * as React from "react"
-import { Drill } from "./model"
+import { Activity, Drill, Tool } from "./model"
 
 export function MenuView({
   drills,
-  onSelectDrill,
+  tools,
+  onSelectActivity,
 }: {
   drills: Drill[]
-  onSelectDrill: (drill: Drill) => void
+  tools: Tool[]
+  onSelectActivity: (activity: Activity) => void
 }) {
   return (
     <Flex direction="column" gap="6">
@@ -15,9 +17,25 @@ export function MenuView({
         Mr. Driller
       </Heading>
       <Grid columns={{ initial: "1", sm: "2" }} gap="4">
-        {drills.map((drill, index) => (
-          <Button key={index} onClick={() => onSelectDrill(drill)} size="4">
+        {drills.map((drill) => (
+          <Button
+            key={drill.id}
+            onClick={() => onSelectActivity({ type: "drill", ...drill })}
+            size="4"
+          >
             {drill.title}
+          </Button>
+        ))}
+      </Grid>
+      <Separator size="4" />
+      <Grid columns={{ initial: "1", sm: "2" }} gap="4">
+        {tools.map((tool) => (
+          <Button
+            key={tool.id}
+            onClick={() => onSelectActivity({ type: "tool", ...tool })}
+            size="4"
+          >
+            {tool.title}
           </Button>
         ))}
       </Grid>

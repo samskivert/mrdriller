@@ -107,3 +107,50 @@ export function SectionHeader({
 export function EmptyBeatPlaceholder({ strokeSize = 28 }: { strokeSize?: number }) {
   return <div style={{ minWidth: strokeSize + 8 }} />
 }
+
+const IntroText = ["Ichi - いち", "Ni - に", "So - そ〜", "Re - れ！"]
+
+export function IntroView({
+  bpm,
+  beat,
+  intro,
+  beatsPerMeasure,
+  drillRepeat,
+  drillRepeatCount,
+}: {
+  bpm: number
+  beat: number
+  intro: boolean
+  beatsPerMeasure: number
+  drillRepeat?: number
+  drillRepeatCount?: number
+}) {
+  const isHighlighted = intro
+  const measure = Math.floor(beat / beatsPerMeasure)
+  const introText =
+    measure >= IntroText.length ? `${bpm} bpm` : intro ? IntroText[measure] : "Get ready..."
+  const drillProgress =
+    measure >= IntroText.length &&
+    drillRepeat &&
+    drillRepeat > 1 &&
+    drillRepeatCount !== undefined ? (
+      <Text size="9" weight="bold" color="gray">
+        {drillRepeatCount + 1} / {drillRepeat}
+      </Text>
+    ) : undefined
+  return (
+    <HighlightedCard isHighlighted={isHighlighted} minHeight={100}>
+      <Flex align="center" justify="center" gap="8">
+        <Text
+          size="9"
+          weight="bold"
+          color={isHighlighted ? "blue" : "gray"}
+          style={{ textAlign: "center" }}
+        >
+          {introText}
+        </Text>
+        {drillProgress}
+      </Flex>
+    </HighlightedCard>
+  )
+}

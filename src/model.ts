@@ -110,3 +110,14 @@ const swapRowHands = (row: Row): Row => row.map(swapSectionHands)
 
 /** Swaps the L and R hands in a drill. */
 export const swapHands = (drill: Drill): Drill => ({ ...drill, rows: drill.rows.map(swapRowHands) })
+
+// defines a data model for tools
+
+export type Tool = {
+  id: string
+  title: string
+}
+
+// defines a data model for activities (tools or drills)
+
+export type Activity = ({ type: "tool" } & Tool) | ({ type: "drill" } & Drill)
