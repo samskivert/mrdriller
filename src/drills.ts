@@ -42,8 +42,10 @@ export const paradiddles: Drill = {
       section(
         "Pa-ra-did-dle",
         4,
-        measure(R, l, r, r),
-        measure(L, r, l, l),
+        measure(r, l, r, r),
+        measure(l, r, l, l),
+        measure(r, l, r, r),
+        measure(l, r, l, l),
         measure(R, l, r, r),
         measure(L, r, l, l),
         measure(R, l, r, r),
