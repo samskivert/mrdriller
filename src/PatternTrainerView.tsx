@@ -437,7 +437,7 @@ export function PatternTrainerView({ onBack }: { onBack: () => void }) {
         ) : (
           patterns.length > 0 &&
           state.pattern < patterns.length && (
-            <Flex direction="column" gap="4" style={{ marginTop: "24px" }}>
+            <Flex direction="column" gap="4">
               <ModeView mode={state.mode} />
               {(sectionVisibility === "show-all" ||
                 (sectionVisibility === "show-listen" && state.mode === "listen") ||
