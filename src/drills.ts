@@ -279,6 +279,20 @@ export const diddleAndA: Drill = {
   ],
 }
 
+export const addingAccents: Drill = {
+  id: "adding-accents",
+  title: "Adding accents",
+  bpm: 4,
+  forceIntro: true,
+  rows: [
+    [section("None", 1, measure(r, l, r, l), measure(r, l, r, l))],
+    [section("One", 1, measure(R, l, r, l), measure(R, l, r, l))],
+    [section("One, Two", 1, measure(R, L, r, l), measure(R, L, r, l))],
+    [section("One, Two, Three", 1, measure(R, L, R, l), measure(R, L, R, l))],
+    [section("One, Two, Three, Four", 1, measure(R, L, R, R), measure(R, L, R, R))],
+  ],
+}
+
 export const iceSkater: Drill = {
   id: "ice-skater",
   title: "Ice Skater",
@@ -538,6 +552,7 @@ export const sixteens: Drill = {
 
 export const drills = [
   oneEAndA,
+  addingAccents,
   paradiddles,
   kodoParadiddle,
   paradiddleInversions,
