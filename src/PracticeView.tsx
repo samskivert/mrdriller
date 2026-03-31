@@ -1,8 +1,9 @@
 import { Button, Flex, Text, Box, Switch } from "@radix-ui/themes"
 import * as React from "react"
-import { NumberInput, CenteredContainer, IntroView } from "./components"
+import { NumberInput, CenteredContainer, CountdownSection, HighlightedCard } from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
 import { Drill, Section, swapSectionHands } from "./model"
+import { DrillOverView } from "./DrillOverviewView"
 import { SectionView } from "./SectionView"
 
 type State = {
@@ -62,6 +63,91 @@ function saveConfig(drillId: string, config: DrillConfig) {
   }
 }
 
+function StatusView({
+  bpm,
+  drillRepeat,
+  drillRepeatCount,
+}: {
+  bpm: number
+  drillRepeat?: number
+  drillRepeatCount?: number
+}) {
+  const drillProgress =
+    drillRepeat &&
+    drillRepeat > 1 &&
+    drillRepeatCount !== undefined ? (
+      <Text size="7" weight="bold" color="gray">
+        {drillRepeatCount + 1} / {drillRepeat}
+      </Text>
+    ) : undefined
+  return (
+    <Flex align="center" justify="center" gap="4">
+      <Text size="7" weight="bold" color="gray">
+        {bpm} bpm
+      </Text>
+      {drillProgress}
+    </Flex>
+  )
+}
+
+function DrillControls({
+  bpm,
+  setBpm,
+  bpmIncrease,
+  setBpmIncrease,
+  drillRepeat,
+  setDrillRepeat,
+  swapHands,
+  setSwapHands,
+  onStart,
+}: {
+  bpm: number
+  setBpm: (v: number) => void
+  bpmIncrease: number
+  setBpmIncrease: (v: number) => void
+  drillRepeat: number
+  setDrillRepeat: (v: number) => void
+  swapHands: boolean
+  setSwapHands: (v: boolean) => void
+  onStart: () => void
+}) {
+  return (
+    <Flex align="center" justify="center" wrap="wrap" gap="6">
+      <NumberInput label="BPM" value={bpm} onChange={setBpm} min={30} max={200} width={60} />
+
+      <NumberInput
+        label="BPM Increase"
+        value={bpmIncrease}
+        onChange={setBpmIncrease}
+        min={0}
+        max={50}
+        width={80}
+      />
+
+      <NumberInput
+        label="Repeat"
+        value={drillRepeat}
+        onChange={setDrillRepeat}
+        min={1}
+        max={10}
+        width={60}
+      />
+
+      <Text as="label">
+        <Flex gap="2">
+          <Switch size="3" checked={swapHands} onCheckedChange={setSwapHands} />
+          L↔︎R
+        </Flex>
+      </Text>
+
+      <Button onClick={onStart} color="green" size="2">
+        Start
+      </Button>
+    </Flex>
+  )
+}
+
+
 export function PracticeView({ drill }: { drill: Drill }) {
   const [bpm, setBpm] = React.useState(60)
   const [bpmIncrease, setBpmIncrease] = React.useState(0)
@@ -120,15 +206,6 @@ export function PracticeView({ drill }: { drill: Drill }) {
     }
   }, [state.playing, state.beat])
 
-  // Auto-scroll to active section
-  React.useEffect(() => {
-    if (!state.playing) return
-    if (typeof window === "undefined") return
-
-    const selector = `[data-section-index="${state.section}"][data-row-index="${state.row}"]`
-    const activeSectionElement = document.querySelector<HTMLElement>(selector)
-    activeSectionElement?.scrollIntoView({ behavior: "smooth", block: "center" })
-  }, [state.playing, state.section, state.row])
 
   React.useEffect(() => {
     if (state.playing) {
@@ -201,17 +278,12 @@ export function PracticeView({ drill }: { drill: Drill }) {
     }
   }, [state, drill.rows.length, drillRepeat])
 
-  const handleStartStop = () => {
-    if (state.playing) {
-      setState(NotPlaying)
-    } else {
-      // Copy current BPM and BPM Increase values into state when starting
-      setState({
-        ...Playing,
-        bpm: bpm,
-        bpmIncrease: bpmIncrease,
-      })
-    }
+  const handleStart = () => {
+    setState({
+      ...Playing,
+      bpm: bpm,
+      bpmIncrease: bpmIncrease,
+    })
   }
 
   const empty = "○"
@@ -219,76 +291,126 @@ export function PracticeView({ drill }: { drill: Drill }) {
     return "●".repeat(current + 1) + empty.repeat(total - current - 1)
   }
 
-  function mkSectionView(section: Section, rowIndex: number, sectionIndex: number) {
-    const isHighlighted =
-      state.playing && !state.intro && state.row === rowIndex && state.section === sectionIndex
+  // Flatten all sections into a linear list for navigation
+  const allSections: { section: Section; rowIndex: number; sectionIndex: number }[] = drill.rows.flatMap(
+    (row, rowIndex) => row.map((section, sectionIndex) => ({ section, rowIndex, sectionIndex }))
+  )
+
+  // Find the current flat index
+  const currentFlatIndex = allSections.findIndex(
+    (s) => s.rowIndex === state.row && s.sectionIndex === state.section
+  )
+
+  // Determine if we will repeat after this drill pass
+  const willRepeatDrill = state.drillRepeat + 1 < drillRepeat
+  const willRepeatWithIntro = willRepeatDrill && (state.bpmIncrease > 0 || drill.forceIntro)
+  const idx = currentFlatIndex >= 0 ? currentFlatIndex : 0
+  const isLastSection = idx === allSections.length - 1
+
+  function mkSectionView(section: Section, rowIndex: number, sectionIndex: number, isHighlighted: boolean) {
     const repeatDisplay = isHighlighted
       ? mkRepeat(state.repeat, section.repeat ?? 1)
       : empty.repeat(section.repeat ?? 1)
 
     return (
-      <Box
-        key={`${rowIndex}-${sectionIndex}`}
-        data-section-index={sectionIndex}
-        data-row-index={rowIndex}
-      >
+      <Box key={`${rowIndex}-${sectionIndex}`}>
         <SectionView
           section={section}
           isHighlighted={isHighlighted}
           repeatDisplay={repeatDisplay}
-          highlight={state.playing ? state : undefined}
+          highlight={isHighlighted && state.playing ? state : undefined}
         />
       </Box>
     )
   }
 
+  function renderSections() {
+    const effectiveIdx = currentFlatIndex >= 0 ? currentFlatIndex : 0
+    const current = allSections[effectiveIdx]
+    const currentSection = swapHands ? swapSectionHands(current.section) : current.section
+
+    // During intro or not playing, show countdown as current and first section as next
+    if (!state.playing || state.intro) {
+      const isBpmUp = state.drillRepeat > 0 && state.bpmIncrease > 0
+      const isRepeat = state.drillRepeat > 0
+      return [
+        <Box key="countdown">
+          <CountdownSection
+            beat={state.beat}
+            beatsPerMeasure={drill.bpm}
+            intro={state.intro}
+            preText={isBpmUp ? "BPM up!" : isRepeat ? "Back to the start!" : "Get ready..."}
+          />
+        </Box>,
+        mkSectionView(currentSection, current.rowIndex, current.sectionIndex, false),
+      ]
+    }
+
+    // Playing: show current highlighted + next section
+    const elements = [
+      mkSectionView(currentSection, current.rowIndex, current.sectionIndex, true),
+    ]
+
+    if (isLastSection && !willRepeatDrill) {
+      elements.push(
+        <Box key="all-done">
+          <HighlightedCard isHighlighted={false} minHeight={100}>
+            <Flex align="center" justify="center">
+              <Text size="9" weight="bold" color="gray">
+                All done!
+              </Text>
+            </Flex>
+          </HighlightedCard>
+        </Box>,
+      )
+    } else if (isLastSection && willRepeatWithIntro) {
+      // Show countdown as next section before a repeat with intro
+      elements.push(
+        <Box key="countdown-next">
+          <CountdownSection beat={0} beatsPerMeasure={drill.bpm} intro={false} preText={state.bpmIncrease > 0 ? "BPM up!" : "Back to the start!"} />
+        </Box>,
+      )
+    } else {
+      const nextFlatIndex = (effectiveIdx + 1) % allSections.length
+      const next = allSections[nextFlatIndex]
+      const nextSection = swapHands ? swapSectionHands(next.section) : next.section
+      elements.push(mkSectionView(nextSection, next.rowIndex, next.sectionIndex, false))
+    }
+
+    return elements
+  }
+
   return (
     <CenteredContainer>
-      <Flex align="center" justify="center" wrap="wrap" gap="6">
-        <NumberInput label="BPM" value={bpm} onChange={setBpm} min={30} max={200} width={60} />
-
-        <NumberInput
-          label="BPM Increase"
-          value={bpmIncrease}
-          onChange={setBpmIncrease}
-          min={0}
-          max={50}
-          width={80}
-        />
-
-        <NumberInput
-          label="Repeat"
-          value={drillRepeat}
-          onChange={setDrillRepeat}
-          min={1}
-          max={10}
-          width={60}
-        />
-
-        <Text as="label">
-          <Flex gap="2">
-            <Switch size="3" checked={swapHands} onCheckedChange={setSwapHands} />
-            L↔︎R
+      {state.playing ? (
+        <>
+          <Flex align="center" justify="center" wrap="wrap" gap="4">
+            <StatusView
+              bpm={state.bpm}
+              drillRepeat={drillRepeat}
+              drillRepeatCount={state.drillRepeat}
+            />
+            <Button onClick={() => setState(NotPlaying)} color="red" size="2">
+              Stop
+            </Button>
           </Flex>
-        </Text>
-
-        <Button onClick={handleStartStop} color={state.playing ? "red" : "green"} size="2">
-          {state.playing ? "Stop" : "Start"}
-        </Button>
-      </Flex>
-
-      <IntroView
-        bpm={state.bpm}
-        beat={state.beat}
-        intro={state.intro}
-        beatsPerMeasure={drill.bpm}
-        drillRepeat={drillRepeat}
-        drillRepeatCount={state.drillRepeat}
-      />
-      {drill.rows.flatMap((row, rowIndex) =>
-        row.map((section, sectionIndex) =>
-          mkSectionView(swapHands ? swapSectionHands(section) : section, rowIndex, sectionIndex),
-        ),
+          {renderSections()}
+        </>
+      ) : (
+        <>
+          <DrillControls
+            bpm={bpm}
+            setBpm={setBpm}
+            bpmIncrease={bpmIncrease}
+            setBpmIncrease={setBpmIncrease}
+            drillRepeat={drillRepeat}
+            setDrillRepeat={setDrillRepeat}
+            swapHands={swapHands}
+            setSwapHands={setSwapHands}
+            onStart={handleStart}
+          />
+          <DrillOverView drill={drill} />
+        </>
       )}
     </CenteredContainer>
   )

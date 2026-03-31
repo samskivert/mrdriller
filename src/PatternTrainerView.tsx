@@ -1,6 +1,6 @@
 import { Button, Flex, Text, Box, Switch, Select, Heading } from "@radix-ui/themes"
 import * as React from "react"
-import { NumberInput, CenteredContainer, IntroView, HighlightedCard } from "./components"
+import { NumberInput, CenteredContainer, CountdownSection, HighlightedCard } from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
 import { Stroke, Section, Measure, hit, Pos, beat, swapSectionHands } from "./model"
 import { SectionView } from "./SectionView"
@@ -433,7 +433,7 @@ export function PatternTrainerView({ onBack }: { onBack: () => void }) {
         </Flex>
 
         {state.intro || !state.playing ? (
-          <IntroView bpm={state.bpm} beat={state.beat} intro={state.intro} beatsPerMeasure={4} />
+          <CountdownSection beat={state.beat} beatsPerMeasure={4} intro={state.intro} />
         ) : (
           patterns.length > 0 &&
           state.pattern < patterns.length && (

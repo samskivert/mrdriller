@@ -110,46 +110,34 @@ export function EmptyBeatPlaceholder({ strokeSize = 28 }: { strokeSize?: number 
 
 const IntroText = ["Ichi - いち", "Ni - に", "So - そ〜", "Re - れ！"]
 
-export function IntroView({
-  bpm,
+export function CountdownSection({
   beat,
-  intro,
   beatsPerMeasure,
-  drillRepeat,
-  drillRepeatCount,
+  intro,
+  preText = "Get ready...",
 }: {
-  bpm: number
   beat: number
-  intro: boolean
   beatsPerMeasure: number
-  drillRepeat?: number
-  drillRepeatCount?: number
+  intro: boolean
+  preText?: string
 }) {
-  const isHighlighted = intro
   const measure = Math.floor(beat / beatsPerMeasure)
-  const introText =
-    measure >= IntroText.length ? `${bpm} bpm` : intro ? IntroText[measure] : "Get ready..."
-  const drillProgress =
-    measure >= IntroText.length &&
-    drillRepeat &&
-    drillRepeat > 1 &&
-    drillRepeatCount !== undefined ? (
-      <Text size="9" weight="bold" color="gray">
-        {drillRepeatCount + 1} / {drillRepeat}
-      </Text>
-    ) : undefined
+  const text = !intro
+    ? preText
+    : measure >= IntroText.length
+      ? IntroText[IntroText.length - 1]
+      : IntroText[measure]
   return (
-    <HighlightedCard isHighlighted={isHighlighted} minHeight={100}>
-      <Flex align="center" justify="center" gap="8">
+    <HighlightedCard isHighlighted={intro} minHeight={100}>
+      <Flex align="center" justify="center">
         <Text
           size="9"
           weight="bold"
-          color={isHighlighted ? "blue" : "gray"}
+          color={intro ? "blue" : "gray"}
           style={{ textAlign: "center" }}
         >
-          {introText}
+          {text}
         </Text>
-        {drillProgress}
       </Flex>
     </HighlightedCard>
   )
