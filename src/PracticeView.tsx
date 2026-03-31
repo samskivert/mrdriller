@@ -1,5 +1,6 @@
-import { Button, Flex, Text, Box, Switch } from "@radix-ui/themes"
+import { Button, Flex, Text, Switch } from "@radix-ui/themes"
 import * as React from "react"
+import { AnimatePresence, motion } from "framer-motion"
 import { NumberInput, CenteredContainer, CountdownSection, HighlightedCard } from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
 import { Drill, Section, swapSectionHands } from "./model"
@@ -63,33 +64,6 @@ function saveConfig(drillId: string, config: DrillConfig) {
   }
 }
 
-function StatusView({
-  bpm,
-  drillRepeat,
-  drillRepeatCount,
-}: {
-  bpm: number
-  drillRepeat?: number
-  drillRepeatCount?: number
-}) {
-  const drillProgress =
-    drillRepeat &&
-    drillRepeat > 1 &&
-    drillRepeatCount !== undefined ? (
-      <Text size="7" weight="bold" color="gray">
-        {drillRepeatCount + 1} / {drillRepeat}
-      </Text>
-    ) : undefined
-  return (
-    <Flex align="center" justify="center" gap="4">
-      <Text size="7" weight="bold" color="gray">
-        {bpm} bpm
-      </Text>
-      {drillProgress}
-    </Flex>
-  )
-}
-
 function DrillControls({
   bpm,
   setBpm,
@@ -147,6 +121,51 @@ function DrillControls({
   )
 }
 
+function StatusView({
+  bpm,
+  drillRepeat,
+  drillRepeatCount,
+}: {
+  bpm: number
+  drillRepeat?: number
+  drillRepeatCount?: number
+}) {
+  const drillProgress =
+    drillRepeat &&
+    drillRepeat > 1 &&
+    drillRepeatCount !== undefined ? (
+      <Text size="7" weight="bold" color="gray">
+        {drillRepeatCount + 1} / {drillRepeat}
+      </Text>
+    ) : undefined
+  return (
+    <Flex align="center" justify="center" gap="4">
+      <Text size="7" weight="bold" color="gray">
+        {bpm} bpm
+      </Text>
+      {drillProgress}
+    </Flex>
+  )
+}
+
+function AnimatedSection({ sectionKey, children }: { sectionKey: string; children: React.ReactNode }) {
+  return (
+    <motion.div
+      key={sectionKey}
+      layout
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, pointerEvents: "none" as const, transition: { duration: 0 } }}
+      transition={{
+        layout: { duration: 0.3, ease: "easeInOut" },
+        opacity: { duration: 0.3, ease: "easeInOut", delay: 0.3 },
+        y: { duration: 0.3, ease: "easeInOut" },
+      }}
+    >
+      {children}
+    </motion.div>
+  )
+}
 
 export function PracticeView({ drill }: { drill: Drill }) {
   const [bpm, setBpm] = React.useState(60)
@@ -205,7 +224,6 @@ export function PracticeView({ drill }: { drill: Drill }) {
       }
     }
   }, [state.playing, state.beat])
-
 
   React.useEffect(() => {
     if (state.playing) {
@@ -307,20 +325,35 @@ export function PracticeView({ drill }: { drill: Drill }) {
   const idx = currentFlatIndex >= 0 ? currentFlatIndex : 0
   const isLastSection = idx === allSections.length - 1
 
-  function mkSectionView(section: Section, rowIndex: number, sectionIndex: number, isHighlighted: boolean) {
+  function mkSectionView(section: Section, isHighlighted: boolean) {
     const repeatDisplay = isHighlighted
       ? mkRepeat(state.repeat, section.repeat ?? 1)
       : empty.repeat(section.repeat ?? 1)
 
     return (
-      <Box key={`${rowIndex}-${sectionIndex}`}>
-        <SectionView
-          section={section}
-          isHighlighted={isHighlighted}
-          repeatDisplay={repeatDisplay}
-          highlight={isHighlighted && state.playing ? state : undefined}
-        />
-      </Box>
+      <SectionView
+        section={section}
+        isHighlighted={isHighlighted}
+        repeatDisplay={repeatDisplay}
+        highlight={isHighlighted && state.playing ? state : undefined}
+      />
+    )
+  }
+
+  // Compute a unique key for the countdown that includes the drill repeat so
+  // each repeat's countdown is treated as a distinct element.
+  const countdownKey = `countdown-${state.drillRepeat}`
+
+  function countdownSection() {
+    const isBpmUp = state.drillRepeat > 0 && state.bpmIncrease > 0
+    const isRepeat = state.drillRepeat > 0
+    return (
+      <CountdownSection
+        beat={state.beat}
+        beatsPerMeasure={drill.bpm}
+        intro={state.intro}
+        preText={isBpmUp ? "BPM up!" : isRepeat ? "Back to the start!" : "Get ready..."}
+      />
     )
   }
 
@@ -328,56 +361,86 @@ export function PracticeView({ drill }: { drill: Drill }) {
     const effectiveIdx = currentFlatIndex >= 0 ? currentFlatIndex : 0
     const current = allSections[effectiveIdx]
     const currentSection = swapHands ? swapSectionHands(current.section) : current.section
+    const currentKey = `section-${effectiveIdx}-${state.drillRepeat}`
 
-    // During intro or not playing, show countdown as current and first section as next
-    if (!state.playing || state.intro) {
-      const isBpmUp = state.drillRepeat > 0 && state.bpmIncrease > 0
-      const isRepeat = state.drillRepeat > 0
-      return [
-        <Box key="countdown">
-          <CountdownSection
-            beat={state.beat}
-            beatsPerMeasure={drill.bpm}
-            intro={state.intro}
-            preText={isBpmUp ? "BPM up!" : isRepeat ? "Back to the start!" : "Get ready..."}
-          />
-        </Box>,
-        mkSectionView(currentSection, current.rowIndex, current.sectionIndex, false),
-      ]
-    }
+    const elements: React.ReactNode[] = []
 
-    // Playing: show current highlighted + next section
-    const elements = [
-      mkSectionView(currentSection, current.rowIndex, current.sectionIndex, true),
-    ]
-
-    if (isLastSection && !willRepeatDrill) {
+    if (state.intro && state.drillRepeat == 0) {
+      // don't animate the countdown section the very first time it shows up
       elements.push(
-        <Box key="all-done">
-          <HighlightedCard isHighlighted={false} minHeight={100}>
-            <Flex align="center" justify="center">
-              <Text size="9" weight="bold" color="gray">
-                All done!
-              </Text>
-            </Flex>
-          </HighlightedCard>
-        </Box>,
+        <motion.div
+          key={countdownKey}
+          layout
+          exit={{ opacity: 0, pointerEvents: "none" as const, transition: { duration: 0 } }}
+          transition={{
+            layout: { duration: 0.3, ease: "easeInOut" },
+            opacity: { duration: 0.3, ease: "easeInOut", delay: 0.3 },
+            y: { duration: 0.3, ease: "easeInOut" },
+          }}
+        >
+          {countdownSection()}
+        </motion.div>
+        ,
+        <AnimatedSection key={currentKey} sectionKey={currentKey}>
+          {mkSectionView(currentSection, false)}
+        </AnimatedSection>,
       )
-    } else if (isLastSection && willRepeatWithIntro) {
-      // Show countdown as next section before a repeat with intro
+
+    } else if (state.intro) {
       elements.push(
-        <Box key="countdown-next">
-          <CountdownSection beat={0} beatsPerMeasure={drill.bpm} intro={false} preText={state.bpmIncrease > 0 ? "BPM up!" : "Back to the start!"} />
-        </Box>,
+        <AnimatedSection key={countdownKey} sectionKey={countdownKey}>
+          {countdownSection()}
+        </AnimatedSection>,
+        <AnimatedSection key={currentKey} sectionKey={currentKey}>
+          {mkSectionView(currentSection, false)}
+        </AnimatedSection>,
       )
+
     } else {
-      const nextFlatIndex = (effectiveIdx + 1) % allSections.length
-      const next = allSections[nextFlatIndex]
-      const nextSection = swapHands ? swapSectionHands(next.section) : next.section
-      elements.push(mkSectionView(nextSection, next.rowIndex, next.sectionIndex, false))
+      elements.push(
+        <AnimatedSection key={currentKey} sectionKey={currentKey}>
+          {mkSectionView(currentSection, true)}
+        </AnimatedSection>,
+      )
+
+      if (isLastSection && !willRepeatDrill) {
+        elements.push(
+          <AnimatedSection key="all-done" sectionKey="all-done">
+            <HighlightedCard isHighlighted={false} minHeight={100}>
+              <Flex align="center" justify="center">
+                <Text size="9" weight="bold" color="gray">
+                  All done!
+                </Text>
+              </Flex>
+            </HighlightedCard>
+          </AnimatedSection>,
+        )
+      } else if (isLastSection && willRepeatWithIntro) {
+        const nextCountdownKey = `countdown-${state.drillRepeat + 1}`
+        elements.push(
+          <AnimatedSection key={nextCountdownKey} sectionKey={nextCountdownKey}>
+            <CountdownSection beat={0} beatsPerMeasure={drill.bpm} intro={false} preText={state.bpmIncrease > 0 ? "BPM up!" : "Back to the start!"} />
+          </AnimatedSection>,
+        )
+      } else {
+        const nextFlatIndex = (effectiveIdx + 1) % allSections.length
+        const next = allSections[nextFlatIndex]
+        const nextSection = swapHands ? swapSectionHands(next.section) : next.section
+        const nextDrillRepeat = nextFlatIndex === 0 ? state.drillRepeat + 1 : state.drillRepeat
+        const nextKey = `section-${nextFlatIndex}-${nextDrillRepeat}`
+        elements.push(
+          <AnimatedSection key={nextKey} sectionKey={nextKey}>
+            {mkSectionView(nextSection, false)}
+          </AnimatedSection>,
+        )
+      }
     }
 
-    return elements
+    return (
+      <AnimatePresence mode="popLayout">
+        {elements}
+      </AnimatePresence>
+    )
   }
 
   return (
