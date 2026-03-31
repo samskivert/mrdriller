@@ -1,4 +1,4 @@
-import { Theme, Container, Box } from "@radix-ui/themes"
+import { Theme, Box } from "@radix-ui/themes"
 import * as React from "react"
 import { StrictMode, useState } from "react"
 import { createRoot } from "react-dom/client"
@@ -38,11 +38,39 @@ function App() {
       {selectedActivity ? (
         mkView(selectedActivity)
       ) : (
-        <Container size="4" p="4" style={{ height: "100dvh", overflow: "auto" }}>
-          <Box style={{ width: "fit-content", margin: "0 auto" }}>
-            <MenuView drills={drills} tools={tools} onSelectActivity={handleSelectActivity} />
-          </Box>
-        </Container>
+        <>
+          <style>{`
+            .menu-bg {
+              height: 100dvh;
+              overflow: auto;
+              background-color: white;
+              background-image: url('mrdriller.png');
+              background-repeat: no-repeat;
+            }
+            @media (min-width: 1024px) {
+              .menu-bg {
+                background-position-x: calc(25vw - 256px);
+                background-position-y: top;
+              }
+              .menu-content {
+                margin-left: 50vw;
+                width: 50vw;
+              }
+            }
+            @media (max-width: 1023px) {
+              .menu-bg {
+                background-image: none;
+              }
+            }
+          `}</style>
+          <div className="menu-bg">
+            <div className="menu-content" style={{ display: "flex", justifyContent: "center" }}>
+              <Box p="4" style={{ width: "fit-content" }}>
+                <MenuView drills={drills} tools={tools} onSelectActivity={handleSelectActivity} />
+              </Box>
+            </div>
+          </div>
+        </>
       )}
     </>
   )
@@ -51,7 +79,7 @@ function App() {
 const root = createRoot(document.getElementById("root") as HTMLElement)
 root.render(
   <StrictMode>
-    <Theme>
+    <Theme hasBackground={false}>
       <App />
     </Theme>
   </StrictMode>,

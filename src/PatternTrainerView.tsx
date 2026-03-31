@@ -355,7 +355,7 @@ export function PatternTrainerView({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <div style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "24px" }}>
+    <div style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "24px", minHeight: "100dvh", backgroundColor: "white" }}>
       <Flex align="center" justify="between" wrap="wrap" gap="3">
         <Button variant="soft" onClick={onBack} style={{ flexShrink: 0 }}>
           ← Back

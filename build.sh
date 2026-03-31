@@ -3,7 +3,7 @@
 NAME=mrdriller
 rm -rf $NAME
 mkdir $NAME
-cp public/index.html $NAME
+cp public/* $NAME
 npx esbuild src/index.tsx \
   --minify --sourcemap \
   --bundle --outfile=$NAME/index.js

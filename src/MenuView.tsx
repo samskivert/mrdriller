@@ -13,7 +13,21 @@ export function MenuView({
 }) {
   return (
     <Flex direction="column" gap="6">
-      <Heading align="center" size="8">
+      <Heading
+        align="center"
+        size="9"
+        style={{
+          color: "#F03564",
+          fontFamily: "Impact, sans-serif",
+          letterSpacing: "0.15em",
+          textShadow: `
+            -3px -3px 0 #6F2223, 3px -3px 0 #6F2223, -3px 3px 0 #6F2223, 3px 3px 0 #6F2223,
+            0 -3px 0 #6F2223, 0 3px 0 #6F2223, -3px 0 0 #6F2223, 3px 0 0 #6F2223,
+            -2px -3px 0 #6F2223, 2px -3px 0 #6F2223, -2px 3px 0 #6F2223, 2px 3px 0 #6F2223,
+            -3px -2px 0 #6F2223, 3px -2px 0 #6F2223, -3px 2px 0 #6F2223, 3px 2px 0 #6F2223
+          `,
+        }}
+      >
         Mr. Driller
       </Heading>
       <Grid columns={{ initial: "1", sm: "2" }} gap="4">
