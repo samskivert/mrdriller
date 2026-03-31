@@ -29,17 +29,17 @@ export const kodoParadiddle: Drill = {
   title: "Paradiddle Drill",
   bpm: 4,
   rows: [
-    [section("Accent on 1", 4, measure(R, l, r, r), measure(L, r, l, l))],
-    [section("Accent on 3+4", 4, measure(r, l, R, R), measure(l, r, L, L))],
+    [section("Accent 1", 4, measure(R, l, r, r), measure(L, r, l, l))],
+    [section("Accent 3+4", 4, measure(r, l, R, R), measure(l, r, L, L))],
     [
-      section("Accent on R", 2, measure(R, l, R, R), measure(l, R, l, l)),
-      section("Accent on L", 2, measure(r, L, r, r), measure(L, r, L, L)),
+      section("Accent R", 2, measure(R, l, R, R), measure(l, R, l, l)),
+      section("Accent L", 2, measure(r, L, r, r), measure(L, r, L, L)),
     ],
     [
-      section("Accent on R", 2, measure(R, l, R, R), measure(l, R, l, l)),
-      section("Accent on L", 2, measure(r, L, r, r), measure(L, r, L, L)),
+      section("Accent R", 2, measure(R, l, R, R), measure(l, R, l, l)),
+      section("Accent L", 2, measure(r, L, r, r), measure(L, r, L, L)),
     ],
-    [section("Accent on 4", 4, measure(r, l, r, R), measure(l, r, l, L))],
+    [section("Accent 4", 4, measure(r, l, r, R), measure(l, r, l, L))],
   ],
 }
 
@@ -238,26 +238,26 @@ export const oneEAndA: Drill = {
   forceIntro: true,
   rows: [
     [
-      section("1A", 4, measure(R, l, r, l)),
-      section("1B", 4, measure(r, L, r, l)),
-      section("1C", 4, measure(r, l, R, l)),
-      section("1D", 4, measure(r, l, r, L)),
+      section("Accent 1", 4, measure(R, l, r, l)),
+      section("Accent 2", 4, measure(r, L, r, l)),
+      section("Accent 3", 4, measure(r, l, R, l)),
+      section("Accent 4", 4, measure(r, l, r, L)),
     ],
     [
-      section("2A", 4, measure(R, L, r, l)),
-      section("2B", 4, measure(r, L, R, l)),
-      section("2C", 4, measure(r, l, R, L)),
-      section("2D", 4, measure(R, l, r, L)),
-      section("2E", 4, measure(R, l, R, l)),
-      section("2F", 4, measure(r, L, r, L)),
+      section("Accent 1,2", 4, measure(R, L, r, l)),
+      section("Accent 2,3", 4, measure(r, L, R, l)),
+      section("Accent 3,4", 4, measure(r, l, R, L)),
+      section("Accent 1,4", 4, measure(R, l, r, L)),
+      section("Accent 1,3", 4, measure(R, l, R, l)),
+      section("Accent 2,4", 4, measure(r, L, r, L)),
     ],
     [
-      section("3A", 4, measure(R, L, R, l)),
-      section("3B", 4, measure(r, L, R, L)),
-      section("3C", 4, measure(R, l, R, L)),
-      section("3D", 4, measure(R, L, r, L)),
+      section("Accent 1,2,3", 4, measure(R, L, R, l)),
+      section("Accent 2,3,4", 4, measure(r, L, R, L)),
+      section("Accent 1,3,4", 4, measure(R, l, R, L)),
+      section("Accent 1,2,4", 4, measure(R, L, r, L)),
     ],
-    [section("4", 4, measure(R, L, R, L))],
+    [section("Accent 1,2,3,4", 4, measure(R, L, R, L))],
   ],
 }
 
@@ -314,11 +314,15 @@ export const iceSkater: Drill = {
   rows: [
     [
       section("Four", 2, measure(r, su, r, su, r, su, r, su), measure(l, su, l, su, l, su, l, su)),
+    ],
+    [
       section("Three", 2, measure(r, su, r, su, r, su), measure(l, su, l, su, l, su)),
       section("Four", 1, measure(r, su, r, su, r, su, r, su)),
     ],
     [
       section("Four", 2, measure(l, su, l, su, l, su, l, su), measure(r, su, r, su, r, su, r, su)),
+    ],
+    [
       section("Three", 2, measure(l, su, l, su, l, su), measure(r, su, r, su, r, su)),
       section("Four", 1, measure(l, su, l, su, l, su, l, su)),
     ],
@@ -329,6 +333,8 @@ export const iceSkater: Drill = {
         measure(r, l, r, su, r, su, r, su),
         measure(l, r, l, su, l, su, l, su),
       ),
+    ],
+    [
       section("Three + 1", 2, measure(r, l, r, su, r, su), measure(l, r, l, su, l, su)),
       section("Four + 1", 1, measure(r, l, r, su, r, su, r, su)),
     ],
@@ -339,16 +345,22 @@ export const iceSkater: Drill = {
         measure(l, r, l, su, l, su, l, su),
         measure(r, l, r, su, r, su, r, su),
       ),
+    ],
+    [
       section("Three + 1", 2, measure(l, r, l, su, l, su), measure(r, l, r, su, r, su)),
       section("Four + 1", 1, measure(l, r, l, su, l, su, l, su)),
     ],
     [
       section("Four + 2", 2, measure(r, l, r, l, r, su, r, su), measure(l, r, l, r, l, su, l, su)),
+    ],
+    [
       section("Three + 2", 2, measure(r, l, r, l, r, su), measure(l, r, l, r, l, su)),
       section("Four + 2", 1, measure(r, l, r, l, r, su, r, su)),
     ],
     [
       section("Four + 2", 2, measure(l, r, l, r, l, su, l, su), measure(r, l, r, l, r, su, r, su)),
+    ],
+    [
       section("Three + 2", 2, measure(l, r, l, r, l, su), measure(r, l, r, l, r, su)),
       section("Four + 2", 1, measure(l, r, l, r, l, su, l, su)),
     ],
@@ -361,17 +373,22 @@ export const triplets: Drill = {
   bpm: 3,
   rows: [
     [
-      section("1", 4, measure(R, l, r, L, r, l)),
-      section("2", 4, measure(r, L, r, l, R, l)),
-      section("3", 4, measure(r, l, R, l, r, L)),
+      section("1", 4, measure(R, l, r), measure(L, r, l)),
+      section("2", 4, measure(r, L, r), measure(l, R, l)),
+      section("3", 4, measure(r, l, R), measure(l, r, L)),
     ],
     [
-      section("2+3", 4, measure(r, L, R, l, R, L)),
-      section("1+3", 4, measure(R, l, R, L, r, L)),
-      section("1+2", 4, measure(R, L, r, L, R, l)),
+      section("2+3", 4, measure(r, L, R), measure(l, R, L)),
+      section("1+3", 4, measure(R, l, R), measure(L, r, L)),
+      section("1+2", 4, measure(R, L, r), measure(L, R, l)),
     ],
   ],
 }
+
+const ddkR = measure(r, su, r, l)
+const ddkRs = measure(r, su, l, r)
+const ddkL = measure(l, su, l, r)
+const ddkLs = measure(l, su, r, l)
 
 export const dondoko: Drill = {
   id: "dondoko",
@@ -380,30 +397,11 @@ export const dondoko: Drill = {
   beeps: [1, 3],
   rows: [
     [
-      section(
-        "8s",
-        1,
-        measure(r, su, r, l, r, su, r, l),
-        measure(r, su, r, l, r, su, r, l),
-        measure(r, su, r, l, r, su, r, l),
-        measure(r, su, r, l, r, su, l, r),
-        measure(l, su, l, r, l, su, l, r),
-        measure(l, su, l, r, l, su, l, r),
-        measure(l, su, l, r, l, su, l, r),
-        measure(l, su, l, r, l, su, r, l),
-      ),
+      section("8R", 1, ddkR, ddkR, ddkR, ddkR, ddkR, ddkR, ddkR, ddkRs),
+      section("8L", 1, ddkL, ddkL, ddkL, ddkL, ddkL, ddkL, ddkL, ddkLs),
     ],
-    [
-      section(
-        "4s",
-        2,
-        measure(r, su, r, l, r, su, r, l),
-        measure(r, su, r, l, r, su, l, r),
-        measure(l, su, l, r, l, su, l, r),
-        measure(l, su, l, r, l, su, r, l),
-      ),
-    ],
-    [section("2s", 4, measure(r, su, r, l, r, su, l, r), measure(l, su, l, r, l, su, r, l))],
+    [section("4s", 2, ddkR, ddkR, ddkR, ddkRs, ddkL, ddkL, ddkL, ddkLs)],
+    [section("2s", 4, ddkR, ddkRs, ddkL, ddkLs)],
   ],
 }
 
@@ -488,18 +486,24 @@ export const dexter: Drill = {
     [
       section("Right 8s", 2, dright8),
       section("Right 4s", 2, [...dright4, ...dright4]),
+    ],
+    [
       section("Right 2s", 2, [...dright2, ...dright2, ...dright2]),
       section("Jan Jan Jan", 1, djan3),
     ],
     [
       section("Left 8s", 2, dleft8),
       section("Left 4s", 2, [...dleft4, ...dleft4]),
+    ],
+    [
       section("Left 2s", 2, [...dleft2, ...dleft2, ...dleft2]),
       section("Jan Jan Jan", 1, djan3),
     ],
     [
       section("Right 8", 1, dright8),
       section("Left 8", 1, dleft8),
+    ],
+    [
       section("Alt 4s", 2, [...dright4, ...dleft4]),
       section("Alt 2s", 3, [...dright2, ...dleft2]),
       section("Jan Jan Jan", 1, djan3),
@@ -509,20 +513,16 @@ export const dexter: Drill = {
 
 const srr = [beat(r), su, beat(r), su]
 const srr2 = [...srr, ...srr]
-const srr4 = [...srr2, ...srr2]
 const sll = [beat(l), su, beat(l), su]
 const sll2 = [...sll, ...sll]
-const sll4 = [...sll2, ...sll2]
 
 const srlr = [beat(r), beat(l), beat(r), su]
 const slrl = [beat(l), beat(r), beat(l), su]
 
 const srlrl = [beat(r), beat(l), beat(r), beat(l)]
 const srlrl2 = [...srlrl, ...srlrl]
-const srlrl4 = [...srlrl2, ...srlrl2]
 const slrlr = [beat(l), beat(r), beat(l), beat(r)]
 const slrlr2 = [...slrlr, ...slrlr]
-const slrlr4 = [...slrlr2, ...slrlr2]
 
 export const sixteens: Drill = {
   id: "sixteens",
@@ -531,34 +531,22 @@ export const sixteens: Drill = {
   beeps: [1, 3, 5, 7],
   scale: 0.5,
   rows: [
-    [section("0", 2, srr4, srr4, sll4, sll4)],
-    [section("1", 2, [...srlr, ...srr, ...srr2], srr4, [...slrl, ...sll, ...sll2], sll4)],
-    [section("2", 2, [...srlrl, ...srr, ...srr2], srr4, [...slrlr, ...sll, ...sll2], sll4)],
-    [section("3", 2, [...srlrl, ...srlr, ...srr2], srr4, [...slrlr, ...slrl, ...sll2], sll4)],
-    [section("4", 2, [...srlrl2, ...srr2], srr4, [...slrlr2, ...sll2], sll4)],
-    [section("5", 2, [...srlrl2, ...srlr, ...srr], srr4, [...slrlr2, ...slrl, ...sll], sll4)],
-    [section("6", 2, [...srlrl2, ...srlrl, ...srr], srr4, [...slrlr2, ...slrlr, ...sll], sll4)],
-    [section("7", 2, [...srlrl2, ...srlrl, ...srlr], srr4, [...slrlr2, ...slrlr, ...slrl], sll4)],
-    [section("8", 2, srlrl4, srr4, slrlr4, sll4)],
-    [section("9", 2, srlrl4, [...srlr, ...srr, ...srr2], slrlr4, [...slrl, ...sll, ...sll2])],
-    [section("10", 2, srlrl4, [...srlrl, ...srr, ...srr2], slrlr4, [...slrlr, ...sll, ...sll2])],
-    [section("11", 2, srlrl4, [...srlrl, ...srlr, ...srr2], slrlr4, [...slrlr, ...slrl, ...sll2])],
-    [section("12", 2, srlrl4, [...srlrl2, ...srr2], slrlr4, [...slrlr2, ...sll2])],
-    [section("13", 2, srlrl4, [...srlrl2, ...srlr, ...srr], slrlr4, [...slrlr2, ...slrl, ...sll])],
-    [
-      section("14", 2, srlrl4, [...srlrl2, ...srlrl, ...srr], slrlr4, [
-        ...slrlr2,
-        ...slrlr,
-        ...sll,
-      ]),
-    ],
-    [
-      section("15", 2, srlrl4, [...srlrl2, ...srlrl, ...srlr], slrlr4, [
-        ...slrlr2,
-        ...slrlr,
-        ...slrl,
-      ]),
-    ],
+    [section("0", 2, srr2, srr2, srr2, srr2, sll2, sll2, sll2, sll2)],
+    [section("1", 2, [...srlr, ...srr], srr2, srr2, srr2, [...slrl, ...sll], sll2, sll2, sll2)],
+    [section("2", 2, [...srlrl, ...srr], srr2, srr2, srr2, [...slrlr, ...sll], sll2, sll2, sll2)],
+    [section("3", 2, [...srlrl, ...srlr], srr2, srr2, srr2, [...slrlr, ...slrl], sll2, sll2, sll2)],
+    [section("4", 2, srlrl2, srr2, srr2, srr2, slrlr2, sll2, sll2, sll2)],
+    [section("5", 2, srlrl2, [...srlr, ...srr], srr2, srr2, slrlr2, [...slrl, ...sll], sll2, sll2)],
+    [section("6", 2, srlrl2, [...srlrl, ...srr], srr2, srr2, slrlr2, [...slrlr, ...sll], sll2, sll2)],
+    [section("7", 2, srlrl2, [...srlrl, ...srlr], srr2, srr2, slrlr2, [...slrlr, ...slrl], sll2, sll2)],
+    [section("8", 2, srlrl2, srlrl2, srr2, srr2, slrlr2, slrlr2, sll2, sll2)],
+    [section("9", 2, srlrl2, srlrl2, [...srlr, ...srr], srr2, slrlr2, slrlr2, [...slrl, ...sll], sll2)],
+    [section("10", 2, srlrl2, srlrl2, [...srlrl, ...srr], srr2, slrlr2, slrlr2, [...slrlr, ...sll], sll2)],
+    [section("11", 2, srlrl2, srlrl2, [...srlrl, ...srlr], srr2, slrlr2, slrlr2, [...slrlr, ...slrl], sll2)],
+    [section("12", 2, srlrl2, srlrl2, srlrl2, srr2, slrlr2, slrlr2, slrlr2, sll2)],
+    [section("13", 2, srlrl2, srlrl2, srlrl2, [...srlr, ...srr], slrlr2, slrlr2, slrlr2, [...slrl, ...sll])],
+    [section("14", 2, srlrl2, srlrl2, srlrl2, [...srlrl, ...srr], slrlr2, slrlr2, slrlr2, [...slrlr, ...sll])],
+    [section("15", 2, srlrl2, srlrl2, srlrl2, [...srlrl, ...srlr], slrlr2, slrlr2, slrlr2, [...slrlr, ...slrl])],
   ],
 }
 
