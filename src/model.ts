@@ -111,6 +111,42 @@ const swapRowHands = (row: Row): Row => row.map(swapSectionHands)
 /** Swaps the L and R hands in a drill. */
 export const swapHands = (drill: Drill): Drill => ({ ...drill, rows: drill.rows.map(swapRowHands) })
 
+/** Compute the total duration of a drill in seconds. */
+export function computeDrillDuration(
+  drill: Drill,
+  bpm: number,
+  bpmIncrease: number,
+  drillRepeat: number,
+): number {
+  // Count the total beats for one pass through the drill (excluding intro)
+  let drillBeats = 0
+  for (const row of drill.rows) {
+    for (const section of row) {
+      for (let rep = 0; rep < section.repeat; rep++) {
+        for (const measure of section.measures) {
+          drillBeats += measure.length
+        }
+      }
+    }
+  }
+
+  const introBeats = drill.bpm * 4
+  const scale = drill.scale ?? 1
+  let totalSeconds = 0
+
+  for (let rep = 0; rep < drillRepeat; rep++) {
+    const currentBpm = Math.min(200, bpm + bpmIncrease * rep)
+    const tickMs = (60 * 1000) / currentBpm / 4 * scale
+
+    // First repeat always has intro; subsequent repeats have intro if bpmIncrease > 0 or forceIntro
+    const hasIntro = rep === 0 || bpmIncrease > 0 || (drill.forceIntro ?? false)
+    const beats = drillBeats + (hasIntro ? introBeats : 0)
+    totalSeconds += (beats * tickMs) / 1000
+  }
+
+  return totalSeconds
+}
+
 // defines a data model for tools
 
 export type Tool = {

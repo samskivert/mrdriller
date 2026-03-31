@@ -3,7 +3,7 @@ import * as React from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { NumberInput, CenteredContainer, CountdownSection, HighlightedCard } from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
-import { Drill, Section, swapSectionHands } from "./model"
+import { Drill, Section, swapSectionHands, computeDrillDuration } from "./model"
 import { DrillOverView } from "./DrillOverviewView"
 import { SectionView } from "./SectionView"
 
@@ -64,7 +64,14 @@ function saveConfig(drillId: string, config: DrillConfig) {
   }
 }
 
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60)
+  const secs = Math.round(seconds % 60)
+  return `${mins}m ${secs.toString().padStart(2, "0")}s`
+}
+
 function DrillControls({
+  drill,
   bpm,
   setBpm,
   bpmIncrease,
@@ -75,6 +82,7 @@ function DrillControls({
   setSwapHands,
   onStart,
 }: {
+  drill: Drill
   bpm: number
   setBpm: (v: number) => void
   bpmIncrease: number
@@ -85,6 +93,7 @@ function DrillControls({
   setSwapHands: (v: boolean) => void
   onStart: () => void
 }) {
+  const duration = formatDuration(computeDrillDuration(drill, bpm, bpmIncrease, drillRepeat))
   return (
     <Flex align="center" justify="center" wrap="wrap" gap="6">
       <NumberInput label="BPM" value={bpm} onChange={setBpm} min={30} max={200} width={60} />
@@ -112,6 +121,10 @@ function DrillControls({
           <Switch size="3" checked={swapHands} onCheckedChange={setSwapHands} />
           L↔︎R
         </Flex>
+      </Text>
+
+      <Text size="4" weight="bold" color="gray" style={{ minWidth: 50, textAlign: "center" }}>
+        {duration}
       </Text>
 
       <Button onClick={onStart} color="green" size="2">
@@ -479,6 +492,7 @@ export function PracticeView({ drill }: { drill: Drill }) {
       ) : (
         <>
           <DrillControls
+            drill={drill}
             bpm={bpm}
             setBpm={setBpm}
             bpmIncrease={bpmIncrease}
