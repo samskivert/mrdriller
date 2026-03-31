@@ -193,6 +193,20 @@ export function PracticeView({ drill }: { drill: Drill }) {
 
   const intervalRef = React.useRef<number | null>(null)
   const soundsRef = React.useRef<MetronomeSounds | null>(null)
+  const wakeLockRef = React.useRef<WakeLockSentinel | null>(null)
+
+  // Acquire/release wake lock based on playing state
+  React.useEffect(() => {
+    if (state.playing && "wakeLock" in navigator) {
+      navigator.wakeLock.request("screen").then((lock) => {
+        wakeLockRef.current = lock
+      }).catch(() => {})
+    }
+    return () => {
+      wakeLockRef.current?.release()
+      wakeLockRef.current = null
+    }
+  }, [state.playing])
   // Initialize metronome sounds
   React.useEffect(() => {
     soundsRef.current = new MetronomeSounds()
