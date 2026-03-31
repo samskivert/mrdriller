@@ -123,10 +123,12 @@ function DrillControls({
 
 function StatusView({
   bpm,
+  bpmIncrease,
   drillRepeat,
   drillRepeatCount,
 }: {
   bpm: number
+  bpmIncrease?: number
   drillRepeat?: number
   drillRepeatCount?: number
 }) {
@@ -141,7 +143,7 @@ function StatusView({
   return (
     <Flex align="center" justify="center" gap="4">
       <Text size="7" weight="bold" color="gray">
-        {bpm} bpm
+        {bpm} bpm {bpmIncrease ? ` (+${bpmIncrease})` : ""}
       </Text>
       {drillProgress}
     </Flex>
@@ -464,6 +466,7 @@ export function PracticeView({ drill }: { drill: Drill }) {
           <Flex align="center" justify="center" wrap="wrap" gap="4">
             <StatusView
               bpm={state.bpm}
+              bpmIncrease={state.bpmIncrease}
               drillRepeat={drillRepeat}
               drillRepeatCount={state.drillRepeat}
             />
