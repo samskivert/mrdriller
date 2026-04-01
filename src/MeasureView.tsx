@@ -18,7 +18,13 @@ function BeatView({
   return (
     <Flex direction="column" align="center">
       {forceLabel && (
-        <Box style={{ height: 20, marginBottom: 4, display: "flex", alignItems: "center" }}>
+        <Box style={{
+          height: Math.round(strokeSize * 0.7),
+          marginBottom: Math.round(strokeSize * 0.14),
+          fontSize: `${Math.max(10, Math.round(strokeSize * 0.45))}px`,
+          display: "flex",
+          alignItems: "center",
+        }}>
           {beat.label ?? ""}
         </Box>
       )}

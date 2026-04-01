@@ -13,7 +13,6 @@ function SectionView({ section }: { section: Section; pos: Pos; highlight?: Pos 
         <SectionHeader
           label={section.label}
           repeatDisplay={section.repeat > 1 ? `x${section.repeat}` : undefined}
-          overview={true}
         />
         <Flex direction="row" wrap="wrap" gap="1" justify="center">
           {section.measures.map((measure, measureIndex) => (

@@ -6,6 +6,17 @@ import { MetronomeSounds } from "./MetronomeSounds"
 import { Drill, Section, swapSectionHands, computeDrillDuration } from "./model"
 import { DrillOverView } from "./DrillOverviewView"
 import { SectionView } from "./SectionView"
+import { computeDrillSizeLevel } from "./sizeConfig"
+
+function useWindowWidth() {
+  const [width, setWidth] = React.useState(typeof window !== "undefined" ? window.innerWidth : 1024)
+  React.useEffect(() => {
+    const handler = () => setWidth(window.innerWidth)
+    window.addEventListener("resize", handler)
+    return () => window.removeEventListener("resize", handler)
+  }, [])
+  return width
+}
 
 type State = {
   playing: boolean
@@ -354,6 +365,10 @@ export function PracticeView({ drill }: { drill: Drill }) {
   const idx = currentFlatIndex >= 0 ? currentFlatIndex : 0
   const isLastSection = idx === allSections.length - 1
 
+  const windowWidth = useWindowWidth()
+  const activeDrill = swapHands ? { ...drill, rows: drill.rows.map((row) => row.map(swapSectionHands)) } : drill
+  const sizeLevel = computeDrillSizeLevel(activeDrill, windowWidth)
+
   function mkSectionView(section: Section, isHighlighted: boolean) {
     const repeatDisplay = isHighlighted
       ? mkRepeat(state.repeat, section.repeat ?? 1)
@@ -365,6 +380,7 @@ export function PracticeView({ drill }: { drill: Drill }) {
         isHighlighted={isHighlighted}
         repeatDisplay={repeatDisplay}
         highlight={isHighlighted && state.playing ? state : undefined}
+        sizeLevel={sizeLevel}
       />
     )
   }
