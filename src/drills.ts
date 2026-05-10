@@ -550,6 +550,33 @@ export const sixteens: Drill = {
   ],
 }
 
+export const singleStrokeRoll: Drill = {
+  id: "single-stroke-roll",
+  title: "Single Stroke Roll",
+  bpm: 8,
+  beeps: [1, 3, 5, 7],
+  scale: 0.5,
+  rows: [
+    [section("R", 1, measure(r, su,  r, su, r, su, r, su))],
+    [section("L", 1, measure(l, su, l, su, l, su, l, su))],
+    [section("RL", 2, measure(r, l, r, l, r, l, r, l))],
+  ],
+}
+
+export const doubleStrokeRoll: Drill = {
+  id: "double-stroke-roll",
+  title: "Double Stroke Roll",
+  bpm: 8,
+  beeps: [1, 3, 5, 7],
+  scale: 0.5,
+  rows: [
+    [section("RL", 2, measure(r, su,  l, su, r, su, l, su))],
+    [section("RRR", 2, measure(r, r, r, su, r, r, r, su))],
+    [section("RLL", 2, measure(r, su, l, l, r, su, l, l))],
+    [section("RRLL", 2, measure(r, r, l, l, r, r, l, l))],
+  ],
+}
+
 export const drills = [
   oneEAndA,
   addingAccents,
@@ -567,4 +594,6 @@ export const drills = [
   allAgainstThree,
   dexter,
   sixteens,
+  singleStrokeRoll,
+  doubleStrokeRoll,
 ]
