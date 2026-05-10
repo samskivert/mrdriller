@@ -519,7 +519,7 @@ export function PracticeView({ drill }: { drill: Drill }) {
             setSwapHands={setSwapHands}
             onStart={handleStart}
           />
-          <DrillOverView drill={drill} />
+          <DrillOverView drill={activeDrill} />
         </>
       )}
     </CenteredContainer>
