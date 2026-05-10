@@ -111,6 +111,8 @@ const swapRowHands = (row: Row): Row => row.map(swapSectionHands)
 /** Swaps the L and R hands in a drill. */
 export const swapHands = (drill: Drill): Drill => ({ ...drill, rows: drill.rows.map(swapRowHands) })
 
+export const MAX_BPM = 250
+
 /** Compute the total duration of a drill in seconds. */
 export function computeDrillDuration(
   drill: Drill,
@@ -135,7 +137,7 @@ export function computeDrillDuration(
   let totalSeconds = 0
 
   for (let rep = 0; rep < drillRepeat; rep++) {
-    const currentBpm = Math.min(200, bpm + bpmIncrease * rep)
+    const currentBpm = Math.min(MAX_BPM, bpm + bpmIncrease * rep)
     const tickMs = (60 * 1000) / currentBpm / 4 * scale
 
     // First repeat always has intro; subsequent repeats have intro if bpmIncrease > 0 or forceIntro

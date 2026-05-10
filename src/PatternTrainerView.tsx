@@ -368,7 +368,7 @@ export function PatternTrainerView({ onBack }: { onBack: () => void }) {
 
       <CenteredContainer>
         <Flex align="center" justify="center" wrap="wrap" gap="6">
-          <NumberInput label="BPM" value={bpm} onChange={setBpm} min={30} max={200} width={60} />
+          <NumberInput label="BPM" value={bpm} onChange={setBpm} min={30} max={120} width={60} />
 
           <Flex align="center" gap="2">
             <Text size="2" weight="medium">

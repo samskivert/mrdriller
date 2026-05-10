@@ -3,7 +3,7 @@ import * as React from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { NumberInput, CenteredContainer, CountdownSection, HighlightedCard } from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
-import { Drill, Section, swapSectionHands, computeDrillDuration } from "./model"
+import { Drill, Section, swapSectionHands, computeDrillDuration, MAX_BPM } from "./model"
 import { DrillOverView } from "./DrillOverviewView"
 import { SectionView } from "./SectionView"
 import { computeDrillSizeLevel } from "./sizeConfig"
@@ -107,7 +107,7 @@ function DrillControls({
   const duration = formatDuration(computeDrillDuration(drill, bpm, bpmIncrease, drillRepeat))
   return (
     <Flex align="center" justify="center" wrap="wrap" gap="6">
-      <NumberInput label="BPM" value={bpm} onChange={setBpm} min={30} max={200} width={60} />
+      <NumberInput label="BPM" value={bpm} onChange={setBpm} min={30} max={MAX_BPM} width={60} />
 
       <NumberInput
         label="BPM Increase"
@@ -308,7 +308,7 @@ export function PracticeView({ drill }: { drill: Drill }) {
           next.drillRepeat = prev.drillRepeat + 1
           if (next.drillRepeat < drillRepeat) {
             // Increase BPM by the bpmIncrease amount for the next repeat
-            next.bpm = Math.min(200, prev.bpm + prev.bpmIncrease)
+            next.bpm = Math.min(MAX_BPM, prev.bpm + prev.bpmIncrease)
             // If we're increasing BPM, show the intro again to establish the new time
             if (prev.bpmIncrease > 0 || drill.forceIntro) {
               next.beat = 0
