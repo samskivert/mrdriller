@@ -577,6 +577,22 @@ export const doubleStrokeRoll: Drill = {
   ],
 }
 
+const beatRAL = beat(R, l)
+const beatRLA = beat(r, L)
+const beatRALA = beat(R, L)
+
+export const oneFourSeven: Drill = {
+  id: "one-four-seven",
+  title: "One Four Seven",
+  bpm: 4,
+  rows: [
+    [section("Right", 4, [beatRLA, beatR,  beatR, beatRLA, beatR, beatR, beatRLA, beatR])],
+    [section("Left", 4, [beatRAL, beatL,  beatL, beatRAL, beatL, beatL, beatRAL, beatL])],
+    [section("Jan Right", 4, [beatRALA, beatR,  beatR, beatRALA, beatR, beatR, beatRALA, beatR])],
+    [section("Jan Left", 4, [beatRALA, beatL,  beatL, beatRALA, beatL, beatL, beatRALA, beatL])],
+  ],
+}
+
 export const drills = [
   oneEAndA,
   addingAccents,
@@ -596,4 +612,5 @@ export const drills = [
   sixteens,
   singleStrokeRoll,
   doubleStrokeRoll,
+  oneFourSeven,
 ]
