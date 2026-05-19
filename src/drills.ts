@@ -593,6 +593,50 @@ export const oneFourSeven: Drill = {
   ],
 }
 
+export const kihon: Drill = {
+  id: "kihon",
+  title: "Kihon",
+  bpm: 8,
+  beeps: [1, 3, 5, 7],
+  rows: [
+    [section("Right (Whole)", 8, measure(R, su, su, su, su, su, su, su))],
+    [section("Left (Whole)", 8, measure(L, su, su, su, su, su, su, su))],
+    [section("Right (Half)", 8, measure(R, su, su, su, R, su, su, su))],
+    [section("Left (Half)", 8, measure(L, su, su, su, L, su, su, su))],
+    [section("Right (Quarter)", 8, measure(R, su, R, su, R, su, R, su))],
+    [section("Left (Quarter)", 8, measure(L, su, L, su, L, su, L, su))],
+    [section("Right (Eighth)", 8, measure(R, R, R, R, R, R, R, R))],
+    [section("Left (Eighth)", 8, measure(L, L, L, L, L, L, L, L))],
+    [section("Alternate (Whole)", 8,
+             measure(R, su, su, su, su, su, su, su),
+             measure(L, su, su, su, su, su, su, su))],
+    [section("Alternate (Half)", 8,
+             measure(R, su, su, su, L, su, su, su),
+             measure(R, su, su, su, L, su, su, su))],
+    [section("Alternate (Quarter)", 8,
+             measure(R, su, L, su, R, su, L, su),
+             measure(R, su, L, su, R, su, L, su))],
+    [section("Alternate (Eighth)", 8,
+             measure(R, L, R, L, R, L, R, L),
+             measure(R, L, R, L, R, L, R, L))],
+    [section("Both (Whole)", 4, [beatRALA, su, su, su, su, su, su, su])],
+    [section("Both (Half)", 4, [beatRALA, su, su, su, beatRALA, su, su, su])],
+    [section("Both (Quarter)", 4, [beatRALA, su, beatRALA, su, beatRALA, su, beatRALA, su])],
+    [section("Both (Eighth)", 4, [beatRALA, beatRALA, beatRALA, beatRALA, beatRALA, beatRALA, beatRALA, beatRALA])],
+  ],
+}
+
+export const shurui: Drill = {
+  id: "shurui",
+  title: "Shurui",
+  bpm: 4,
+  rows: [
+    [section("From Top", 4, measure(R, su, L, su, R, su, L, su))],
+    [section("From Bottom", 4, measure(R, su, L, su, R, su, L, su))],
+    [section("Scissors", 4, measure(R, su, L, su, R, su, L, su))],
+  ],
+}
+
 export const drills = [
   oneEAndA,
   addingAccents,
@@ -613,4 +657,6 @@ export const drills = [
   singleStrokeRoll,
   doubleStrokeRoll,
   oneFourSeven,
+  kihon,
+  shurui,
 ]
