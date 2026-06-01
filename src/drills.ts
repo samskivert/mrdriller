@@ -574,6 +574,10 @@ export const doubleStrokeRoll: Drill = {
     [section("RRR", 2, measure(r, r, r, su, r, r, r, su))],
     [section("RLL", 2, measure(r, su, l, l, r, su, l, l))],
     [section("RRLL", 2, measure(r, r, l, l, r, r, l, l))],
+    [section("LR", 2, measure(l, su,  r, su, l, su, r, su))],
+    [section("LLL", 2, measure(l, l, l, su, l, l, l, su))],
+    [section("LRR", 2, measure(l, su, r, r, l, su, r, r))],
+    [section("LLRR", 2, measure(l, l, r, r, l, l, r, r))],
   ],
 }
 
