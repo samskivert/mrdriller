@@ -1,12 +1,8 @@
-import { Button, Flex, Grid, Heading, Separator } from "@radix-ui/themes"
-import * as React from "react"
+import { For } from "solid-js"
+import { Flex, Grid, Heading, Button, Separator } from "./ui"
 import { Activity, Drill, Tool } from "./model"
 
-export function MenuView({
-  drills,
-  tools,
-  onSelectActivity,
-}: {
+export function MenuView(props: {
   drills: Drill[]
   tools: Tool[]
   onSelectActivity: (activity: Activity) => void
@@ -14,13 +10,13 @@ export function MenuView({
   return (
     <Flex direction="column" gap="6">
       <Heading
-        align="center"
         size="9"
+        align="center"
         style={{
           color: "#F03564",
-          fontFamily: "Impact, sans-serif",
-          letterSpacing: "0.15em",
-          textShadow: `
+          "font-family": "Impact, sans-serif",
+          "letter-spacing": "0.15em",
+          "text-shadow": `
             -3px -3px 0 #6F2223, 3px -3px 0 #6F2223, -3px 3px 0 #6F2223, 3px 3px 0 #6F2223,
             0 -3px 0 #6F2223, 0 3px 0 #6F2223, -3px 0 0 #6F2223, 3px 0 0 #6F2223,
             -2px -3px 0 #6F2223, 2px -3px 0 #6F2223, -2px 3px 0 #6F2223, 2px 3px 0 #6F2223,
@@ -31,27 +27,29 @@ export function MenuView({
         Mr. Driller
       </Heading>
       <Grid columns={{ initial: "1", sm: "2" }} gap="4">
-        {drills.map((drill) => (
-          <Button
-            key={drill.id}
-            onClick={() => onSelectActivity({ type: "drill", ...drill })}
-            size="4"
-          >
-            {drill.title}
-          </Button>
-        ))}
+        <For each={props.drills}>
+          {(drill) => (
+            <Button
+              size="4"
+              onClick={() => props.onSelectActivity({ type: "drill", ...drill })}
+            >
+              {drill.title}
+            </Button>
+          )}
+        </For>
       </Grid>
       <Separator size="4" />
       <Grid columns={{ initial: "1", sm: "2" }} gap="4">
-        {tools.map((tool) => (
-          <Button
-            key={tool.id}
-            onClick={() => onSelectActivity({ type: "tool", ...tool })}
-            size="4"
-          >
-            {tool.title}
-          </Button>
-        ))}
+        <For each={props.tools}>
+          {(tool) => (
+            <Button
+              size="4"
+              onClick={() => props.onSelectActivity({ type: "tool", ...tool })}
+            >
+              {tool.title}
+            </Button>
+          )}
+        </For>
       </Grid>
     </Flex>
   )

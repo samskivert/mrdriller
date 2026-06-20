@@ -1,67 +1,67 @@
-import { Flex, Box } from "@radix-ui/themes"
-import * as React from "react"
+import { For, Show } from "solid-js"
+import { Flex, Box } from "./ui"
 import { EmptyBeatPlaceholder } from "./components"
 import { Beat, Measure } from "./model"
 import { StrokeView } from "./StrokeView"
 
-function BeatView({
-  beat,
-  forceLabel,
-  highlight,
-  strokeSize = 28,
-}: {
+function BeatView(props: {
   beat: Beat
   forceLabel: boolean
   highlight: boolean
   strokeSize?: number
 }) {
+  const strokeSize = () => props.strokeSize ?? 28
   return (
     <Flex direction="column" align="center">
-      {forceLabel && (
-        <Box style={{
-          height: Math.round(strokeSize * 0.7),
-          marginBottom: Math.round(strokeSize * 0.14),
-          fontSize: `${Math.max(10, Math.round(strokeSize * 0.45))}px`,
-          display: "flex",
-          alignItems: "center",
-        }}>
-          {beat.label ?? ""}
+      <Show when={props.forceLabel}>
+        <Box
+          style={{
+            height: `${Math.round(strokeSize() * 0.7)}px`,
+            "margin-bottom": `${Math.round(strokeSize() * 0.14)}px`,
+            "font-size": `${Math.max(10, Math.round(strokeSize() * 0.45))}px`,
+            display: "flex",
+            "align-items": "center",
+          }}
+        >
+          {props.beat.label ?? ""}
         </Box>
-      )}
+      </Show>
       <Flex direction="column">
-        {beat.strokes.map((stroke, strokeIndex) => (
-          <StrokeView key={strokeIndex} stroke={stroke} highlight={highlight} size={strokeSize} />
-        ))}
+        <For each={props.beat.strokes}>
+          {(stroke) => (
+            <StrokeView stroke={stroke} highlight={props.highlight} size={strokeSize()} />
+          )}
+        </For>
       </Flex>
     </Flex>
   )
 }
 
-export function MeasureView({
-  measure,
-  highlightBeat,
-  strokeSize = 28,
-}: {
+export function MeasureView(props: {
   measure: Measure
   highlightBeat?: number
   strokeSize?: number
 }) {
-  const hasAnyLabels = measure.some((beat) => beat?.label)
+  const hasAnyLabels = () => props.measure.some((b) => b?.label)
   return (
     <Flex direction="row">
-      {measure.map((beat, beatIndex) =>
-        beat ? (
-          <BeatView
-            key={beatIndex}
-            beat={beat}
-            forceLabel={hasAnyLabels}
-            highlight={beatIndex === highlightBeat}
-            strokeSize={strokeSize}
-          />
-        ) : (
-          <EmptyBeatPlaceholder key={beatIndex} strokeSize={strokeSize} />
-        ),
-      )}
+      <For each={props.measure}>
+        {(beatItem, i) => (
+          <Show
+            when={beatItem}
+            fallback={<EmptyBeatPlaceholder strokeSize={props.strokeSize} />}
+          >
+            {(b) => (
+              <BeatView
+                beat={b()}
+                forceLabel={hasAnyLabels()}
+                highlight={i() === props.highlightBeat}
+                strokeSize={props.strokeSize}
+              />
+            )}
+          </Show>
+        )}
+      </For>
     </Flex>
   )
 }

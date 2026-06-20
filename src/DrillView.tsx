@@ -1,21 +1,24 @@
-import { Button, Flex, Heading } from "@radix-ui/themes"
-import * as React from "react"
+import { Flex, Heading, Button, Box } from "./ui"
 import { Drill } from "./model"
 import { PracticeView } from "./PracticeView"
 
-export function DrillView({ drill, onBack }: { drill: Drill; onBack: () => void }) {
+export function DrillView(props: { drill: Drill; onBack: () => void }) {
   return (
-    <div style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "24px", minHeight: "100dvh", backgroundColor: "white" }}>
+    <Flex
+      direction="column"
+      gap="6"
+      style={{ padding: "24px", "min-height": "100dvh", "background-color": "white" }}
+    >
       <Flex align="center" justify="between" wrap="wrap" gap="3">
-        <Button variant="soft" onClick={onBack} style={{ flexShrink: 0 }}>
+        <Button variant="soft" onClick={props.onBack} style={{ "flex-shrink": 0 }}>
           ← Back
         </Button>
-        <Heading size="6" style={{ flex: 1, textAlign: "center" }}>
-          {drill.title}
+        <Heading size="6" style={{ flex: 1, "text-align": "center" }}>
+          {props.drill.title}
         </Heading>
-        <div style={{ width: 80, flexShrink: 0 }} />
+        <Box style={{ width: "80px", "flex-shrink": 0 }} />
       </Flex>
-      <PracticeView drill={drill} />
-    </div>
+      <PracticeView drill={props.drill} />
+    </Flex>
   )
 }

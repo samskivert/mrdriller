@@ -1,6 +1,5 @@
-import { Button, Flex, Text, Switch } from "@radix-ui/themes"
-import * as React from "react"
-import { AnimatePresence, motion } from "framer-motion"
+import { createSignal, createEffect, createMemo, onMount, on, Show } from "solid-js"
+import { Flex, Text, Button, Toggle } from "./ui"
 import { NumberInput, CenteredContainer, CountdownSection, HighlightedCard } from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
 import { Drill, Section, swapSectionHands, computeDrillDuration, MAX_BPM } from "./model"
@@ -8,13 +7,14 @@ import { DrillOverView } from "./DrillOverviewView"
 import { SectionView } from "./SectionView"
 import { computeDrillSizeLevel } from "./sizeConfig"
 
+// A signal that exposes the current width of the browser window.
 function useWindowWidth() {
-  const [width, setWidth] = React.useState(typeof window !== "undefined" ? window.innerWidth : 1024)
-  React.useEffect(() => {
+  const [width, setWidth] = createSignal(window.innerWidth)
+  onMount(() => {
     const handler = () => setWidth(window.innerWidth)
     window.addEventListener("resize", handler)
     return () => window.removeEventListener("resize", handler)
-  }, [])
+  })
   return width
 }
 
@@ -33,36 +33,20 @@ type State = {
 }
 
 const NotPlaying: State = {
-  playing: false,
-  intro: false,
-  beat: 0,
-  row: 0,
-  section: 0,
-  measure: 0,
-  offset: 0,
-  repeat: 0,
-  drillRepeat: 0,
-  bpm: 60,
-  bpmIncrease: 0,
+  playing: false, intro: false, beat: 0, row: 0, section: 0,
+  measure: 0, offset: 0, repeat: 0, drillRepeat: 0, bpm: 60, bpmIncrease: 0,
 }
 
 const Playing = { ...NotPlaying, playing: true, intro: true }
 
-type DrillConfig = {
-  bpm: number
-  bpmIncrease: number
-  drillRepeat: number
-}
+type DrillConfig = { bpm: number; bpmIncrease: number; drillRepeat: number }
 
-// Load config from localStorage or use defaults
 function loadConfig(drillId: string): DrillConfig {
   try {
     const saved = localStorage.getItem(`config.${drillId}`)
-    if (saved) {
-      return JSON.parse(saved)
-    }
-  } catch (error) {
-    console.warn("Failed to load drill config:", error)
+    if (saved) return JSON.parse(saved) as DrillConfig
+  } catch (_error) {
+    console.warn("Failed to load drill config")
   }
   return { bpm: 60, bpmIncrease: 0, drillRepeat: 1 }
 }
@@ -70,8 +54,8 @@ function loadConfig(drillId: string): DrillConfig {
 function saveConfig(drillId: string, config: DrillConfig) {
   try {
     localStorage.setItem(`config.${drillId}`, JSON.stringify(config))
-  } catch (error) {
-    console.warn("Failed to save drill config:", error)
+  } catch (_error) {
+    console.warn("Failed to save drill config")
   }
 }
 
@@ -81,18 +65,7 @@ function formatDuration(seconds: number): string {
   return `${mins}m ${secs.toString().padStart(2, "0")}s`
 }
 
-function DrillControls({
-  drill,
-  bpm,
-  setBpm,
-  bpmIncrease,
-  setBpmIncrease,
-  drillRepeat,
-  setDrillRepeat,
-  swapHands,
-  setSwapHands,
-  onStart,
-}: {
+function DrillControls(props: {
   drill: Drill
   bpm: number
   setBpm: (v: number) => void
@@ -104,244 +77,169 @@ function DrillControls({
   setSwapHands: (v: boolean) => void
   onStart: () => void
 }) {
-  const duration = formatDuration(computeDrillDuration(drill, bpm, bpmIncrease, drillRepeat))
+  const duration = () => formatDuration(computeDrillDuration(props.drill, props.bpm, props.bpmIncrease, props.drillRepeat))
   return (
     <Flex align="center" justify="center" wrap="wrap" gap="6">
-      <NumberInput label="BPM" value={bpm} onChange={setBpm} min={30} max={MAX_BPM} width={60} />
-
-      <NumberInput
-        label="BPM Increase"
-        value={bpmIncrease}
-        onChange={setBpmIncrease}
-        min={0}
-        max={50}
-        width={80}
-      />
-
-      <NumberInput
-        label="Repeat"
-        value={drillRepeat}
-        onChange={setDrillRepeat}
-        min={1}
-        max={10}
-        width={60}
-      />
-
+      <NumberInput label="BPM" value={props.bpm} onChange={props.setBpm} min={30} max={MAX_BPM} width={60} />
+      <NumberInput label="BPM Increase" value={props.bpmIncrease} onChange={props.setBpmIncrease} min={0} max={50} width={80} />
+      <NumberInput label="Repeat" value={props.drillRepeat} onChange={props.setDrillRepeat} min={1} max={10} width={60} />
       <Text as="label">
-        <Flex gap="2">
-          <Switch size="3" checked={swapHands} onCheckedChange={setSwapHands} />
+        <Flex gap="2" align="center">
+          <Toggle size="3" checked={props.swapHands} onCheckedChange={props.setSwapHands} />
           L↔︎R
         </Flex>
       </Text>
-
-      <Text size="4" weight="bold" color="gray" style={{ minWidth: 50, textAlign: "center" }}>
-        {duration}
+      <Text size="4" weight="bold" color="gray" style={{ "min-width": "50px", "text-align": "center" }}>
+        {duration()}
       </Text>
-
-      <Button onClick={onStart} color="green" size="2">
-        Start
-      </Button>
+      <Button color="green" size="2" onClick={props.onStart}>Start</Button>
     </Flex>
   )
 }
 
-function StatusView({
-  bpm,
-  bpmIncrease,
-  drillRepeat,
-  drillRepeatCount,
-}: {
+function StatusView(props: {
   bpm: number
   bpmIncrease?: number
   drillRepeat?: number
   drillRepeatCount?: number
 }) {
-  const drillProgress =
-    drillRepeat &&
-    drillRepeat > 1 &&
-    drillRepeatCount !== undefined ? (
-      <Text size="7" weight="bold" color="gray">
-        {drillRepeatCount + 1} / {drillRepeat}
-      </Text>
-    ) : undefined
   return (
     <Flex align="center" justify="center" gap="4">
       <Text size="7" weight="bold" color="gray">
-        {bpm} bpm {bpmIncrease ? ` (+${bpmIncrease})` : ""}
+        {props.bpm} bpm{props.bpmIncrease ? ` (+${props.bpmIncrease})` : ""}
       </Text>
-      {drillProgress}
+      <Show when={props.drillRepeat && props.drillRepeat > 1 && props.drillRepeatCount !== undefined}>
+        <Text size="7" weight="bold" color="gray">
+          {(props.drillRepeatCount ?? 0) + 1} / {props.drillRepeat}
+        </Text>
+      </Show>
     </Flex>
   )
 }
 
-function AnimatedSection({ sectionKey, children }: { sectionKey: string; children: React.ReactNode }) {
-  return (
-    <motion.div
-      key={sectionKey}
-      layout
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, pointerEvents: "none" as const, transition: { duration: 0 } }}
-      transition={{
-        layout: { duration: 0.3, ease: "easeInOut" },
-        opacity: { duration: 0.3, ease: "easeInOut", delay: 0.3 },
-        y: { duration: 0.3, ease: "easeInOut" },
-      }}
-    >
-      {children}
-    </motion.div>
-  )
-}
+export function PracticeView(props: { drill: Drill }) {
+  const [bpm, setBpm] = createSignal(60)
+  const [bpmIncrease, setBpmIncrease] = createSignal(0)
+  const [drillRepeat, setDrillRepeat] = createSignal(1)
+  const [swapHands, setSwapHands] = createSignal(false)
+  const [state, setState] = createSignal<State>(NotPlaying)
 
-export function PracticeView({ drill }: { drill: Drill }) {
-  const [bpm, setBpm] = React.useState(60)
-  const [bpmIncrease, setBpmIncrease] = React.useState(0)
-  const [drillRepeat, setDrillRepeat] = React.useState(1)
-  const [swapHands, setSwapHands] = React.useState(false)
-  const [state, setState] = React.useState<State>(NotPlaying)
-  const [configLoaded, setConfigLoaded] = React.useState(false)
-
-  // Load config on mount
-  React.useEffect(() => {
-    const config = loadConfig(drill.id)
+  onMount(() => {
+    const config = loadConfig(props.drill.id)
     setBpm(config.bpm)
     setBpmIncrease(config.bpmIncrease)
     setDrillRepeat(config.drillRepeat)
-    setConfigLoaded(true)
-  }, [drill.id])
+  })
 
-  // Save config whenever values change (but only after config has been loaded)
-  React.useEffect(() => {
-    if (configLoaded) {
-      saveConfig(drill.id, { bpm, bpmIncrease, drillRepeat })
-    }
-  }, [bpm, bpmIncrease, drillRepeat, drill.id, configLoaded])
+  // save our settings when they change (`defer: true` means don't run the effect _until_ something changes)
+  createEffect(
+    on(
+      [bpm, bpmIncrease, drillRepeat],
+      () => saveConfig(props.drill.id, { bpm: bpm(), bpmIncrease: bpmIncrease(), drillRepeat: drillRepeat() }),
+      { defer: true },
+    ),
+  )
 
-  const intervalRef = React.useRef<number | null>(null)
-  const soundsRef = React.useRef<MetronomeSounds | null>(null)
-  const wakeLockRef = React.useRef<WakeLockSentinel | null>(null)
+  let intervalRef: number | null = null
+  let soundsRef: MetronomeSounds | null = null
 
-  // Acquire/release wake lock based on playing state
-  React.useEffect(() => {
-    if (state.playing && "wakeLock" in navigator) {
-      navigator.wakeLock.request("screen").then((lock) => {
-        wakeLockRef.current = lock
-      }).catch(() => {})
-    }
-    return () => {
-      wakeLockRef.current?.release()
-      wakeLockRef.current = null
-    }
-  }, [state.playing])
-  // Initialize metronome sounds
-  React.useEffect(() => {
-    soundsRef.current = new MetronomeSounds()
-    return () => {
-      soundsRef.current?.dispose()
-    }
-  }, [])
+  onMount(() => {
+    soundsRef = new MetronomeSounds()
+    return () => soundsRef?.dispose()
+  })
 
-  // Calculate quarter note duration in milliseconds (1/4 beat)
-  const noteDuration = (60 * 1000) / state.bpm / 4
-  const tickDelay = noteDuration * (drill.scale ?? 1)
+  // Project out the playing and bpm values into separate signals. "Memoizing" means they'll
+  // only fire when their value actually changes, not every time state()'s value changes.
+  const playing = createMemo(() => state().playing)
+  const stateBpm = createMemo(() => state().bpm)
 
-  // Play metronome sound when beat changes
-  React.useEffect(() => {
-    if (state.playing && soundsRef.current) {
-      // Play sound based on current beat (beat 0 = 1st beat, beat 2 = 3rd beat)
-      const beatInMeasure = state.beat % drill.bpm
-      const beeps = drill.beeps
-      if (beeps) {
-        if (beeps.includes(beatInMeasure + 1)) {
-          if (beatInMeasure + 1 === beeps[0]) soundsRef.current.playBeep()
-          else soundsRef.current.playBoop()
-        }
-      } else {
-        // Beat 1: higher pitch beep
-        if (beatInMeasure === 0) soundsRef.current.playBeep()
-        // Every other beat: lower pitch boop
-        else soundsRef.current.playBoop()
+  // Wake lock: acquire when playing, release via onCleanup (runs before re-run).
+  createEffect(() => {
+    if (!playing()) return
+    if (!("wakeLock" in navigator)) return
+    let lock: WakeLockSentinel | null = null
+    navigator.wakeLock.request("screen").then((l) => { lock = l }).catch(() => {})
+    return () => { lock?.release() }
+  })
+
+  // Metronome beep on each beat tick. Tracks state() directly, which is fine
+  // since we want it to fire on every state change (i.e., every tick).
+  createEffect(() => {
+    const s = state()
+    if (!s.playing || !soundsRef) return
+    const beatInMeasure = s.beat % props.drill.bpm
+    const beeps = props.drill.beeps
+    if (beeps) {
+      if (beeps.includes(beatInMeasure + 1)) {
+        if (beatInMeasure + 1 === beeps[0]) soundsRef.playBeep()
+        else soundsRef.playBoop()
       }
-    }
-  }, [state.playing, state.beat])
-
-  React.useEffect(() => {
-    if (state.playing) {
-      intervalRef.current = window.setInterval(() => {
-        setState((prev) => {
-          const next = { ...prev, beat: prev.beat + 1 }
-          const row = drill.rows[prev.row]
-          const section = row[prev.section]
-          const measure = section.measures[prev.measure]
-
-          // Check whether the intro is over
-          if (prev.intro && next.beat < drill.bpm * 4) return next
-          next.intro = false
-          if (next.beat == drill.bpm * 4) return next
-
-          // Check if we've finished all beats in current measure
-          next.offset = prev.offset + 1
-          if (next.offset < measure.length) return next
-          next.offset = 0
-
-          // Move to next measure or handle section completion
-          next.measure = prev.measure + 1
-          if (next.measure < section.measures.length) return next
-          next.measure = 0
-
-          // Finished all measures in section, move to next repeat or next section
-          next.repeat = prev.repeat + 1
-          if (next.repeat < section.repeat) return next
-          next.repeat = 0
-
-          // Move to next section in the same row
-          next.section = prev.section + 1
-          if (next.section < row.length) return next
-          next.section = 0
-
-          // Move to next row
-          next.row = prev.row + 1
-          if (next.row < drill.rows.length) return next
-          next.row = 0
-
-          // Finished all rows - check if we should repeat the drill
-          next.drillRepeat = prev.drillRepeat + 1
-          if (next.drillRepeat < drillRepeat) {
-            // Increase BPM by the bpmIncrease amount for the next repeat
-            next.bpm = Math.min(MAX_BPM, prev.bpm + prev.bpmIncrease)
-            // If we're increasing BPM, show the intro again to establish the new time
-            if (prev.bpmIncrease > 0 || drill.forceIntro) {
-              next.beat = 0
-              next.intro = true
-            }
-            return next
-          }
-
-          // Finished all drill repeats
-          return NotPlaying
-        })
-      }, tickDelay)
     } else {
-      if (intervalRef.current) {
-        window.clearInterval(intervalRef.current)
-        intervalRef.current = null
-      }
+      if (beatInMeasure === 0) soundsRef.playBeep()
+      else soundsRef.playBoop()
     }
+  })
 
-    return () => {
-      if (intervalRef.current) {
-        window.clearInterval(intervalRef.current)
-        intervalRef.current = null
-      }
+  // Runs the main tick that drives the practice UI.
+  createEffect(() => {
+    if (!playing()) {
+      if (intervalRef) { window.clearInterval(intervalRef); intervalRef = null }
+      return
     }
-  }, [state, drill.rows.length, drillRepeat])
+    const delay = (60 * 1000) / stateBpm() / 4 * (props.drill.scale ?? 1)
 
+    intervalRef = window.setInterval(() => {
+      setState((prev) => {
+        const next = { ...prev, beat: prev.beat + 1 }
+        const row = props.drill.rows[prev.row]
+        const section = row[prev.section]
+        const measure = section.measures[prev.measure]
+
+        if (prev.intro && next.beat < props.drill.bpm * 4) return next
+        next.intro = false
+        if (next.beat === props.drill.bpm * 4) return next
+
+        next.offset = prev.offset + 1
+        if (next.offset < measure.length) return next
+        next.offset = 0
+
+        next.measure = prev.measure + 1
+        if (next.measure < section.measures.length) return next
+        next.measure = 0
+
+        next.repeat = prev.repeat + 1
+        if (next.repeat < section.repeat) return next
+        next.repeat = 0
+
+        next.section = prev.section + 1
+        if (next.section < row.length) return next
+        next.section = 0
+
+        next.row = prev.row + 1
+        if (next.row < props.drill.rows.length) return next
+        next.row = 0
+
+        next.drillRepeat = prev.drillRepeat + 1
+        if (next.drillRepeat < drillRepeat()) {
+          next.bpm = Math.min(MAX_BPM, prev.bpm + prev.bpmIncrease)
+          if (prev.bpmIncrease > 0 || props.drill.forceIntro) {
+            next.beat = 0
+            next.intro = true
+          }
+          return next
+        }
+
+        return NotPlaying
+      })
+    }, delay)
+
+    return () => { if (intervalRef) { window.clearInterval(intervalRef); intervalRef = null } }
+  })
+
+  let drillJustStarted = false
   const handleStart = () => {
-    setState({
-      ...Playing,
-      bpm: bpm,
-      bpmIncrease: bpmIncrease,
-    })
+    drillJustStarted = true
+    setState({ ...Playing, bpm: bpm(), bpmIncrease: bpmIncrease() })
   }
 
   const empty = "○"
@@ -349,179 +247,181 @@ export function PracticeView({ drill }: { drill: Drill }) {
     return "●".repeat(current + 1) + empty.repeat(total - current - 1)
   }
 
-  // Flatten all sections into a linear list for navigation
-  const allSections: { section: Section; rowIndex: number; sectionIndex: number }[] = drill.rows.flatMap(
-    (row, rowIndex) => row.map((section, sectionIndex) => ({ section, rowIndex, sectionIndex }))
+  const allSections = props.drill.rows.flatMap((row, rowIndex) =>
+    row.map((section, sectionIndex) => ({ section, rowIndex, sectionIndex }))
   )
 
-  // Find the current flat index
-  const currentFlatIndex = allSections.findIndex(
-    (s) => s.rowIndex === state.row && s.sectionIndex === state.section
+  const currentFlatIndex = createMemo(() =>
+    allSections.findIndex((s) => s.rowIndex === state().row && s.sectionIndex === state().section)
   )
-
+  const idx = createMemo(() => (currentFlatIndex() >= 0 ? currentFlatIndex() : 0))
   // Determine if we will repeat after this drill pass
-  const willRepeatDrill = state.drillRepeat + 1 < drillRepeat
-  const willRepeatWithIntro = willRepeatDrill && (state.bpmIncrease > 0 || drill.forceIntro)
-  const idx = currentFlatIndex >= 0 ? currentFlatIndex : 0
-  const isLastSection = idx === allSections.length - 1
+  const willRepeatDrill = createMemo(() => state().drillRepeat + 1 < drillRepeat())
+  const willRepeatWithIntro = createMemo(
+    () => willRepeatDrill() && (state().bpmIncrease > 0 || (props.drill.forceIntro ?? false))
+  )
+  const isLastSection = createMemo(() => idx() === allSections.length - 1)
+
+  const activeDrill = createMemo(() =>
+    swapHands()
+      ? { ...props.drill, rows: props.drill.rows.map((row) => row.map(swapSectionHands)) }
+      : props.drill
+  )
 
   const windowWidth = useWindowWidth()
-  const activeDrill = swapHands ? { ...drill, rows: drill.rows.map((row) => row.map(swapSectionHands)) } : drill
-  const sizeLevel = computeDrillSizeLevel(activeDrill, windowWidth)
+  const sizeLevel = createMemo(() => computeDrillSizeLevel(activeDrill(), windowWidth()))
+
+  const currentSection = createMemo(() => {
+    const c = allSections[idx()]
+    return swapHands() ? swapSectionHands(c.section) : c.section
+  })
 
   function mkSectionView(section: Section, isHighlighted: boolean) {
     const repeatDisplay = isHighlighted
-      ? mkRepeat(state.repeat, section.repeat ?? 1)
+      ? mkRepeat(state().repeat, section.repeat ?? 1)
       : empty.repeat(section.repeat ?? 1)
-
     return (
       <SectionView
         section={section}
         isHighlighted={isHighlighted}
         repeatDisplay={repeatDisplay}
-        highlight={isHighlighted && state.playing ? state : undefined}
-        sizeLevel={sizeLevel}
+        highlight={isHighlighted && state().playing ? state() : undefined}
+        sizeLevel={sizeLevel()}
       />
     )
   }
 
-  // Compute a unique key for the countdown that includes the drill repeat so
-  // each repeat's countdown is treated as a distinct element.
-  const countdownKey = `countdown-${state.drillRepeat}`
-
-  function countdownSection() {
-    const isBpmUp = state.drillRepeat > 0 && state.bpmIncrease > 0
-    const isRepeat = state.drillRepeat > 0
+  function countdownSectionEl() {
+    const s = state()
+    const isBpmUp = s.drillRepeat > 0 && s.bpmIncrease > 0
+    const isRepeat = s.drillRepeat > 0
     return (
       <CountdownSection
-        beat={state.beat}
-        beatsPerMeasure={drill.bpm}
-        intro={state.intro}
+        beat={s.beat}
+        beatsPerMeasure={props.drill.bpm}
+        intro={s.intro}
         preText={isBpmUp ? "BPM up!" : isRepeat ? "Back to the start!" : "Get ready..."}
       />
     )
   }
 
-  function renderSections() {
-    const effectiveIdx = currentFlatIndex >= 0 ? currentFlatIndex : 0
-    const current = allSections[effectiveIdx]
-    const currentSection = swapHands ? swapSectionHands(current.section) : current.section
-    const currentKey = `section-${effectiveIdx}-${state.drillRepeat}`
+  // Keys for the two animated display slots (top = current/countdown, bottom = preview).
+  // When a key changes, <Presence> + <For> animate the old element out and the new one in.
+  const topKey = createMemo(() =>
+    state().intro
+      ? `countdown-${state().drillRepeat}`
+      : `section-${idx()}-${state().drillRepeat}`
+  )
 
-    const elements: React.ReactNode[] = []
+  const bottomKey = createMemo(() => {
+    if (state().intro) return `section-${idx()}-${state().drillRepeat}-preview`
+    if (isLastSection() && !willRepeatDrill()) return "all-done"
+    if (isLastSection() && willRepeatWithIntro()) return `countdown-next-${state().drillRepeat + 1}`
+    const nextIdx = (idx() + 1) % allSections.length
+    const nextDR = nextIdx === 0 ? state().drillRepeat + 1 : state().drillRepeat
+    return `section-${nextIdx}-${nextDR}-preview`
+  })
 
-    if (state.intro && state.drillRepeat == 0) {
-      // don't animate the countdown section the very first time it shows up
-      elements.push(
-        <motion.div
-          key={countdownKey}
-          layout
-          exit={{ opacity: 0, pointerEvents: "none" as const, transition: { duration: 0 } }}
-          transition={{
-            layout: { duration: 0.3, ease: "easeInOut" },
-            opacity: { duration: 0.3, ease: "easeInOut", delay: 0.3 },
-            y: { duration: 0.3, ease: "easeInOut" },
-          }}
-        >
-          {countdownSection()}
-        </motion.div>
-        ,
-        <AnimatedSection key={currentKey} sectionKey={currentKey}>
-          {mkSectionView(currentSection, false)}
-        </AnimatedSection>,
-      )
-
-    } else if (state.intro) {
-      elements.push(
-        <AnimatedSection key={countdownKey} sectionKey={countdownKey}>
-          {countdownSection()}
-        </AnimatedSection>,
-        <AnimatedSection key={currentKey} sectionKey={currentKey}>
-          {mkSectionView(currentSection, false)}
-        </AnimatedSection>,
-      )
-
-    } else {
-      elements.push(
-        <AnimatedSection key={currentKey} sectionKey={currentKey}>
-          {mkSectionView(currentSection, true)}
-        </AnimatedSection>,
-      )
-
-      if (isLastSection && !willRepeatDrill) {
-        elements.push(
-          <AnimatedSection key="all-done" sectionKey="all-done">
-            <HighlightedCard isHighlighted={false} minHeight={100}>
-              <Flex align="center" justify="center">
-                <Text size="9" weight="bold" color="gray">
-                  All done!
-                </Text>
-              </Flex>
-            </HighlightedCard>
-          </AnimatedSection>,
-        )
-      } else if (isLastSection && willRepeatWithIntro) {
-        const nextCountdownKey = `countdown-${state.drillRepeat + 1}`
-        elements.push(
-          <AnimatedSection key={nextCountdownKey} sectionKey={nextCountdownKey}>
-            <CountdownSection beat={0} beatsPerMeasure={drill.bpm} intro={false} preText={state.bpmIncrease > 0 ? "BPM up!" : "Back to the start!"} />
-          </AnimatedSection>,
-        )
-      } else {
-        const nextFlatIndex = (effectiveIdx + 1) % allSections.length
-        const next = allSections[nextFlatIndex]
-        const nextSection = swapHands ? swapSectionHands(next.section) : next.section
-        const nextDrillRepeat = nextFlatIndex === 0 ? state.drillRepeat + 1 : state.drillRepeat
-        const nextKey = `section-${nextFlatIndex}-${nextDrillRepeat}`
-        elements.push(
-          <AnimatedSection key={nextKey} sectionKey={nextKey}>
-            {mkSectionView(nextSection, false)}
-          </AnimatedSection>,
-        )
-      }
-    }
-
-    return (
-      <AnimatePresence mode="popLayout">
-        {elements}
-      </AnimatePresence>
-    )
+  function topContent() {
+    if (state().intro) return countdownSectionEl()
+    return mkSectionView(currentSection(), true)
   }
+
+  function bottomContent() {
+    const key = bottomKey()
+    if (key === "all-done") {
+      return (
+        <HighlightedCard isHighlighted={false} minHeight={100}>
+          <Flex align="center" justify="center">
+            <Text size="9" weight="bold" color="gray">All done!</Text>
+          </Flex>
+        </HighlightedCard>
+      )
+    }
+    if (key.startsWith("countdown-next-")) {
+      return (
+        <CountdownSection
+          beat={0}
+          beatsPerMeasure={props.drill.bpm}
+          intro={false}
+          preText={state().bpmIncrease > 0 ? "BPM up!" : "Back to the start!"}
+        />
+      )
+    }
+    const nextIdx = state().intro ? idx() : (idx() + 1) % allSections.length
+    const nextItem = allSections[nextIdx]
+    const nextSection = swapHands() ? swapSectionHands(nextItem.section) : nextItem.section
+    return mkSectionView(nextSection, false)
+  }
+
+  // Two persistent DOM slots — always mounted while playing, never recreated on
+  // transitions. This means we can measure heights from a stable DOM and animate
+  // with imperative WAAPI calls, with no For-loop creation/cleanup race conditions.
+  let topSlotRef: HTMLDivElement | undefined
+  let bottomSlotRef: HTMLDivElement | undefined
+  let storedSlideY = 200
+
+  // Animation effect — created FIRST so SolidJS runs it before the measurement
+  // effect below. Reads storedSlideY, which was written by the measurement effect
+  // on the *previous* topKey change (i.e. the just-replaced card's height).
+  createEffect(on(topKey, (_newKey, oldKey) => {
+    const justStarted = drillJustStarted
+    drillJustStarted = false
+    if (!oldKey || justStarted || !topSlotRef?.isConnected || !bottomSlotRef?.isConnected) return
+    topSlotRef.getAnimations().forEach(a => a.cancel())
+    bottomSlotRef.getAnimations().forEach(a => a.cancel())
+    topSlotRef.animate(
+      [{ transform: `translateY(${storedSlideY}px)` }, { transform: "translateY(0)" }],
+      { duration: 400, easing: "ease-out", fill: "backwards" }
+    )
+    bottomSlotRef.animate(
+      [{ opacity: "0" }, { opacity: "1" }],
+      { duration: 300, easing: "ease-in-out", delay: 400, fill: "backwards" }
+    )
+  }))
+
+  // Measurement effect — created SECOND so it fires after the animation effect.
+  // Stores the now-current top card height for the next transition's animation.
+  createEffect(on(topKey, () => {
+    if (topSlotRef) storedSlideY = topSlotRef.offsetHeight + 16
+  }))
 
   return (
     <CenteredContainer>
-      {state.playing ? (
-        <>
-          <Flex align="center" justify="center" wrap="wrap" gap="4">
-            <StatusView
-              bpm={state.bpm}
-              bpmIncrease={state.bpmIncrease}
-              drillRepeat={drillRepeat}
-              drillRepeatCount={state.drillRepeat}
+      <Show
+        when={state().playing}
+        fallback={
+          <>
+            <DrillControls
+              drill={props.drill}
+              bpm={bpm()}
+              setBpm={setBpm}
+              bpmIncrease={bpmIncrease()}
+              setBpmIncrease={setBpmIncrease}
+              drillRepeat={drillRepeat()}
+              setDrillRepeat={setDrillRepeat}
+              swapHands={swapHands()}
+              setSwapHands={setSwapHands}
+              onStart={handleStart}
             />
-            <Button onClick={() => setState(NotPlaying)} color="red" size="2">
-              Stop
-            </Button>
-          </Flex>
-          {renderSections()}
-        </>
-      ) : (
-        <>
-          <DrillControls
-            drill={drill}
-            bpm={bpm}
-            setBpm={setBpm}
-            bpmIncrease={bpmIncrease}
-            setBpmIncrease={setBpmIncrease}
-            drillRepeat={drillRepeat}
-            setDrillRepeat={setDrillRepeat}
-            swapHands={swapHands}
-            setSwapHands={setSwapHands}
-            onStart={handleStart}
+            <DrillOverView drill={activeDrill()} />
+          </>
+        }
+      >
+        <Flex align="center" justify="center" wrap="wrap" gap="4">
+          <StatusView
+            bpm={state().bpm}
+            bpmIncrease={state().bpmIncrease}
+            drillRepeat={drillRepeat()}
+            drillRepeatCount={state().drillRepeat}
           />
-          <DrillOverView drill={activeDrill} />
-        </>
-      )}
+          <Button color="red" size="2" onClick={() => setState(NotPlaying)}>Stop</Button>
+        </Flex>
+        <Flex direction="column" gap="4">
+          <div ref={(r) => (topSlotRef = r)}>{topContent()}</div>
+          <div ref={(r) => (bottomSlotRef = r)}>{bottomContent()}</div>
+        </Flex>
+      </Show>
     </CenteredContainer>
   )
 }

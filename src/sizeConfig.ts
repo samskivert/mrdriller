@@ -2,16 +2,18 @@ import { Drill, Section } from "./model"
 
 export type SizeLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
+export type RadixTextSize = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
 export type SizeConfig = {
   strokeSize: number
   measureGap: number
   cardPadding: number
-  labelSize: "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-  repeatSize: "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+  labelSize: RadixTextSize
+  repeatSize: RadixTextSize
 }
 
 // Size 9: strokeSize=192, size 1: strokeSize=28 (matches DrillOverviewView)
-// Sizes scale roughly evenly between them (~20.5px steps)
+// Label/repeat sizes map to Radix UI Text sizes (see ui.tsx FONT_SIZE for pixel values)
 export const SIZE_CONFIGS: { [K in SizeLevel]: SizeConfig } = {
   1: { strokeSize:  28, measureGap:  4, cardPadding:  8, labelSize: "2", repeatSize: "2" },
   2: { strokeSize:  48, measureGap:  5, cardPadding: 10, labelSize: "3", repeatSize: "3" },

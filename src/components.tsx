@@ -1,57 +1,46 @@
-import { Card, Flex, Text, TextField } from "@radix-ui/themes"
-import * as React from "react"
+import { JSX, Show } from "solid-js"
+import { Flex, Text } from "./ui"
 
-export function HighlightedCard({
-  children,
-  isHighlighted,
-  minHeight,
-}: {
-  children: React.ReactNode
+export function HighlightedCard(props: {
+  children: JSX.Element
   isHighlighted: boolean
   minHeight?: number
 }) {
   return (
-    <Card
-      variant="surface"
+    <div
       style={{
-        border: isHighlighted ? "3px solid var(--accent-9)" : "2px solid var(--gray-9)",
-        backgroundColor: isHighlighted ? "#FFD700" : "var(--gray-2)",
-        boxShadow: isHighlighted ? "0 0 0 3px var(--accent-6)" : "none",
-        minHeight: minHeight || "auto",
+        border: props.isHighlighted ? "3px solid #0090ff" : "2px solid #999",
+        "background-color": props.isHighlighted ? "#fff3c4" : "#f9f9fb",
+        "box-shadow": props.isHighlighted ? "0 0 0 3px #70b8ff" : "none",
+        "min-height": props.minHeight ? `${props.minHeight}px` : "auto",
         display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        "align-items": "center",
+        "justify-content": "center",
+        "border-radius": "8px",
+        padding: "12px",
+        "box-sizing": "border-box",
+        width: "100%",
       }}
     >
-      {children}
-    </Card>
+      {props.children}
+    </div>
   )
 }
 
-export function CenteredContainer({
-  children,
-  maxWidth,
-}: {
-  children: React.ReactNode
+export function CenteredContainer(props: {
+  children: JSX.Element
   maxWidth?: string
 }) {
   return (
-    <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
-      <Flex direction="column" gap="4" style={{ width: "fit-content", maxWidth }}>
-        {children}
+    <div style={{ display: "flex", "justify-content": "center", width: "100%" }}>
+      <Flex direction="column" gap="4" style={{ width: "fit-content", "max-width": props.maxWidth }}>
+        {props.children}
       </Flex>
     </div>
   )
 }
 
-export function NumberInput({
-  label,
-  value,
-  onChange,
-  min,
-  max,
-  width = 60,
-}: {
+export function NumberInput(props: {
   label: string
   value: number
   onChange: (value: number) => void
@@ -61,84 +50,71 @@ export function NumberInput({
 }) {
   return (
     <Flex align="center" gap="2">
-      <Text size="2" weight="medium">
-        {label}:
-      </Text>
-      <TextField.Root
+      <Text size="2" weight="medium">{props.label}:</Text>
+      <input
         type="number"
-        value={value.toString()}
-        onChange={(e) => onChange(parseInt(e.target.value) || min)}
-        min={min.toString()}
-        max={max.toString()}
-        style={{ width }}
-        size="2"
+        value={props.value}
+        onInput={(e) => props.onChange(parseInt(e.currentTarget.value) || props.min)}
+        min={props.min}
+        max={props.max}
+        style={{ width: `${props.width ?? 60}px` }}
       />
     </Flex>
   )
 }
 
-export function SectionHeader({
-  label,
-  repeatDisplay,
-  labelSize = "2",
-  repeatSize = "2",
-}: {
+export function SectionHeader(props: {
   label?: string
   repeatDisplay?: string
-  labelSize?: "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-  repeatSize?: "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+  labelSize?: string
+  repeatSize?: string
 }) {
-  if (!label && !repeatDisplay) return null
-
   return (
-    <Flex justify="between" align="center">
-      {label && (
-        <Text size={labelSize} weight="bold">
-          {label}
-        </Text>
-      )}
-      {repeatDisplay && (
-        <Text size={repeatSize} weight="bold" color="gray">
-          {repeatDisplay}
-        </Text>
-      )}
-    </Flex>
+    <Show when={props.label || props.repeatDisplay}>
+      <Flex justify="between" align="center">
+        <Show when={props.label}>
+          <Text size={props.labelSize ?? "2"} weight="bold">{props.label}</Text>
+        </Show>
+        <Show when={props.repeatDisplay}>
+          <Text size={props.repeatSize ?? props.labelSize ?? "2"} weight="bold" color="gray">
+            {props.repeatDisplay}
+          </Text>
+        </Show>
+      </Flex>
+    </Show>
   )
 }
 
-export function EmptyBeatPlaceholder({ strokeSize = 28 }: { strokeSize?: number }) {
-  return <div style={{ minWidth: strokeSize + 8 }} />
+export function EmptyBeatPlaceholder(props: { strokeSize?: number }) {
+  return <div style={{ "min-width": `${(props.strokeSize ?? 28) + 8}px` }} />
 }
 
 const IntroText = ["Ichi - いち", "Ni - に", "So - そ〜", "Re - れ！"]
 
-export function CountdownSection({
-  beat,
-  beatsPerMeasure,
-  intro,
-  preText = "Get ready...",
-}: {
+export function CountdownSection(props: {
   beat: number
   beatsPerMeasure: number
   intro: boolean
   preText?: string
 }) {
-  const measure = Math.floor(beat / beatsPerMeasure)
-  const text = !intro
-    ? preText
-    : measure >= IntroText.length
-      ? IntroText[IntroText.length - 1]
-      : IntroText[measure]
+  const measure = () => Math.floor(props.beat / props.beatsPerMeasure)
+  const text = () =>
+    !props.intro
+      ? (props.preText ?? "Get ready...")
+      : measure() >= IntroText.length
+        ? IntroText[IntroText.length - 1]
+        : IntroText[measure()]
+
   return (
-    <HighlightedCard isHighlighted={intro} minHeight={100}>
+    <HighlightedCard isHighlighted={props.intro} minHeight={100}>
       <Flex align="center" justify="center">
         <Text
           size="9"
           weight="bold"
-          color={intro ? "blue" : "gray"}
-          style={{ textAlign: "center" }}
+          color={props.intro ? "blue" : "gray"}
+          style={{ "text-align": "center" }}
         >
-          {text}
+          {text()}
         </Text>
       </Flex>
     </HighlightedCard>

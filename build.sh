@@ -1,12 +1,10 @@
 #!/bin/sh
+set -e
 
 NAME=mrdriller
-rm -rf $NAME
-mkdir $NAME
-cp public/* $NAME
-npx esbuild src/index.tsx \
-  --minify --sourcemap \
-  --bundle --outfile=$NAME/index.js
-rm -f $NAME.zip
+
+npm run build
+rm -rf $NAME $NAME.zip
+cp -r dist $NAME
 zip -r $NAME.zip $NAME
 rm -rf $NAME

@@ -1,8 +1,5 @@
-import { Theme, Box, Button, Flex, Text } from "@radix-ui/themes"
-import * as React from "react"
-import { StrictMode, useState, useEffect } from "react"
-import { createRoot } from "react-dom/client"
-import "@radix-ui/themes/styles.css"
+import { createSignal, createEffect, Switch, Match } from "solid-js"
+import { render } from "solid-js/web"
 import { drills } from "./drills"
 import { DrillView } from "./DrillView"
 import { MenuView } from "./MenuView"
@@ -29,16 +26,37 @@ function stateFromSearch(search: string): AppState {
   return { view: "unknown", id }
 }
 
-function App() {
-  const [appState, setAppState] = useState<AppState>(() =>
-    stateFromSearch(window.location.search),
-  )
+const menuCSS = `
+  .menu-bg {
+    height: 100dvh;
+    overflow: auto;
+    background-color: white;
+    background-image: url('mrdriller.png');
+    background-repeat: no-repeat;
+  }
+  @media (min-width: 1024px) {
+    .menu-bg {
+      background-position-x: calc(25vw - 256px);
+      background-position-y: top;
+    }
+    .menu-content {
+      margin-left: 50vw;
+      width: 50vw;
+    }
+  }
+  @media (max-width: 1023px) {
+    .menu-bg { background-image: none; }
+  }
+`
 
-  useEffect(() => {
+function App() {
+  const [appState, setAppState] = createSignal<AppState>(stateFromSearch(window.location.search))
+
+  createEffect(() => {
     const onPopState = () => setAppState(stateFromSearch(window.location.search))
     window.addEventListener("popstate", onPopState)
     return () => window.removeEventListener("popstate", onPopState)
-  }, [])
+  })
 
   const handleSelectActivity = (activity: Activity) => {
     history.pushState({ fromApp: true }, "", `?id=${activity.id}`)
@@ -54,86 +72,39 @@ function App() {
     }
   }
 
-  function mkView(activity: Activity) {
-    if (activity.type === "drill") {
-      return <DrillView drill={activity} onBack={handleBack} />
-    } else {
-      if (activity.id === "pattern-trainer") {
-        return <PatternTrainerView onBack={handleBack} />
-      }
-      return <p>TODO: ${activity.title}</p>
-    }
-  }
-
-  if (appState.view === "activity") {
-    return mkView(appState.activity)
-  }
-
-  if (appState.view === "unknown") {
-    return (
-      <Flex
-        direction="column"
-        align="center"
-        justify="center"
-        gap="4"
-        style={{ minHeight: "100dvh", padding: "24px" }}
-      >
-        <Text size="5">Unknown drill or tool: {appState.id}</Text>
-        <Button
-          variant="soft"
-          onClick={() => {
-            history.pushState(null, "", window.location.pathname)
-            setAppState({ view: "menu" })
-          }}
-        >
-          ← Back
-        </Button>
-      </Flex>
-    )
+  function mkActivityView(activity: Activity) {
+    if (activity.type === "drill") return <DrillView drill={activity} onBack={handleBack} />
+    if (activity.id === "pattern-trainer") return <PatternTrainerView onBack={handleBack} />
+    return <p>TODO: {activity.title}</p>
   }
 
   return (
-    <>
-      <style>{`
-        .menu-bg {
-          height: 100dvh;
-          overflow: auto;
-          background-color: white;
-          background-image: url('mrdriller.png');
-          background-repeat: no-repeat;
-        }
-        @media (min-width: 1024px) {
-          .menu-bg {
-            background-position-x: calc(25vw - 256px);
-            background-position-y: top;
-          }
-          .menu-content {
-            margin-left: 50vw;
-            width: 50vw;
-          }
-        }
-        @media (max-width: 1023px) {
-          .menu-bg {
-            background-image: none;
-          }
-        }
-      `}</style>
-      <div className="menu-bg">
-        <div className="menu-content" style={{ display: "flex", justifyContent: "center" }}>
-          <Box p="4" style={{ width: "fit-content" }}>
-            <MenuView drills={drills} tools={tools} onSelectActivity={handleSelectActivity} />
-          </Box>
+    <Switch>
+      <Match when={appState().view === "menu"}>
+        <style>{menuCSS}</style>
+        <div class="menu-bg">
+          <div class="menu-content" style={{ display: "flex", "justify-content": "center" }}>
+            <div style={{ padding: "16px", width: "100%", "max-width": "512px", "box-sizing": "border-box" }}>
+              <MenuView drills={drills} tools={tools} onSelectActivity={handleSelectActivity} />
+            </div>
+          </div>
         </div>
-      </div>
-    </>
+      </Match>
+
+      <Match when={appState().view === "activity"}>
+        {mkActivityView((appState() as { view: "activity"; activity: Activity }).activity)}
+      </Match>
+
+      <Match when={appState().view === "unknown"}>
+        <div style={{ display: "flex", "flex-direction": "column", "align-items": "center", "justify-content": "center", gap: "16px", "min-height": "100dvh", padding: "24px" }}>
+          <p>Unknown drill or tool: {(appState() as { view: "unknown"; id: string }).id}</p>
+          <button onClick={() => { history.pushState(null, "", window.location.pathname); setAppState({ view: "menu" }) }}>
+            ← Back
+          </button>
+        </div>
+      </Match>
+    </Switch>
   )
 }
 
-const root = createRoot(document.getElementById("root") as HTMLElement)
-root.render(
-  <StrictMode>
-    <Theme hasBackground={false}>
-      <App />
-    </Theme>
-  </StrictMode>,
-)
+render(() => <App />, document.getElementById("root") as HTMLElement)

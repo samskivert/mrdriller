@@ -1,50 +1,43 @@
-import { Flex, Card } from "@radix-ui/themes"
-import * as React from "react"
+import { For } from "solid-js"
+import { Flex, Card } from "./ui"
 import { SectionHeader } from "./components"
 import { MeasureView } from "./MeasureView"
-import { Section, Row, Drill, Pos } from "./model"
+import { Section, Row, Drill } from "./model"
 
-const Zero = { row: 0, section: 0, measure: 0, offset: 0, repeat: 0 }
-
-function SectionView({ section }: { section: Section; pos: Pos; highlight?: Pos }) {
+function OverviewSectionView(props: { section: Section }) {
   return (
     <Card>
       <Flex direction="column" gap="2">
         <SectionHeader
-          label={section.label}
-          repeatDisplay={section.repeat > 1 ? `x${section.repeat}` : undefined}
+          label={props.section.label}
+          repeatDisplay={props.section.repeat > 1 ? `x${props.section.repeat}` : undefined}
         />
         <Flex direction="row" wrap="wrap" gap="1" justify="center">
-          {section.measures.map((measure, measureIndex) => (
-            <MeasureView key={measureIndex} measure={measure} />
-          ))}
+          <For each={props.section.measures}>
+            {(measure) => <MeasureView measure={measure} />}
+          </For>
         </Flex>
       </Flex>
     </Card>
   )
 }
 
-function RowView({ row, rowIndex, highlight }: { row: Row; rowIndex: number; highlight?: Pos }) {
+function RowView(props: { row: Row }) {
   return (
     <Flex direction="row" wrap="wrap" gap="2" justify="center">
-      {row.map((section, sectionIndex) => (
-        <SectionView
-          key={sectionIndex}
-          section={section}
-          pos={{ ...Zero, row: rowIndex, section: sectionIndex }}
-          highlight={highlight}
-        />
-      ))}
+      <For each={props.row}>
+        {(section) => <OverviewSectionView section={section} />}
+      </For>
     </Flex>
   )
 }
 
-export function DrillOverView({ drill }: { drill: Drill }) {
+export function DrillOverView(props: { drill: Drill }) {
   return (
-    <Flex direction="column" gap="4" align="center" style={{ maxWidth: 1200 }}>
-      {drill.rows.map((row, rowIndex) => (
-        <RowView key={rowIndex} row={row} rowIndex={rowIndex} />
-      ))}
+    <Flex direction="column" gap="4" align="center" style={{ "max-width": "1200px" }}>
+      <For each={props.drill.rows}>
+        {(row) => <RowView row={row} />}
+      </For>
     </Flex>
   )
 }
