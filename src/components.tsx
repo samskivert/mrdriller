@@ -86,7 +86,14 @@ export function SectionHeader(props: {
 }
 
 export function EmptyBeatPlaceholder(props: { strokeSize?: number }) {
-  return <div style={{ "min-width": `${(props.strokeSize ?? 28) + 8}px` }} />
+  const size = () => props.strokeSize ?? 28
+  return (
+    <div style={{ width: `${size() + 8}px`, height: `${size() + 8}px`, display: "flex", "align-items": "center", "justify-content": "center" }}>
+      <svg width={size() + 4} height={size() + 4} style={{ "pointer-events": "none" }}>
+        <circle cx={size() / 2 + 2} cy={size() / 2 + 2} r={size() / 4} fill="rgba(0,0,0,0.00)" stroke="rgba(0,0,0,0.10)" stroke-width={2} />
+      </svg>
+    </div>
+  )
 }
 
 const IntroText = ["Ichi - いち", "Ni - に", "So - そ〜", "Re - れ！"]
