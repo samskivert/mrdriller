@@ -24,6 +24,7 @@ type State = {
   beat: number
   row: number
   section: number
+  line: number
   measure: number
   offset: number
   repeat: number
@@ -33,7 +34,7 @@ type State = {
 }
 
 const NotPlaying: State = {
-  playing: false, intro: false, beat: 0, row: 0, section: 0,
+  playing: false, intro: false, beat: 0, row: 0, section: 0, line: 0,
   measure: 0, offset: 0, repeat: 0, drillRepeat: 0, bpm: 60, bpmIncrease: 0,
 }
 
@@ -193,7 +194,8 @@ export function PracticeView(props: { drill: Drill }) {
         const next = { ...prev, beat: prev.beat + 1 }
         const row = props.drill.rows[prev.row]
         const section = row[prev.section]
-        const measure = section.measures[prev.measure]
+        const line = section.lines[prev.line]
+        const measure = line.measures[prev.measure]
 
         if (prev.intro && next.beat < props.drill.bpm * 4) return next
         next.intro = false
@@ -204,8 +206,12 @@ export function PracticeView(props: { drill: Drill }) {
         next.offset = 0
 
         next.measure = prev.measure + 1
-        if (next.measure < section.measures.length) return next
+        if (next.measure < line.measures.length) return next
         next.measure = 0
+
+        next.line = prev.line + 1
+        if (next.line < section.lines.length) return next
+        next.line = 0
 
         next.repeat = prev.repeat + 1
         if (next.repeat < section.repeat) return next

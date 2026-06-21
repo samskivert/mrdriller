@@ -29,18 +29,25 @@ export function SectionView(props: {
           labelSize={config().labelSize}
           repeatSize={config().repeatSize}
         />
-        <Flex direction="row" wrap="wrap" justify="center" style={{ gap: `${config().measureGap}px` }}>
-          <For each={props.section.measures}>
-            {(measure, i) => (
-              <MeasureView
-                measure={measure}
-                strokeSize={config().strokeSize}
-                highlightBeat={
-                  props.isHighlighted && props.highlight && props.highlight.measure === i()
-                    ? props.highlight.offset
-                    : undefined
-                }
-              />
+        <Flex direction="column">
+          <For each={props.section.lines}>
+            {(line, ll) => (
+              <Flex direction="row" wrap="wrap" justify="center" style={{ gap: `${config().measureGap}px` }}>
+                <For each={line.measures}>
+                  {(measure, mm) => (
+                    <MeasureView
+                      measure={measure}
+                      strokeSize={config().strokeSize}
+                      highlightBeat={
+                        props.isHighlighted && props.highlight &&
+                        props.highlight.line == ll() && props.highlight.measure === mm()
+                          ? props.highlight.offset
+                          : undefined
+                      }
+                    />
+                  )}
+                </For>
+              </Flex>
             )}
           </For>
         </Flex>

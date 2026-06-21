@@ -58,20 +58,30 @@ export type Measure = (Beat | undefined)[]
 export const measure = (...strokes: StrokeOrRest[]): Measure =>
   strokes.map((stroke) => (stroke ? beat(stroke) : undefined))
 
-/** A section is a collection of measures, with an optional label. The measures in a section are
- * rendered in a single horizontal line, with the label above it, and all surrounded by a box.
- * Sections may be repeated one or more times. */
+/** A line is a collection of measures that we try to render on a single horizontal line. */
+export type Line = {
+  measures: Measure[]
+}
+
+export const line = (...measures: Measure[]) => ({ measures })
+
+/** A section is a collection of lines, with an optional label. The lines in a section are rendered
+  * in a vertical list, with the label above it, and all surrounded by a box. Sections may be
+  * repeated one or more times. */
 export type Section = {
   label?: string
-  measures: Measure[]
+  lines: Line[]
   repeat: number
 }
 
-export const section = (label: string, repeat: number, ...measures: Measure[]) => ({
+export const section = (label: string, repeat: number, ...lines: Line[]) => ({
   label,
-  measures,
+  lines,
   repeat,
 })
+
+export const oneLineSection = (label: string, repeat: number, ...measures: Measure[]) =>
+  section(label, repeat, { measures })
 
 /** A row is a collection of sections that are displayed horizontally in a single row. */
 export type Row = Section[]
@@ -88,6 +98,7 @@ export type Drill = {
 export type Pos = {
   row: number
   section: number
+  line: number
   measure: number
   offset: number
   repeat: number
@@ -99,11 +110,12 @@ const swapStrokeHands = (stroke: Stroke | undefined): Stroke | undefined =>
 const swapBeatHands = (beat: Beat | undefined): Beat | undefined =>
   beat === undefined ? undefined : { ...beat, strokes: beat.strokes.map(swapStrokeHands) }
 const swapMeasureHands = (measure: Measure): Measure => measure.map(swapBeatHands)
+const swapLineHands = (line: Line) :Line => ({ measures: line.measures.map(swapMeasureHands) })
 
 /** Swaps the L and R hands in a section. */
 export const swapSectionHands = (section: Section): Section => ({
   ...section,
-  measures: section.measures.map(swapMeasureHands),
+  lines: section.lines.map(swapLineHands),
 })
 
 const swapRowHands = (row: Row): Row => row.map(swapSectionHands)
@@ -125,8 +137,10 @@ export function computeDrillDuration(
   for (const row of drill.rows) {
     for (const section of row) {
       for (let rep = 0; rep < section.repeat; rep++) {
-        for (const measure of section.measures) {
-          drillBeats += measure.length
+        for (const line of section.lines) {
+          for (const measure of line.measures) {
+            drillBeats += measure.length
+          }
         }
       }
     }

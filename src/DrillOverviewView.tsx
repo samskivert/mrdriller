@@ -12,9 +12,13 @@ function OverviewSectionView(props: { section: Section }) {
           label={props.section.label}
           repeatDisplay={props.section.repeat > 1 ? `x${props.section.repeat}` : undefined}
         />
-        <Flex direction="row" wrap="wrap" gap="1" justify="center">
-          <For each={props.section.measures}>
-            {(measure) => <MeasureView measure={measure} />}
+        <Flex direction="column" gap="2">
+          <For each={props.section.lines}>
+            {(line) => <Flex direction="row" wrap="wrap" gap="1" justify="center">
+              <For each={line.measures}>
+                {(measure) => <MeasureView measure={measure} />}
+              </For>
+            </Flex>}
           </For>
         </Flex>
       </Flex>
