@@ -1,4 +1,4 @@
-import { createSignal, createEffect, createMemo, onMount, on, Show, Switch, Match } from "solid-js"
+import { createSignal, createEffect, createMemo, onMount, onCleanup, on, Show, Switch, Match } from "solid-js"
 import { Flex, Text, Heading, Button, Toggle, Select, Box } from "./ui"
 import { NumberInput, CenteredContainer, CountdownSection, HighlightedCard } from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
@@ -171,7 +171,7 @@ export function PatternTrainerView(props: { onBack: () => void }) {
   // Initialize metronome sounds
   onMount(() => {
     soundsRef = new MetronomeSounds()
-    return () => soundsRef?.dispose()
+    onCleanup(() => soundsRef?.dispose())
   })
 
   function playStroke(stroke: Stroke | undefined) {
@@ -267,12 +267,12 @@ export function PatternTrainerView(props: { onBack: () => void }) {
       })
     }, tickDelay)
 
-    return () => {
+    onCleanup(() => {
       if (intervalRef) {
         window.clearInterval(intervalRef)
         intervalRef = null
       }
-    }
+    })
   })
 
   const handleStart = () => {

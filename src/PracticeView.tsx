@@ -1,4 +1,4 @@
-import { createSignal, createEffect, createMemo, onMount, on, Show } from "solid-js"
+import { createSignal, createEffect, createMemo, onMount, onCleanup, on, Show } from "solid-js"
 import { Flex, Text, Button, Toggle } from "./ui"
 import { NumberInput, CenteredContainer, CountdownSection, HighlightedCard } from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
@@ -146,7 +146,7 @@ export function PracticeView(props: { drill: Drill }) {
 
   onMount(() => {
     soundsRef = new MetronomeSounds()
-    return () => soundsRef?.dispose()
+    onCleanup(() => soundsRef?.dispose())
   })
 
   // Project out the playing and bpm values into separate signals. "Memoizing" means they'll
@@ -160,7 +160,7 @@ export function PracticeView(props: { drill: Drill }) {
     if (!("wakeLock" in navigator)) return
     let lock: WakeLockSentinel | null = null
     navigator.wakeLock.request("screen").then((l) => { lock = l }).catch(() => {})
-    return () => { lock?.release() }
+    onCleanup(() => { lock?.release() })
   })
 
   // Metronome beep on each beat tick. Tracks state() directly, which is fine
@@ -239,7 +239,7 @@ export function PracticeView(props: { drill: Drill }) {
       })
     }, delay)
 
-    return () => { if (intervalRef) { window.clearInterval(intervalRef); intervalRef = null } }
+    onCleanup(() => { if (intervalRef) { window.clearInterval(intervalRef); intervalRef = null } })
   })
 
   let drillJustStarted = false
