@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
     // project
-    "outDir": "./dist/",
-    "sourceMap": true,
+    "noEmit": true,
     "target": "es2020",
     "module": "ESNext",
     "lib": ["es2020", "dom", "dom.iterable"],
