@@ -2,7 +2,7 @@ import { createSignal, createEffect, createMemo, onMount, onCleanup, on, Show, S
 import { Flex, Text, Heading, Button, Toggle, Select, Box } from "./ui"
 import { NumberInput, CenteredContainer, CountdownSection, HighlightedCard } from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
-import { Stroke, Section, Measure, hit, Pos, beat, swapSectionHands } from "./model"
+import { Stroke, Section, Measure, hit, Pos, beat, swapSectionHands, section, line } from "./model"
 import { SectionView } from "./SectionView"
 
 type Difficulty = "easy" | "medium" | "hard"
@@ -126,7 +126,11 @@ function generatePattern(difficulty: Difficulty, measurePool: MeasurePool): Sect
     // Hard: all 4 measures can be different
     measures = [measurePool.getMeasure(), measurePool.getMeasure(), measurePool.getMeasure(), measurePool.getMeasure()]
   }
-  return { label: undefined, measures, repeat: 1 }
+  return section("", 1, line(measures[0], measures[1]), line(measures[2], measures[3]))
+}
+
+function flatMeasures(pattern: Section): Measure[] {
+  return pattern.lines.flatMap((l) => l.measures)
 }
 
 export function PatternTrainerView(props: { onBack: () => void }) {
@@ -219,12 +223,13 @@ export function PatternTrainerView(props: { onBack: () => void }) {
           next.measure = 0
           next.offset = 0
           // Play sound for the first beat of the first pattern
-          playStroke(patterns()[prev.pattern].measures[0][0]?.strokes[0])
+          playStroke(flatMeasures(patterns()[prev.pattern])[0][0]?.strokes[0])
           return next
         }
 
         const currentPattern = patterns()[prev.pattern]
-        const currentMeasure = currentPattern.measures[prev.measure]
+        const currentMeasures = flatMeasures(currentPattern)
+        const currentMeasure = currentMeasures[prev.measure]
 
         // Calculate next position
         let nextOffset = prev.offset + 1
@@ -235,7 +240,7 @@ export function PatternTrainerView(props: { onBack: () => void }) {
         if (nextOffset >= currentMeasure.length) {
           nextOffset = 0
           nextMeasure = prev.measure + 1
-          if (nextMeasure >= currentPattern.measures.length) {
+          if (nextMeasure >= currentMeasures.length) {
             // Pattern completed
             if (prev.mode === "listen") {
               // Switch to Repeat mode for the same pattern
@@ -255,7 +260,7 @@ export function PatternTrainerView(props: { onBack: () => void }) {
 
         // Play sound for the beat we're moving to (only in Listen mode, not Repeat mode)
         if (!next.intro && nextMode === "listen") {
-          const measureToPlay = patterns()[nextPattern].measures[nextMeasure]
+          const measureToPlay = flatMeasures(patterns()[nextPattern])[nextMeasure]
           playStroke(measureToPlay[nextOffset]?.strokes[0])
         }
 
@@ -294,14 +299,15 @@ export function PatternTrainerView(props: { onBack: () => void }) {
 
   function mkPatternView(pattern: Section, patternIndex: number) {
     const isHighlighted = () => state().playing && state().pattern === patternIndex
-    const repeatDisplay = () =>
-      isHighlighted()
-        ? mkRepeat(state().repeat, pattern.repeat ?? 1)
-        : empty.repeat(pattern.repeat ?? 1)
+    const repeatDisplay = () => {
+      const total = pattern.repeat ?? 1
+      if (total <= 1) return undefined
+      return isHighlighted() ? mkRepeat(state().repeat, total) : empty.repeat(total)
+    }
 
     const highlight = (): Pos | undefined =>
       state().playing && state().pattern === patternIndex
-        ? { row: 0, section: 0, measure: state().measure, offset: state().offset, repeat: state().repeat }
+        ? { row: 0, section: 0, line: Math.floor(state().measure / 2), measure: state().measure % 2, offset: state().offset, repeat: state().repeat }
         : undefined
 
     return (
