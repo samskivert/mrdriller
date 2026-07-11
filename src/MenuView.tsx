@@ -51,6 +51,9 @@ export function MenuView(props: {
           )}
         </For>
       </Grid>
+      <div style={{ "text-align": "center", "font-size": "11px", opacity: "0.35" }}>
+        {__BUILD_INFO__}
+      </div>
     </Flex>
   )
 }
