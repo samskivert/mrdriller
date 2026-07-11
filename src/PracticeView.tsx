@@ -146,13 +146,16 @@ export function PracticeView(props: { drill: Drill }) {
 
   onMount(() => {
     soundsRef = new MetronomeSounds()
-    onCleanup(() => soundsRef?.dispose())
+    onCleanup(() => { soundsRef?.dispose() })
   })
 
   // Project out the playing and bpm values into separate signals. "Memoizing" means they'll
   // only fire when their value actually changes, not every time state()'s value changes.
   const playing = createMemo(() => state().playing)
   const stateBpm = createMemo(() => state().bpm)
+
+  // Pause the silent audio (used to keep iOS in playback mode) when stopped.
+  createEffect(() => { if (!playing()) soundsRef?.pause() })
 
   // Wake lock: acquire when playing, release via onCleanup (runs before re-run).
   createEffect(() => {
@@ -245,6 +248,7 @@ export function PracticeView(props: { drill: Drill }) {
   let drillJustStarted = false
   const handleStart = () => {
     drillJustStarted = true
+    soundsRef?.resume()
     setState({ ...Playing, bpm: bpm(), bpmIncrease: bpmIncrease() })
   }
 

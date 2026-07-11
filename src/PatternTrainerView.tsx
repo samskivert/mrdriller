@@ -196,6 +196,8 @@ export function PatternTrainerView(props: { onBack: () => void }) {
   const ptPlaying = createMemo(() => state().playing)
   const ptBpm = createMemo(() => state().bpm)
 
+  createEffect(() => { if (!ptPlaying()) soundsRef?.pause() })
+
   createEffect(() => {
     if (!ptPlaying() || patterns().length === 0) {
       if (intervalRef) {
@@ -281,6 +283,7 @@ export function PatternTrainerView(props: { onBack: () => void }) {
   })
 
   const handleStart = () => {
+    soundsRef?.resume()
     const measurePool = new MeasurePool()
     const newPatterns: Section[] = []
     for (let i = 0; i < numPatterns(); i++) {
