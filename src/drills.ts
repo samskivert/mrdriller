@@ -6,7 +6,7 @@ export const paradiddles: Drill = {
   id: "paradiddles",
   title: "Paradiddles",
   bpm: 4,
- rows: [
+  rows: [
     [
       section(
         "Pa-ra-did-dle",
@@ -291,13 +291,12 @@ export const addingAccents: Drill = {
   id: "adding-accents",
   title: "Adding accents",
   bpm: 4,
-  forceIntro: true,
   rows: [
     [oneLineSection("None", 1, measure(r, l, r, l), measure(r, l, r, l))],
     [oneLineSection("One", 1, measure(R, l, r, l), measure(R, l, r, l))],
     [oneLineSection("One, Two", 1, measure(R, L, r, l), measure(R, L, r, l))],
     [oneLineSection("One, Two, Three", 1, measure(R, L, R, l), measure(R, L, R, l))],
-    [oneLineSection("One, Two, Three, Four", 1, measure(R, L, R, R), measure(R, L, R, R))],
+    [oneLineSection("One, Two, Three, Four", 1, measure(R, L, R, L), measure(R, L, R, L))],
   ],
 }
 
@@ -308,64 +307,32 @@ export const iceSkater: Drill = {
   beeps: [1, 3, 5, 7],
   scale: 0.5,
   rows: [
-    [
-      section("Four", 2, line(measure(r, su, r, su, r, su, r, su)), line(measure(l, su, l, su, l, su, l, su))),
-    ],
+    [section("Four", 2, line(measure(r, su, r, su, r, su, r, su)), line(measure(l, su, l, su, l, su, l, su)))],
     [
       section("Three", 2, line(measure(r, su, r, su, r, su)), line(measure(l, su, l, su, l, su))),
       oneLineSection("Four", 1, measure(r, su, r, su, r, su, r, su)),
     ],
-    [
-      section("Four", 2, line(measure(l, su, l, su, l, su, l, su)), line(measure(r, su, r, su, r, su, r, su))),
-    ],
+    [section("Four", 2, line(measure(l, su, l, su, l, su, l, su)), line(measure(r, su, r, su, r, su, r, su)))],
     [
       section("Three", 2, line(measure(l, su, l, su, l, su)), line(measure(r, su, r, su, r, su))),
       oneLineSection("Four", 1, measure(l, su, l, su, l, su, l, su)),
     ],
-    [
-      section(
-        "Four + 1",
-        2,
-        line(measure(r, l, r, su, r, su, r, su)),
-        line(measure(l, r, l, su, l, su, l, su)),
-      ),
-    ],
+    [section("Four + 1", 2, line(measure(r, l, r, su, r, su, r, su)), line(measure(l, r, l, su, l, su, l, su)))],
     [
       section("Three + 1", 2, line(measure(r, l, r, su, r, su)), line(measure(l, r, l, su, l, su))),
       oneLineSection("Four + 1", 1, measure(r, l, r, su, r, su, r, su)),
     ],
-    [
-      section(
-        "Four + 1",
-        2,
-        line(measure(l, r, l, su, l, su, l, su)),
-        line(measure(r, l, r, su, r, su, r, su)),
-      ),
-    ],
+    [section("Four + 1", 2, line(measure(l, r, l, su, l, su, l, su)), line(measure(r, l, r, su, r, su, r, su)))],
     [
       section("Three + 1", 2, line(measure(l, r, l, su, l, su)), line(measure(r, l, r, su, r, su))),
       oneLineSection("Four + 1", 1, measure(l, r, l, su, l, su, l, su)),
     ],
-    [
-      section(
-        "Four + 2",
-        2,
-        line(measure(r, l, r, l, r, su, r, su)),
-        line(measure(l, r, l, r, l, su, l, su)),
-      ),
-    ],
+    [section("Four + 2", 2, line(measure(r, l, r, l, r, su, r, su)), line(measure(l, r, l, r, l, su, l, su)))],
     [
       section("Three + 2", 2, line(measure(r, l, r, l, r, su)), line(measure(l, r, l, r, l, su))),
       oneLineSection("Four + 2", 1, measure(r, l, r, l, r, su, r, su)),
     ],
-    [
-      section(
-        "Four + 2",
-        2,
-        line(measure(l, r, l, r, l, su, l, su)),
-        line(measure(r, l, r, l, r, su, r, su)),
-      ),
-    ],
+    [section("Four + 2", 2, line(measure(l, r, l, r, l, su, l, su)), line(measure(r, l, r, l, r, su, r, su)))],
     [
       section("Three + 2", 2, line(measure(l, r, l, r, l, su)), line(measure(r, l, r, l, r, su))),
       oneLineSection("Four + 2", 1, measure(l, r, l, r, l, su, l, su)),
@@ -489,26 +456,11 @@ export const dexter: Drill = {
   title: "Dexter",
   bpm: 4,
   rows: [
-    [
-      oneLineSection("Right 8s", 2, dright8),
-      oneLineSection("Right 4s", 2, [...dright4, ...dright4]),
-    ],
-    [
-      oneLineSection("Right 2s", 2, [...dright2, ...dright2, ...dright2]),
-      oneLineSection("Jan Jan Jan", 1, djan3),
-    ],
-    [
-      oneLineSection("Left 8s", 2, dleft8),
-      oneLineSection("Left 4s", 2, [...dleft4, ...dleft4]),
-    ],
-    [
-      oneLineSection("Left 2s", 2, [...dleft2, ...dleft2, ...dleft2]),
-      oneLineSection("Jan Jan Jan", 1, djan3),
-    ],
-    [
-      oneLineSection("Right 8", 1, dright8),
-      oneLineSection("Left 8", 1, dleft8),
-    ],
+    [oneLineSection("Right 8s", 2, dright8), oneLineSection("Right 4s", 2, [...dright4, ...dright4])],
+    [oneLineSection("Right 2s", 2, [...dright2, ...dright2, ...dright2]), oneLineSection("Jan Jan Jan", 1, djan3)],
+    [oneLineSection("Left 8s", 2, dleft8), oneLineSection("Left 4s", 2, [...dleft4, ...dleft4])],
+    [oneLineSection("Left 2s", 2, [...dleft2, ...dleft2, ...dleft2]), oneLineSection("Jan Jan Jan", 1, djan3)],
+    [oneLineSection("Right 8", 1, dright8), oneLineSection("Left 8", 1, dleft8)],
     [
       oneLineSection("Alt 4s", 2, [...dright4, ...dleft4]),
       oneLineSection("Alt 2s", 3, [...dright2, ...dleft2]),
@@ -559,28 +511,66 @@ export const sixteens: Drill = {
 export const singleStrokeRoll: Drill = {
   id: "single-stroke-roll",
   title: "Single Stroke Roll",
-  bpm: 8,
-  beeps: [1, 3, 5, 7],
-  scale: 0.5,
+  bpm: 4,
+  beeps: [1, 3],
   rows: [
-    [oneLineSection("R", 1, measure(r, su,  r, su, r, su, r, su))],
-    [oneLineSection("L", 1, measure(l, su, l, su, l, su, l, su))],
-    [oneLineSection("RL", 2, measure(r, l, r, l, r, l, r, l))],
+    [section("R, L", 4, line(measure(r, su, r, su, r, su, r, su)), line(measure(l, su, l, su, l, su, l, su)))],
+    [
+      section(
+        "Rx2, Lx2",
+        2,
+        line(measure(r, su, r, su, r, su, r, su)),
+        line(measure(r, su, r, su, r, su, r, su)),
+        line(measure(l, su, l, su, l, su, l, su)),
+        line(measure(l, su, l, su, l, su, l, su)),
+      ),
+    ],
+    [
+      section(
+        "Rx4",
+        1,
+        line(measure(r, su, r, su, r, su, r, su)),
+        line(measure(r, su, r, su, r, su, r, su)),
+        line(measure(r, su, r, su, r, su, r, su)),
+        line(measure(r, su, r, su, r, su, r, su)),
+      ),
+    ],
+    [
+      section(
+        "Lx4",
+        1,
+        line(measure(l, su, l, su, l, su, l, su)),
+        line(measure(l, su, l, su, l, su, l, su)),
+        line(measure(l, su, l, su, l, su, l, su)),
+        line(measure(l, su, l, su, l, su, l, su)),
+      ),
+    ],
+    [section("R + L", 4, line(measure(r, l, r, l, r, l, r, l)), line(measure(r, l, r, l, r, l, r, l)))],
   ],
 }
 
 export const doubleStrokeRoll: Drill = {
   id: "double-stroke-roll",
   title: "Double Stroke Roll",
-  bpm: 8,
-  beeps: [1, 3, 5, 7],
-  scale: 0.5,
+  bpm: 4,
+  beeps: [1, 3],
   rows: [
-    [oneLineSection("RL", 2, measure(r, su,  l, su, r, su, l, su))],
+    [oneLineSection("RL", 2, measure(r, su, l, su, r, su, l, su))],
     [oneLineSection("RRR", 2, measure(r, r, r, su, r, r, r, su))],
     [oneLineSection("RLL", 2, measure(r, su, l, l, r, su, l, l))],
     [oneLineSection("RRLL", 2, measure(r, r, l, l, r, r, l, l))],
-    [oneLineSection("LR", 2, measure(l, su,  r, su, l, su, r, su))],
+
+    [oneLineSection("RL", 2, measure(r, su, l, su, r, su, l, su))],
+    [oneLineSection("RRR", 2, measure(r, r, r, su, r, r, r, su))],
+    [oneLineSection("RLL", 2, measure(r, su, l, l, r, su, l, l))],
+    [oneLineSection("RRLL", 2, measure(r, r, l, l, r, r, l, l))],
+
+    [oneLineSection("LR", 2, measure(l, su, r, su, l, su, r, su))],
+    [oneLineSection("LLL", 2, measure(l, l, l, su, l, l, l, su))],
+    [oneLineSection("LRR", 2, measure(l, su, r, r, l, su, r, r))],
+    [oneLineSection("LLRR", 2, measure(l, l, r, r, l, l, r, r))],
+
+    [oneLineSection("LR", 2, measure(l, su, r, su, l, su, r, su))],
     [oneLineSection("LLL", 2, measure(l, l, l, su, l, l, l, su))],
     [oneLineSection("LRR", 2, measure(l, su, r, r, l, su, r, r))],
     [oneLineSection("LLRR", 2, measure(l, l, r, r, l, l, r, r))],
@@ -596,10 +586,10 @@ export const oneFourSeven: Drill = {
   title: "One Four Seven",
   bpm: 4,
   rows: [
-    [oneLineSection("Right", 4, [beatRLA, beatR,  beatR, beatRLA, beatR, beatR, beatRLA, beatR])],
-    [oneLineSection("Left", 4, [beatRAL, beatL,  beatL, beatRAL, beatL, beatL, beatRAL, beatL])],
-    [oneLineSection("Jan Right", 4, [beatRALA, beatR,  beatR, beatRALA, beatR, beatR, beatRALA, beatR])],
-    [oneLineSection("Jan Left", 4, [beatRALA, beatL,  beatL, beatRALA, beatL, beatL, beatRALA, beatL])],
+    [oneLineSection("Right", 4, [beatRLA, beatR, beatR, beatRLA, beatR, beatR, beatRLA, beatR])],
+    [oneLineSection("Left", 4, [beatRAL, beatL, beatL, beatRAL, beatL, beatL, beatRAL, beatL])],
+    [oneLineSection("Jan Right", 4, [beatRALA, beatR, beatR, beatRALA, beatR, beatR, beatRALA, beatR])],
+    [oneLineSection("Jan Left", 4, [beatRALA, beatL, beatL, beatRALA, beatL, beatL, beatRALA, beatL])],
   ],
 }
 
@@ -617,22 +607,46 @@ export const kihon: Drill = {
     [oneLineSection("Left (Quarter)", 8, measure(L, su, L, su, L, su, L, su))],
     [oneLineSection("Right (Eighth)", 8, measure(R, R, R, R, R, R, R, R))],
     [oneLineSection("Left (Eighth)", 8, measure(L, L, L, L, L, L, L, L))],
-    [oneLineSection("Alternate (Whole)", 8,
-             measure(R, su, su, su, su, su, su, su),
-             measure(L, su, su, su, su, su, su, su))],
-    [oneLineSection("Alternate (Half)", 8,
-             measure(R, su, su, su, L, su, su, su),
-             measure(R, su, su, su, L, su, su, su))],
-    [oneLineSection("Alternate (Quarter)", 8,
-             measure(R, su, L, su, R, su, L, su),
-             measure(R, su, L, su, R, su, L, su))],
-    [oneLineSection("Alternate (Eighth)", 8,
-             measure(R, L, R, L, R, L, R, L),
-             measure(R, L, R, L, R, L, R, L))],
+    [
+      oneLineSection(
+        "Alternate (Whole)",
+        8,
+        measure(R, su, su, su, su, su, su, su),
+        measure(L, su, su, su, su, su, su, su),
+      ),
+    ],
+    [
+      oneLineSection(
+        "Alternate (Half)",
+        8,
+        measure(R, su, su, su, L, su, su, su),
+        measure(R, su, su, su, L, su, su, su),
+      ),
+    ],
+    [
+      oneLineSection(
+        "Alternate (Quarter)",
+        8,
+        measure(R, su, L, su, R, su, L, su),
+        measure(R, su, L, su, R, su, L, su),
+      ),
+    ],
+    [oneLineSection("Alternate (Eighth)", 8, measure(R, L, R, L, R, L, R, L), measure(R, L, R, L, R, L, R, L))],
     [oneLineSection("Both (Whole)", 4, [beatRALA, su, su, su, su, su, su, su])],
     [oneLineSection("Both (Half)", 4, [beatRALA, su, su, su, beatRALA, su, su, su])],
     [oneLineSection("Both (Quarter)", 4, [beatRALA, su, beatRALA, su, beatRALA, su, beatRALA, su])],
-    [oneLineSection("Both (Eighth)", 4, [beatRALA, beatRALA, beatRALA, beatRALA, beatRALA, beatRALA, beatRALA, beatRALA])],
+    [
+      oneLineSection("Both (Eighth)", 4, [
+        beatRALA,
+        beatRALA,
+        beatRALA,
+        beatRALA,
+        beatRALA,
+        beatRALA,
+        beatRALA,
+        beatRALA,
+      ]),
+    ],
   ],
 }
 
