@@ -4,12 +4,7 @@ import { Beat, Measure } from "./model"
 import { StrokeView } from "./StrokeView"
 import { Flex, Box } from "./ui"
 
-function BeatView(props: {
-  beat: Beat
-  forceLabel: boolean
-  highlight: boolean
-  strokeSize?: number
-}) {
+function BeatView(props: { beat: Beat; forceLabel: boolean; highlight: boolean; strokeSize?: number }) {
   const strokeSize = () => props.strokeSize ?? 28
   return (
     <Flex direction="column" align="center">
@@ -28,20 +23,14 @@ function BeatView(props: {
       </Show>
       <Flex direction="column">
         <For each={props.beat.strokes}>
-          {(stroke) => (
-            <StrokeView stroke={stroke} highlight={props.highlight} size={strokeSize()} />
-          )}
+          {(stroke) => <StrokeView stroke={stroke} highlight={props.highlight} size={strokeSize()} />}
         </For>
       </Flex>
     </Flex>
   )
 }
 
-export function MeasureView(props: {
-  measure: Measure
-  highlightBeat?: number
-  strokeSize?: number
-}) {
+export function MeasureView(props: { measure: Measure; highlightBeat?: number; strokeSize?: number }) {
   const hasAnyLabels = () => props.measure.some((b) => b?.label)
   return (
     <Flex direction="row">

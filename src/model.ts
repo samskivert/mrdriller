@@ -157,8 +157,7 @@ export function computeDrillDuration(
 
     // First repeat always has intro; subsequent repeats have intro if bpmIncrease > 0 (and the
     // setting allows it) or forceIntro
-    const hasIntro =
-      rep === 0 || (bpmIncrease > 0 && replayIntroOnBpmIncrease) || (drill.forceIntro ?? false)
+    const hasIntro = rep === 0 || (bpmIncrease > 0 && replayIntroOnBpmIncrease) || (drill.forceIntro ?? false)
     const beats = drillBeats + (hasIntro ? introBeats : 0)
     totalSeconds += (beats * tickMs) / 1000
   }

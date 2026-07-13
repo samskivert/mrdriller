@@ -101,14 +101,7 @@ function DrillControls(props: {
     )
   return (
     <Flex align="center" justify="center" wrap="wrap" gap="6">
-      <NumberInput
-        label="BPM"
-        value={props.bpm}
-        onChange={props.setBpm}
-        min={30}
-        max={MAX_BPM}
-        width={60}
-      />
+      <NumberInput label="BPM" value={props.bpm} onChange={props.setBpm} min={30} max={MAX_BPM} width={60} />
       <NumberInput
         label="BPM Increase"
         value={props.bpmIncrease}
@@ -131,12 +124,7 @@ function DrillControls(props: {
           L↔︎R
         </Flex>
       </Text>
-      <Text
-        size="4"
-        weight="bold"
-        color="gray"
-        style={{ "min-width": "50px", "text-align": "center" }}
-      >
+      <Text size="4" weight="bold" color="gray" style={{ "min-width": "50px", "text-align": "center" }}>
         {duration()}
       </Text>
       <Button color="green" size="2" onClick={props.onStart}>
@@ -146,20 +134,13 @@ function DrillControls(props: {
   )
 }
 
-function StatusView(props: {
-  bpm: number
-  bpmIncrease?: number
-  drillRepeat?: number
-  drillRepeatCount?: number
-}) {
+function StatusView(props: { bpm: number; bpmIncrease?: number; drillRepeat?: number; drillRepeatCount?: number }) {
   return (
     <Flex align="center" justify="center" gap="4">
       <Text size="7" weight="bold" color="gray">
         {props.bpm} bpm{props.bpmIncrease ? ` (+${props.bpmIncrease})` : ""}
       </Text>
-      <Show
-        when={props.drillRepeat && props.drillRepeat > 1 && props.drillRepeatCount !== undefined}
-      >
+      <Show when={props.drillRepeat && props.drillRepeat > 1 && props.drillRepeatCount !== undefined}>
         <Text size="7" weight="bold" color="gray">
           {(props.drillRepeatCount ?? 0) + 1} / {props.drillRepeat}
         </Text>
@@ -300,10 +281,7 @@ export function PracticeView(props: { drill: Drill }) {
         next.drillRepeat = prev.drillRepeat + 1
         if (next.drillRepeat < drillRepeat()) {
           next.bpm = Math.min(MAX_BPM, prev.bpm + prev.bpmIncrease)
-          if (
-            (prev.bpmIncrease > 0 && settings().replayIntroOnBpmIncrease) ||
-            props.drill.forceIntro
-          ) {
+          if ((prev.bpmIncrease > 0 && settings().replayIntroOnBpmIncrease) || props.drill.forceIntro) {
             next.beat = 0
             next.intro = true
           }
@@ -353,9 +331,7 @@ export function PracticeView(props: { drill: Drill }) {
   const isLastSection = createMemo(() => idx() === allSections.length - 1)
 
   const activeDrill = createMemo(() =>
-    swapHands()
-      ? { ...props.drill, rows: props.drill.rows.map((row) => row.map(swapSectionHands)) }
-      : props.drill,
+    swapHands() ? { ...props.drill, rows: props.drill.rows.map((row) => row.map(swapSectionHands)) } : props.drill,
   )
 
   const windowWidth = useWindowWidth()
@@ -375,9 +351,7 @@ export function PracticeView(props: { drill: Drill }) {
         section={section}
         isHighlighted={isHighlighted}
         repeatDisplay={repeatDisplay}
-        highlight={
-          isHighlighted && state().playing && settings().showBouncingDot ? state() : undefined
-        }
+        highlight={isHighlighted && state().playing && settings().showBouncingDot ? state() : undefined}
         sizeLevel={sizeLevel()}
       />
     )
@@ -475,10 +449,11 @@ export function PracticeView(props: { drill: Drill }) {
       if (!oldKey || justStarted || !topSlotRef?.isConnected || !bottomSlotRef?.isConnected) return
       topSlotRef.getAnimations().forEach((a) => a.cancel())
       bottomSlotRef.getAnimations().forEach((a) => a.cancel())
-      topSlotRef.animate(
-        [{ transform: `translateY(${storedSlideY}px)` }, { transform: "translateY(0)" }],
-        { duration: 400, easing: "ease-out", fill: "backwards" },
-      )
+      topSlotRef.animate([{ transform: `translateY(${storedSlideY}px)` }, { transform: "translateY(0)" }], {
+        duration: 400,
+        easing: "ease-out",
+        fill: "backwards",
+      })
       bottomSlotRef.animate([{ opacity: "0" }, { opacity: "1" }], {
         duration: 300,
         easing: "ease-in-out",

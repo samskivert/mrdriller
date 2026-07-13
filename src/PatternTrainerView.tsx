@@ -1,34 +1,7 @@
-import {
-  createSignal,
-  createEffect,
-  createMemo,
-  onMount,
-  onCleanup,
-  on,
-  Show,
-  Switch,
-  Match,
-} from "solid-js"
-import {
-  NumberInput,
-  CenteredContainer,
-  CountdownSection,
-  HighlightedCard,
-  BackButton,
-} from "./components"
+import { createSignal, createEffect, createMemo, onMount, onCleanup, on, Show, Switch, Match } from "solid-js"
+import { NumberInput, CenteredContainer, CountdownSection, HighlightedCard, BackButton } from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
-import {
-  Stroke,
-  Section,
-  Measure,
-  hit,
-  Pos,
-  beat,
-  swapSectionHands,
-  section,
-  line,
-  Navigation,
-} from "./model"
+import { Stroke, Section, Measure, hit, Pos, beat, swapSectionHands, section, line, Navigation } from "./model"
 import { SectionView } from "./SectionView"
 import { Flex, Text, Heading, Button, Toggle, Select, Box } from "./ui"
 
@@ -157,12 +130,7 @@ function generatePattern(difficulty: Difficulty, measurePool: MeasurePool): Sect
     measures = [measure1, measure2, measure1, measure2]
   } else {
     // Hard: all 4 measures can be different
-    measures = [
-      measurePool.getMeasure(),
-      measurePool.getMeasure(),
-      measurePool.getMeasure(),
-      measurePool.getMeasure(),
-    ]
+    measures = [measurePool.getMeasure(), measurePool.getMeasure(), measurePool.getMeasure(), measurePool.getMeasure()]
   }
   return section("", 1, line(measures[0], measures[1]), line(measures[2], measures[3]))
 }
@@ -383,11 +351,7 @@ export function PatternTrainerView(props: { nav: Navigation }) {
   }
 
   return (
-    <Flex
-      direction="column"
-      gap="6"
-      style={{ padding: "24px", "min-height": "100dvh", "background-color": "white" }}
-    >
+    <Flex direction="column" gap="6" style={{ padding: "24px", "min-height": "100dvh", "background-color": "white" }}>
       <Flex align="center" justify="between" wrap="wrap" gap="3">
         <BackButton nav={props.nav} />
         <Heading size="6" style={{ flex: 1, "text-align": "center" }}>
@@ -414,14 +378,7 @@ export function PatternTrainerView(props: { nav: Navigation }) {
             </Select.Root>
           </Flex>
 
-          <NumberInput
-            label="Patterns"
-            value={numPatterns()}
-            onChange={setNumPatterns}
-            min={1}
-            max={20}
-            width={60}
-          />
+          <NumberInput label="Patterns" value={numPatterns()} onChange={setNumPatterns} min={1} max={20} width={60} />
 
           <Text as="label">
             <Flex gap="2" align="center">
@@ -468,9 +425,7 @@ export function PatternTrainerView(props: { nav: Navigation }) {
               <ModeView mode={state().mode} />
               <Show when={visibilityOk()}>
                 {mkPatternView(
-                  swapHands()
-                    ? swapSectionHands(patterns()[state().pattern])
-                    : patterns()[state().pattern],
+                  swapHands() ? swapSectionHands(patterns()[state().pattern]) : patterns()[state().pattern],
                   state().pattern,
                 )}
               </Show>

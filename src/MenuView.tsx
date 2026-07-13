@@ -47,9 +47,7 @@ export function MenuView(props: { drills: Drill[]; tools: Tool[]; nav: Navigatio
           )}
         </For>
       </Grid>
-      <div style={{ "text-align": "center", "font-size": "11px", opacity: "0.35" }}>
-        {__BUILD_INFO__}
-      </div>
+      <div style={{ "text-align": "center", "font-size": "11px", opacity: "0.35" }}>{__BUILD_INFO__}</div>
     </Flex>
   )
 }

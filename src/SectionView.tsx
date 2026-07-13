@@ -32,12 +32,7 @@ export function SectionView(props: {
         <Flex direction="column">
           <For each={props.section.lines}>
             {(line, ll) => (
-              <Flex
-                direction="row"
-                wrap="wrap"
-                justify="center"
-                style={{ gap: `${config().measureGap}px` }}
-              >
+              <Flex direction="row" wrap="wrap" justify="center" style={{ gap: `${config().measureGap}px` }}>
                 <For each={line.measures}>
                   {(measure, mm) => (
                     <MeasureView

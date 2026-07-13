@@ -1,11 +1,7 @@
 import { Show, Switch, Match } from "solid-js"
 import { Stroke } from "./model"
 
-export function StrokeView(props: {
-  stroke: Stroke | undefined
-  highlight?: boolean
-  size?: number
-}) {
+export function StrokeView(props: { stroke: Stroke | undefined; highlight?: boolean; size?: number }) {
   const size = () => props.size ?? 28
   const containerStyle = () => ({
     width: `${size()}px`,

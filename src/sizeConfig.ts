@@ -30,11 +30,7 @@ const STROKE_MARGIN = 8 // 4px margin on each side in StrokeView
 const OUTER_MARGIN = 48 // container padding, card borders, etc.
 
 /** Compute the best size level for a single section to fit within the given window width. */
-function computeSectionLevel(
-  section: Section,
-  windowWidth: number,
-  minLevel: SizeLevel,
-): SizeLevel {
+function computeSectionLevel(section: Section, windowWidth: number, minLevel: SizeLevel): SizeLevel {
   let widestBeats = 0 // number of beats in the widest line
   let widestMeasures = 0 // number of measures in the widest line
   for (const line of section.lines) {

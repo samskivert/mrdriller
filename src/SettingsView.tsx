@@ -3,12 +3,7 @@ import { Navigation } from "./model"
 import { settings, setSetting } from "./settings"
 import { Flex, Heading, Box, Text, Toggle } from "./ui"
 
-function SettingRow(props: {
-  label: string
-  description: string
-  checked: boolean
-  onChange: (v: boolean) => void
-}) {
+function SettingRow(props: { label: string; description: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <Flex align="center" justify="between" gap="4">
       <Flex direction="column" gap="1">
@@ -26,11 +21,7 @@ function SettingRow(props: {
 
 export function SettingsView(props: { nav: Navigation }) {
   return (
-    <Flex
-      direction="column"
-      gap="6"
-      style={{ padding: "24px", "min-height": "100dvh", "background-color": "white" }}
-    >
+    <Flex direction="column" gap="6" style={{ padding: "24px", "min-height": "100dvh", "background-color": "white" }}>
       <Flex align="center" justify="between" wrap="wrap" gap="3">
         <BackButton nav={props.nav} />
         <Heading size="6" style={{ flex: 1, "text-align": "center" }}>
@@ -38,11 +29,7 @@ export function SettingsView(props: { nav: Navigation }) {
         </Heading>
         <Box style={{ width: "80px", "flex-shrink": 0 }} />
       </Flex>
-      <Flex
-        direction="column"
-        gap="5"
-        style={{ "max-width": "480px", margin: "0 auto", width: "100%" }}
-      >
+      <Flex direction="column" gap="5" style={{ "max-width": "480px", margin: "0 auto", width: "100%" }}>
         <SettingRow
           label="Bouncing dot"
           description="Highlight the active beat while a drill plays. When off, only the active section is highlighted."

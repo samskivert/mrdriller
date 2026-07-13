@@ -4,12 +4,7 @@ import { Flex, Text, Button } from "./ui"
 
 export function BackButton(props: { nav: Navigation; style?: JSX.CSSProperties }) {
   return (
-    <Button
-      variant="soft"
-      onClick={props.nav.back}
-      aria-label="Back"
-      style={{ "flex-shrink": 0, ...props.style }}
-    >
+    <Button variant="soft" onClick={props.nav.back} aria-label="Back" style={{ "flex-shrink": 0, ...props.style }}>
       ←
     </Button>
   )
@@ -29,11 +24,7 @@ export function SettingsButton(props: { nav: Navigation; style?: JSX.CSSProperti
   )
 }
 
-export function HighlightedCard(props: {
-  children: JSX.Element
-  isHighlighted: boolean
-  minHeight?: number
-}) {
+export function HighlightedCard(props: { children: JSX.Element; isHighlighted: boolean; minHeight?: number }) {
   return (
     <div
       style={{
@@ -58,11 +49,7 @@ export function HighlightedCard(props: {
 export function CenteredContainer(props: { children: JSX.Element; maxWidth?: string }) {
   return (
     <div style={{ display: "flex", "justify-content": "center", width: "100%" }}>
-      <Flex
-        direction="column"
-        gap="4"
-        style={{ width: "fit-content", "max-width": props.maxWidth }}
-      >
+      <Flex direction="column" gap="4" style={{ width: "fit-content", "max-width": props.maxWidth }}>
         {props.children}
       </Flex>
     </div>
@@ -146,12 +133,7 @@ export function EmptyBeatPlaceholder(props: { strokeSize?: number }) {
 
 const IntroText = ["Ichi - いち", "Ni - に", "So - そ〜", "Re - れ！"]
 
-export function CountdownSection(props: {
-  beat: number
-  beatsPerMeasure: number
-  intro: boolean
-  preText?: string
-}) {
+export function CountdownSection(props: { beat: number; beatsPerMeasure: number; intro: boolean; preText?: string }) {
   const measure = () => Math.floor(props.beat / props.beatsPerMeasure)
   const text = () =>
     !props.intro
@@ -163,12 +145,7 @@ export function CountdownSection(props: {
   return (
     <HighlightedCard isHighlighted={props.intro} minHeight={100}>
       <Flex align="center" justify="center">
-        <Text
-          size="9"
-          weight="bold"
-          color={props.intro ? "blue" : "gray"}
-          style={{ "text-align": "center" }}
-        >
+        <Text size="9" weight="bold" color={props.intro ? "blue" : "gray"} style={{ "text-align": "center" }}>
           {text()}
         </Text>
       </Flex>

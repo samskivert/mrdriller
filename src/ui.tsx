@@ -206,10 +206,7 @@ export function Button(props: {
   children: JSX.Element
 }) {
   const isSoft = () =>
-    props.variant === "soft" ||
-    props.variant === "ghost" ||
-    props.variant === "outline" ||
-    props.variant === "surface"
+    props.variant === "soft" || props.variant === "ghost" || props.variant === "outline" || props.variant === "surface"
   const col = () => props.color ?? "blue"
   return (
     <button
@@ -227,9 +224,7 @@ export function Button(props: {
         "font-weight": "500",
         "font-size": BTN_FONT[props.size ?? "2"] ?? BTN_FONT["2"],
         "letter-spacing": "-0.15px",
-        "background-color": isSoft()
-          ? (BTN_SOFT_BG[col()] ?? BTN_SOFT_BG.blue)
-          : (BTN_BG[col()] ?? BTN_BG.blue),
+        "background-color": isSoft() ? (BTN_SOFT_BG[col()] ?? BTN_SOFT_BG.blue) : (BTN_BG[col()] ?? BTN_BG.blue),
         color: isSoft() ? (BTN_BG[col()] ?? BTN_BG.blue) : "white",
         opacity: props.disabled ? 0.5 : 1,
         ...props.style,
@@ -258,16 +253,10 @@ export function Toggle(props: {
 }
 
 export function Separator(_: { size?: string; orientation?: "horizontal" | "vertical" }) {
-  return (
-    <hr style={{ border: "none", "border-top": "1px solid #e2e8f0", margin: 0, width: "100%" }} />
-  )
+  return <hr style={{ border: "none", "border-top": "1px solid #e2e8f0", margin: 0, width: "100%" }} />
 }
 
-function SelectRoot(props: {
-  value?: string
-  onValueChange?: (v: string) => void
-  children: JSX.Element
-}) {
+function SelectRoot(props: { value?: string; onValueChange?: (v: string) => void; children: JSX.Element }) {
   return (
     <select value={props.value} onChange={(e) => props.onValueChange?.(e.currentTarget.value)}>
       {props.children}
