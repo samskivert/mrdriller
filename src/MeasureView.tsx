@@ -1,8 +1,8 @@
 import { For, Show } from "solid-js"
-import { Flex, Box } from "./ui"
 import { EmptyBeatPlaceholder } from "./components"
 import { Beat, Measure } from "./model"
 import { StrokeView } from "./StrokeView"
+import { Flex, Box } from "./ui"
 
 function BeatView(props: {
   beat: Beat

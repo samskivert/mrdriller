@@ -37,7 +37,7 @@ function computeSectionLevel(
 ): SizeLevel {
   let widestBeats = 0 // number of beats in the widest line
   let widestMeasures = 0 // number of measures in the widest line
-  for (let line of section.lines) {
+  for (const line of section.lines) {
     const lineBeats = line.measures.reduce((sum, m) => sum + m.length, 0)
     if (lineBeats > widestBeats) {
       widestBeats = lineBeats

@@ -1,8 +1,8 @@
 import { For } from "solid-js"
-import { Flex, Card } from "./ui"
 import { SectionHeader } from "./components"
 import { MeasureView } from "./MeasureView"
 import { Section, Row, Drill } from "./model"
+import { Flex, Card } from "./ui"
 
 function OverviewSectionView(props: { section: Section }) {
   return (

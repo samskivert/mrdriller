@@ -1,12 +1,12 @@
 import { createSignal, createEffect, createMemo, onMount, onCleanup, on, Show } from "solid-js"
-import { Flex, Text, Button, Toggle } from "./ui"
 import { NumberInput, CenteredContainer, CountdownSection, HighlightedCard } from "./components"
+import { DrillOverView } from "./DrillOverviewView"
 import { MetronomeSounds } from "./MetronomeSounds"
 import { Drill, Section, swapSectionHands, computeDrillDuration, MAX_BPM } from "./model"
-import { DrillOverView } from "./DrillOverviewView"
 import { SectionView } from "./SectionView"
-import { computeDrillSizeLevel } from "./sizeConfig"
 import { settings } from "./settings"
+import { computeDrillSizeLevel } from "./sizeConfig"
+import { Flex, Text, Button, Toggle } from "./ui"
 
 // A signal that exposes the current width of the browser window.
 function useWindowWidth() {

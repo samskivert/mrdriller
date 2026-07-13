@@ -1,9 +1,9 @@
 import { For } from "solid-js"
-import { Flex } from "./ui"
 import { HighlightedCard, SectionHeader } from "./components"
 import { MeasureView } from "./MeasureView"
 import { Pos, Section } from "./model"
 import { SizeLevel, SIZE_CONFIGS } from "./sizeConfig"
+import { Flex } from "./ui"
 
 export function SectionView(props: {
   section: Section
