@@ -1,7 +1,8 @@
 // Minimal silent WAV (44 bytes): forces iOS to use the "playback" audio session
 // category, which bypasses the silent switch (same category as the Music app).
 // Web Audio API alone uses "ambient" and gets muted by silent mode.
-const SILENT_WAV = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA="
+const SILENT_WAV =
+  "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA="
 
 export class MetronomeSounds {
   private audioContext: AudioContext | null = null

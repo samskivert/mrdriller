@@ -100,7 +100,14 @@ function App() {
         <style>{menuCSS}</style>
         <div class="menu-bg">
           <div class="menu-content" style={{ display: "flex", "justify-content": "center" }}>
-            <div style={{ padding: "16px", width: "100%", "max-width": "512px", "box-sizing": "border-box" }}>
+            <div
+              style={{
+                padding: "16px",
+                width: "100%",
+                "max-width": "512px",
+                "box-sizing": "border-box",
+              }}
+            >
               <MenuView drills={drills} tools={tools} nav={nav} />
             </div>
           </div>
@@ -116,7 +123,17 @@ function App() {
       </Match>
 
       <Match when={appState().view === "unknown"}>
-        <div style={{ display: "flex", "flex-direction": "column", "align-items": "center", "justify-content": "center", gap: "16px", "min-height": "100dvh", padding: "24px" }}>
+        <div
+          style={{
+            display: "flex",
+            "flex-direction": "column",
+            "align-items": "center",
+            "justify-content": "center",
+            gap: "16px",
+            "min-height": "100dvh",
+            padding: "24px",
+          }}
+        >
           <p>Unknown drill or tool: {(appState() as { view: "unknown"; id: string }).id}</p>
           <button onClick={nav.back}>← Back</button>
         </div>

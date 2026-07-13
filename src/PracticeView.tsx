@@ -35,8 +35,18 @@ type State = {
 }
 
 const NotPlaying: State = {
-  playing: false, intro: false, beat: 0, row: 0, section: 0, line: 0,
-  measure: 0, offset: 0, repeat: 0, drillRepeat: 0, bpm: 60, bpmIncrease: 0,
+  playing: false,
+  intro: false,
+  beat: 0,
+  row: 0,
+  section: 0,
+  line: 0,
+  measure: 0,
+  offset: 0,
+  repeat: 0,
+  drillRepeat: 0,
+  bpm: 60,
+  bpmIncrease: 0,
 }
 
 const Playing = { ...NotPlaying, playing: true, intro: true }
@@ -79,24 +89,59 @@ function DrillControls(props: {
   setSwapHands: (v: boolean) => void
   onStart: () => void
 }) {
-  const duration = () => formatDuration(
-    computeDrillDuration(props.drill, props.bpm, props.bpmIncrease, props.drillRepeat, settings().replayIntroOnBpmIncrease)
-  )
+  const duration = () =>
+    formatDuration(
+      computeDrillDuration(
+        props.drill,
+        props.bpm,
+        props.bpmIncrease,
+        props.drillRepeat,
+        settings().replayIntroOnBpmIncrease,
+      ),
+    )
   return (
     <Flex align="center" justify="center" wrap="wrap" gap="6">
-      <NumberInput label="BPM" value={props.bpm} onChange={props.setBpm} min={30} max={MAX_BPM} width={60} />
-      <NumberInput label="BPM Increase" value={props.bpmIncrease} onChange={props.setBpmIncrease} min={0} max={50} width={80} />
-      <NumberInput label="Repeat" value={props.drillRepeat} onChange={props.setDrillRepeat} min={1} max={10} width={60} />
+      <NumberInput
+        label="BPM"
+        value={props.bpm}
+        onChange={props.setBpm}
+        min={30}
+        max={MAX_BPM}
+        width={60}
+      />
+      <NumberInput
+        label="BPM Increase"
+        value={props.bpmIncrease}
+        onChange={props.setBpmIncrease}
+        min={0}
+        max={50}
+        width={80}
+      />
+      <NumberInput
+        label="Repeat"
+        value={props.drillRepeat}
+        onChange={props.setDrillRepeat}
+        min={1}
+        max={10}
+        width={60}
+      />
       <Text as="label">
         <Flex gap="2" align="center">
           <Toggle size="3" checked={props.swapHands} onCheckedChange={props.setSwapHands} />
           L↔︎R
         </Flex>
       </Text>
-      <Text size="4" weight="bold" color="gray" style={{ "min-width": "50px", "text-align": "center" }}>
+      <Text
+        size="4"
+        weight="bold"
+        color="gray"
+        style={{ "min-width": "50px", "text-align": "center" }}
+      >
         {duration()}
       </Text>
-      <Button color="green" size="2" onClick={props.onStart}>Start</Button>
+      <Button color="green" size="2" onClick={props.onStart}>
+        Start
+      </Button>
     </Flex>
   )
 }
@@ -112,7 +157,9 @@ function StatusView(props: {
       <Text size="7" weight="bold" color="gray">
         {props.bpm} bpm{props.bpmIncrease ? ` (+${props.bpmIncrease})` : ""}
       </Text>
-      <Show when={props.drillRepeat && props.drillRepeat > 1 && props.drillRepeatCount !== undefined}>
+      <Show
+        when={props.drillRepeat && props.drillRepeat > 1 && props.drillRepeatCount !== undefined}
+      >
         <Text size="7" weight="bold" color="gray">
           {(props.drillRepeatCount ?? 0) + 1} / {props.drillRepeat}
         </Text>
@@ -139,7 +186,12 @@ export function PracticeView(props: { drill: Drill }) {
   createEffect(
     on(
       [bpm, bpmIncrease, drillRepeat],
-      () => saveConfig(props.drill.id, { bpm: bpm(), bpmIncrease: bpmIncrease(), drillRepeat: drillRepeat() }),
+      () =>
+        saveConfig(props.drill.id, {
+          bpm: bpm(),
+          bpmIncrease: bpmIncrease(),
+          drillRepeat: drillRepeat(),
+        }),
       { defer: true },
     ),
   )
@@ -149,7 +201,9 @@ export function PracticeView(props: { drill: Drill }) {
 
   onMount(() => {
     soundsRef = new MetronomeSounds()
-    onCleanup(() => { soundsRef?.dispose() })
+    onCleanup(() => {
+      soundsRef?.dispose()
+    })
   })
 
   // Project out the playing and bpm values into separate signals. "Memoizing" means they'll
@@ -158,15 +212,24 @@ export function PracticeView(props: { drill: Drill }) {
   const stateBpm = createMemo(() => state().bpm)
 
   // Pause the silent audio (used to keep iOS in playback mode) when stopped.
-  createEffect(() => { if (!playing()) soundsRef?.pause() })
+  createEffect(() => {
+    if (!playing()) soundsRef?.pause()
+  })
 
   // Wake lock: acquire when playing, release via onCleanup (runs before re-run).
   createEffect(() => {
     if (!playing()) return
     if (!("wakeLock" in navigator)) return
     let lock: WakeLockSentinel | null = null
-    navigator.wakeLock.request("screen").then((l) => { lock = l }).catch(() => {})
-    onCleanup(() => { lock?.release() })
+    navigator.wakeLock
+      .request("screen")
+      .then((l) => {
+        lock = l
+      })
+      .catch(() => {})
+    onCleanup(() => {
+      lock?.release()
+    })
   })
 
   // Metronome beep on each beat tick. Tracks state() directly, which is fine
@@ -190,10 +253,13 @@ export function PracticeView(props: { drill: Drill }) {
   // Runs the main tick that drives the practice UI.
   createEffect(() => {
     if (!playing()) {
-      if (intervalRef) { window.clearInterval(intervalRef); intervalRef = null }
+      if (intervalRef) {
+        window.clearInterval(intervalRef)
+        intervalRef = null
+      }
       return
     }
-    const delay = (60 * 1000) / stateBpm() / 4 * (props.drill.scale ?? 1)
+    const delay = ((60 * 1000) / stateBpm() / 4) * (props.drill.scale ?? 1)
 
     intervalRef = window.setInterval(() => {
       setState((prev) => {
@@ -234,7 +300,10 @@ export function PracticeView(props: { drill: Drill }) {
         next.drillRepeat = prev.drillRepeat + 1
         if (next.drillRepeat < drillRepeat()) {
           next.bpm = Math.min(MAX_BPM, prev.bpm + prev.bpmIncrease)
-          if ((prev.bpmIncrease > 0 && settings().replayIntroOnBpmIncrease) || props.drill.forceIntro) {
+          if (
+            (prev.bpmIncrease > 0 && settings().replayIntroOnBpmIncrease) ||
+            props.drill.forceIntro
+          ) {
             next.beat = 0
             next.intro = true
           }
@@ -245,7 +314,12 @@ export function PracticeView(props: { drill: Drill }) {
       })
     }, delay)
 
-    onCleanup(() => { if (intervalRef) { window.clearInterval(intervalRef); intervalRef = null } })
+    onCleanup(() => {
+      if (intervalRef) {
+        window.clearInterval(intervalRef)
+        intervalRef = null
+      }
+    })
   })
 
   let drillJustStarted = false
@@ -261,11 +335,11 @@ export function PracticeView(props: { drill: Drill }) {
   }
 
   const allSections = props.drill.rows.flatMap((row, rowIndex) =>
-    row.map((section, sectionIndex) => ({ section, rowIndex, sectionIndex }))
+    row.map((section, sectionIndex) => ({ section, rowIndex, sectionIndex })),
   )
 
   const currentFlatIndex = createMemo(() =>
-    allSections.findIndex((s) => s.rowIndex === state().row && s.sectionIndex === state().section)
+    allSections.findIndex((s) => s.rowIndex === state().row && s.sectionIndex === state().section),
   )
   const idx = createMemo(() => (currentFlatIndex() >= 0 ? currentFlatIndex() : 0))
   // Determine if we will repeat after this drill pass
@@ -274,14 +348,14 @@ export function PracticeView(props: { drill: Drill }) {
   // intro). This is independent of whether the intro screen actually plays — even with the
   // "replay intro on BPM increase" setting off, we still want to warn that BPM is about to jump.
   const willAnnounceRepeat = createMemo(
-    () => willRepeatDrill() && (state().bpmIncrease > 0 || (props.drill.forceIntro ?? false))
+    () => willRepeatDrill() && (state().bpmIncrease > 0 || (props.drill.forceIntro ?? false)),
   )
   const isLastSection = createMemo(() => idx() === allSections.length - 1)
 
   const activeDrill = createMemo(() =>
     swapHands()
       ? { ...props.drill, rows: props.drill.rows.map((row) => row.map(swapSectionHands)) }
-      : props.drill
+      : props.drill,
   )
 
   const windowWidth = useWindowWidth()
@@ -301,7 +375,9 @@ export function PracticeView(props: { drill: Drill }) {
         section={section}
         isHighlighted={isHighlighted}
         repeatDisplay={repeatDisplay}
-        highlight={isHighlighted && state().playing && settings().showBouncingDot ? state() : undefined}
+        highlight={
+          isHighlighted && state().playing && settings().showBouncingDot ? state() : undefined
+        }
         sizeLevel={sizeLevel()}
       />
     )
@@ -324,9 +400,7 @@ export function PracticeView(props: { drill: Drill }) {
   // Keys for the two animated display slots (top = current/countdown, bottom = preview).
   // When a key changes, <Presence> + <For> animate the old element out and the new one in.
   const topKey = createMemo(() =>
-    state().intro
-      ? `countdown-${state().drillRepeat}`
-      : `section-${idx()}-${state().drillRepeat}`
+    state().intro ? `countdown-${state().drillRepeat}` : `section-${idx()}-${state().drillRepeat}`,
   )
 
   // While the last section before a repeat is playing, the bottom slot flags the repeat itself
@@ -361,7 +435,9 @@ export function PracticeView(props: { drill: Drill }) {
       return (
         <HighlightedCard isHighlighted={false} minHeight={100}>
           <Flex align="center" justify="center">
-            <Text size="9" weight="bold" color="gray">All done!</Text>
+            <Text size="9" weight="bold" color="gray">
+              All done!
+            </Text>
           </Flex>
         </HighlightedCard>
       )
@@ -392,27 +468,33 @@ export function PracticeView(props: { drill: Drill }) {
   // Animation effect — created FIRST so SolidJS runs it before the measurement
   // effect below. Reads storedSlideY, which was written by the measurement effect
   // on the *previous* topKey change (i.e. the just-replaced card's height).
-  createEffect(on(topKey, (_newKey, oldKey) => {
-    const justStarted = drillJustStarted
-    drillJustStarted = false
-    if (!oldKey || justStarted || !topSlotRef?.isConnected || !bottomSlotRef?.isConnected) return
-    topSlotRef.getAnimations().forEach(a => a.cancel())
-    bottomSlotRef.getAnimations().forEach(a => a.cancel())
-    topSlotRef.animate(
-      [{ transform: `translateY(${storedSlideY}px)` }, { transform: "translateY(0)" }],
-      { duration: 400, easing: "ease-out", fill: "backwards" }
-    )
-    bottomSlotRef.animate(
-      [{ opacity: "0" }, { opacity: "1" }],
-      { duration: 300, easing: "ease-in-out", delay: 400, fill: "backwards" }
-    )
-  }))
+  createEffect(
+    on(topKey, (_newKey, oldKey) => {
+      const justStarted = drillJustStarted
+      drillJustStarted = false
+      if (!oldKey || justStarted || !topSlotRef?.isConnected || !bottomSlotRef?.isConnected) return
+      topSlotRef.getAnimations().forEach((a) => a.cancel())
+      bottomSlotRef.getAnimations().forEach((a) => a.cancel())
+      topSlotRef.animate(
+        [{ transform: `translateY(${storedSlideY}px)` }, { transform: "translateY(0)" }],
+        { duration: 400, easing: "ease-out", fill: "backwards" },
+      )
+      bottomSlotRef.animate([{ opacity: "0" }, { opacity: "1" }], {
+        duration: 300,
+        easing: "ease-in-out",
+        delay: 400,
+        fill: "backwards",
+      })
+    }),
+  )
 
   // Measurement effect — created SECOND so it fires after the animation effect.
   // Stores the now-current top card height for the next transition's animation.
-  createEffect(on(topKey, () => {
-    if (topSlotRef) storedSlideY = topSlotRef.offsetHeight + 16
-  }))
+  createEffect(
+    on(topKey, () => {
+      if (topSlotRef) storedSlideY = topSlotRef.offsetHeight + 16
+    }),
+  )
 
   return (
     <CenteredContainer>
@@ -443,7 +525,9 @@ export function PracticeView(props: { drill: Drill }) {
             drillRepeat={drillRepeat()}
             drillRepeatCount={state().drillRepeat}
           />
-          <Button color="red" size="2" onClick={() => setState(NotPlaying)}>Stop</Button>
+          <Button color="red" size="2" onClick={() => setState(NotPlaying)}>
+            Stop
+          </Button>
         </Flex>
         <Flex direction="column" gap="4">
           <div ref={(r) => (topSlotRef = r)}>{topContent()}</div>

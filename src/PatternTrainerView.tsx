@@ -1,7 +1,34 @@
-import { createSignal, createEffect, createMemo, onMount, onCleanup, on, Show, Switch, Match } from "solid-js"
-import { NumberInput, CenteredContainer, CountdownSection, HighlightedCard, BackButton } from "./components"
+import {
+  createSignal,
+  createEffect,
+  createMemo,
+  onMount,
+  onCleanup,
+  on,
+  Show,
+  Switch,
+  Match,
+} from "solid-js"
+import {
+  NumberInput,
+  CenteredContainer,
+  CountdownSection,
+  HighlightedCard,
+  BackButton,
+} from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
-import { Stroke, Section, Measure, hit, Pos, beat, swapSectionHands, section, line, Navigation } from "./model"
+import {
+  Stroke,
+  Section,
+  Measure,
+  hit,
+  Pos,
+  beat,
+  swapSectionHands,
+  section,
+  line,
+  Navigation,
+} from "./model"
 import { SectionView } from "./SectionView"
 import { Flex, Text, Heading, Button, Toggle, Select, Box } from "./ui"
 
@@ -55,7 +82,13 @@ function loadConfig(): PatternTrainerConfig {
   } catch (error) {
     console.warn("Failed to load pattern trainer config:", error)
   }
-  return { bpm: 60, difficulty: "easy", numPatterns: 5, swapHands: false, sectionVisibility: "show-all" }
+  return {
+    bpm: 60,
+    difficulty: "easy",
+    numPatterns: 5,
+    swapHands: false,
+    sectionVisibility: "show-all",
+  }
 }
 
 function saveConfig(config: PatternTrainerConfig) {
@@ -124,7 +157,12 @@ function generatePattern(difficulty: Difficulty, measurePool: MeasurePool): Sect
     measures = [measure1, measure2, measure1, measure2]
   } else {
     // Hard: all 4 measures can be different
-    measures = [measurePool.getMeasure(), measurePool.getMeasure(), measurePool.getMeasure(), measurePool.getMeasure()]
+    measures = [
+      measurePool.getMeasure(),
+      measurePool.getMeasure(),
+      measurePool.getMeasure(),
+      measurePool.getMeasure(),
+    ]
   }
   return section("", 1, line(measures[0], measures[1]), line(measures[2], measures[3]))
 }
@@ -196,7 +234,9 @@ export function PatternTrainerView(props: { nav: Navigation }) {
   const ptPlaying = createMemo(() => state().playing)
   const ptBpm = createMemo(() => state().bpm)
 
-  createEffect(() => { if (!ptPlaying()) soundsRef?.pause() })
+  createEffect(() => {
+    if (!ptPlaying()) soundsRef?.pause()
+  })
 
   createEffect(() => {
     if (!ptPlaying() || patterns().length === 0) {
@@ -310,7 +350,14 @@ export function PatternTrainerView(props: { nav: Navigation }) {
 
     const highlight = (): Pos | undefined =>
       state().playing && state().pattern === patternIndex
-        ? { row: 0, section: 0, line: Math.floor(state().measure / 2), measure: state().measure % 2, offset: state().offset, repeat: state().repeat }
+        ? {
+            row: 0,
+            section: 0,
+            line: Math.floor(state().measure / 2),
+            measure: state().measure % 2,
+            offset: state().offset,
+            repeat: state().repeat,
+          }
         : undefined
 
     return (
@@ -328,7 +375,11 @@ export function PatternTrainerView(props: { nav: Navigation }) {
   const visibilityOk = () => {
     const s = state()
     const sv = sectionVisibility()
-    return sv === "show-all" || (sv === "show-listen" && s.mode === "listen") || (sv === "show-repeat" && s.mode === "repeat")
+    return (
+      sv === "show-all" ||
+      (sv === "show-listen" && s.mode === "listen") ||
+      (sv === "show-repeat" && s.mode === "repeat")
+    )
   }
 
   return (
@@ -350,7 +401,9 @@ export function PatternTrainerView(props: { nav: Navigation }) {
           <NumberInput label="BPM" value={bpm()} onChange={setBpm} min={30} max={120} width={60} />
 
           <Flex align="center" gap="2">
-            <Text size="2" weight="medium">Difficulty:</Text>
+            <Text size="2" weight="medium">
+              Difficulty:
+            </Text>
             <Select.Root value={difficulty()} onValueChange={(v) => setDifficulty(v as Difficulty)}>
               <Select.Trigger />
               <Select.Content>
@@ -361,7 +414,14 @@ export function PatternTrainerView(props: { nav: Navigation }) {
             </Select.Root>
           </Flex>
 
-          <NumberInput label="Patterns" value={numPatterns()} onChange={setNumPatterns} min={1} max={20} width={60} />
+          <NumberInput
+            label="Patterns"
+            value={numPatterns()}
+            onChange={setNumPatterns}
+            min={1}
+            max={20}
+            width={60}
+          />
 
           <Text as="label">
             <Flex gap="2" align="center">
@@ -371,7 +431,9 @@ export function PatternTrainerView(props: { nav: Navigation }) {
           </Text>
 
           <Flex align="center" gap="2">
-            <Text size="2" weight="medium">Show:</Text>
+            <Text size="2" weight="medium">
+              Show:
+            </Text>
             <Select.Root
               value={sectionVisibility()}
               onValueChange={(v) => setSectionVisibility(v as SectionVisibility)}
@@ -406,7 +468,9 @@ export function PatternTrainerView(props: { nav: Navigation }) {
               <ModeView mode={state().mode} />
               <Show when={visibilityOk()}>
                 {mkPatternView(
-                  swapHands() ? swapSectionHands(patterns()[state().pattern]) : patterns()[state().pattern],
+                  swapHands()
+                    ? swapSectionHands(patterns()[state().pattern])
+                    : patterns()[state().pattern],
                   state().pattern,
                 )}
               </Show>

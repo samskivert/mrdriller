@@ -44,17 +44,32 @@ export function StrokeView(props: {
 
       <Match when={directionalStroke()}>
         {(s) => {
-          const color = () => s().hand === "R" ? "#0072B7" : "#FF9A00"
+          const color = () => (s().hand === "R" ? "#0072B7" : "#FF9A00")
           const pad = 2
           const svgSize = () => size() + pad * 2
           const half = () => size() / 2
-          const path = () => s().dir === "D"
-            ? `M ${pad} ${half() + pad} A ${half()} ${half()} 0 0 1 ${size() + pad} ${half() + pad} L ${half() + pad} ${size() + pad} Z`
-            : `M ${pad} ${half() + pad} L ${half() + pad} ${pad} L ${size() + pad} ${half() + pad} A ${half()} ${half()} 0 0 1 ${pad} ${half() + pad} Z`
+          const path = () =>
+            s().dir === "D"
+              ? `M ${pad} ${half() + pad} A ${half()} ${half()} 0 0 1 ${size() + pad} ${half() + pad} L ${half() + pad} ${size() + pad} Z`
+              : `M ${pad} ${half() + pad} L ${half() + pad} ${pad} L ${size() + pad} ${half() + pad} A ${half()} ${half()} 0 0 1 ${pad} ${half() + pad} Z`
           return (
             <div style={containerStyle()}>
-              <svg width={svgSize()} height={svgSize()} style={{ position: "absolute", left: `-${pad}px`, top: `-${pad}px`, "pointer-events": "none" }}>
-                <path d={path()} fill={props.highlight ? color() : "transparent"} stroke={color()} stroke-width={s().accent ? 4 : 2} />
+              <svg
+                width={svgSize()}
+                height={svgSize()}
+                style={{
+                  position: "absolute",
+                  left: `-${pad}px`,
+                  top: `-${pad}px`,
+                  "pointer-events": "none",
+                }}
+              >
+                <path
+                  d={path()}
+                  fill={props.highlight ? color() : "transparent"}
+                  stroke={color()}
+                  stroke-width={s().accent ? 4 : 2}
+                />
               </svg>
               <div style={labelStyle(color)}>{s().hand}</div>
             </div>
@@ -64,17 +79,40 @@ export function StrokeView(props: {
 
       <Match when={props.stroke}>
         {(s) => {
-          const color = () => s().hand === "R" ? "#0072B7" : "#FF9A00"
+          const color = () => (s().hand === "R" ? "#0072B7" : "#FF9A00")
           const pad = 2
           const svgSize = () => size() + pad * 2
           const center = () => size() / 2 + pad
           const radius = () => size() / 2 - 1
           return (
             <div style={containerStyle()}>
-              <svg width={svgSize()} height={svgSize()} style={{ position: "absolute", left: `-${pad}px`, top: `-${pad}px`, "pointer-events": "none" }}>
-                <circle cx={center()} cy={center()} r={radius() - size() / 8 - 1} fill={props.highlight ? color() : "transparent"} stroke={color()} stroke-width={2} />
+              <svg
+                width={svgSize()}
+                height={svgSize()}
+                style={{
+                  position: "absolute",
+                  left: `-${pad}px`,
+                  top: `-${pad}px`,
+                  "pointer-events": "none",
+                }}
+              >
+                <circle
+                  cx={center()}
+                  cy={center()}
+                  r={radius() - size() / 8 - 1}
+                  fill={props.highlight ? color() : "transparent"}
+                  stroke={color()}
+                  stroke-width={2}
+                />
                 <Show when={s().accent}>
-                  <circle cx={center()} cy={center()} r={radius()} fill={props.highlight ? color() : "transparent"} stroke={color()} stroke-width={2} />
+                  <circle
+                    cx={center()}
+                    cy={center()}
+                    r={radius()}
+                    fill={props.highlight ? color() : "transparent"}
+                    stroke={color()}
+                    stroke-width={2}
+                  />
                 </Show>
               </svg>
               <div style={labelStyle(color)}>{s().hand}</div>

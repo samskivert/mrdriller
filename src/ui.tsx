@@ -2,39 +2,90 @@ import { JSX } from "solid-js"
 
 // Radix UI size scale → pixel values
 const GAP: Record<string, string> = {
-  "1": "4px", "2": "8px", "3": "12px", "4": "16px",
-  "5": "20px", "6": "24px", "7": "28px", "8": "32px", "9": "40px",
+  "1": "4px",
+  "2": "8px",
+  "3": "12px",
+  "4": "16px",
+  "5": "20px",
+  "6": "24px",
+  "7": "28px",
+  "8": "32px",
+  "9": "40px",
 }
 export const FONT_SIZE: Record<string, string> = {
-  "1": "12px", "2": "14px", "3": "16px", "4": "18px", "5": "20px",
-  "6": "24px", "7": "28px", "8": "35px", "9": "60px",
+  "1": "12px",
+  "2": "14px",
+  "3": "16px",
+  "4": "18px",
+  "5": "20px",
+  "6": "24px",
+  "7": "28px",
+  "8": "35px",
+  "9": "60px",
 }
 const WEIGHT: Record<string, string> = { bold: "700", medium: "500", regular: "400" }
 const TEXT_COLOR: Record<string, string> = {
-  blue: "#0072B7", green: "#22c55e", red: "#ef4444", gray: "#6b7280",
+  blue: "#0072B7",
+  green: "#22c55e",
+  red: "#ef4444",
+  gray: "#6b7280",
 }
 const BTN_BG: Record<string, string> = {
-  blue: "#3E63DD", green: "#30a46c", red: "#ef4444", gray: "#6b7280",
+  blue: "#3E63DD",
+  green: "#30a46c",
+  red: "#ef4444",
+  gray: "#6b7280",
 }
 const BTN_PADDING: Record<string, string> = {
-  "1": "0 8px", "2": "0 12px", "3": "0 16px", "4": "0 24px",
+  "1": "0 8px",
+  "2": "0 12px",
+  "3": "0 16px",
+  "4": "0 24px",
 }
 const BTN_SOFT_BG: Record<string, string> = {
-  blue: "rgba(62, 99, 221, 0.067)", green: "rgba(48, 164, 108, 0.1)",
-  red: "rgba(239, 68, 68, 0.1)", gray: "rgba(107, 114, 128, 0.1)",
+  blue: "rgba(62, 99, 221, 0.067)",
+  green: "rgba(48, 164, 108, 0.1)",
+  red: "rgba(239, 68, 68, 0.1)",
+  gray: "rgba(107, 114, 128, 0.1)",
 }
 const BTN_HEIGHT: Record<string, string> = {
-  "1": "24px", "2": "32px", "3": "40px", "4": "48px",
+  "1": "24px",
+  "2": "32px",
+  "3": "40px",
+  "4": "48px",
 }
 const BTN_FONT: Record<string, string> = {
-  "1": "12px", "2": "14px", "3": "16px", "4": "18px",
+  "1": "12px",
+  "2": "14px",
+  "3": "16px",
+  "4": "18px",
 }
 
 function flexAlign(v: string | undefined): string | undefined {
-  return v ? ({ center: "center", start: "flex-start", end: "flex-end", stretch: "stretch", baseline: "baseline" } as Record<string, string>)[v] : undefined
+  return v
+    ? (
+        {
+          center: "center",
+          start: "flex-start",
+          end: "flex-end",
+          stretch: "stretch",
+          baseline: "baseline",
+        } as Record<string, string>
+      )[v]
+    : undefined
 }
 function flexJustify(v: string | undefined): string | undefined {
-  return v ? ({ center: "center", start: "flex-start", end: "flex-end", between: "space-between", around: "space-around" } as Record<string, string>)[v] : undefined
+  return v
+    ? (
+        {
+          center: "center",
+          start: "flex-start",
+          end: "flex-end",
+          between: "space-between",
+          around: "space-around",
+        } as Record<string, string>
+      )[v]
+    : undefined
 }
 
 export function Flex(props: {
@@ -54,7 +105,7 @@ export function Flex(props: {
         "align-items": flexAlign(props.align),
         "justify-content": flexJustify(props.justify),
         "flex-wrap": props.wrap,
-        gap: props.gap ? GAP[props.gap] ?? props.gap : undefined,
+        gap: props.gap ? (GAP[props.gap] ?? props.gap) : undefined,
         ...props.style,
       }}
     >
@@ -101,7 +152,7 @@ export function Grid(props: {
       style={{
         display: "grid",
         "grid-template-columns": gridCols(),
-        gap: props.gap ? GAP[props.gap] ?? props.gap : undefined,
+        gap: props.gap ? (GAP[props.gap] ?? props.gap) : undefined,
       }}
     >
       {props.children}
@@ -154,7 +205,11 @@ export function Button(props: {
   style?: JSX.CSSProperties
   children: JSX.Element
 }) {
-  const isSoft = () => props.variant === "soft" || props.variant === "ghost" || props.variant === "outline" || props.variant === "surface"
+  const isSoft = () =>
+    props.variant === "soft" ||
+    props.variant === "ghost" ||
+    props.variant === "outline" ||
+    props.variant === "surface"
   const col = () => props.color ?? "blue"
   return (
     <button
@@ -172,7 +227,9 @@ export function Button(props: {
         "font-weight": "500",
         "font-size": BTN_FONT[props.size ?? "2"] ?? BTN_FONT["2"],
         "letter-spacing": "-0.15px",
-        "background-color": isSoft() ? (BTN_SOFT_BG[col()] ?? BTN_SOFT_BG.blue) : (BTN_BG[col()] ?? BTN_BG.blue),
+        "background-color": isSoft()
+          ? (BTN_SOFT_BG[col()] ?? BTN_SOFT_BG.blue)
+          : (BTN_BG[col()] ?? BTN_BG.blue),
         color: isSoft() ? (BTN_BG[col()] ?? BTN_BG.blue) : "white",
         opacity: props.disabled ? 0.5 : 1,
         ...props.style,
@@ -201,7 +258,9 @@ export function Toggle(props: {
 }
 
 export function Separator(_: { size?: string; orientation?: "horizontal" | "vertical" }) {
-  return <hr style={{ border: "none", "border-top": "1px solid #e2e8f0", margin: 0, width: "100%" }} />
+  return (
+    <hr style={{ border: "none", "border-top": "1px solid #e2e8f0", margin: 0, width: "100%" }} />
+  )
 }
 
 function SelectRoot(props: {
@@ -215,10 +274,19 @@ function SelectRoot(props: {
     </select>
   )
 }
-function SelectTrigger() { return null as unknown as JSX.Element }
-function SelectContent(props: { children: JSX.Element }) { return props.children as JSX.Element }
+function SelectTrigger() {
+  return null as unknown as JSX.Element
+}
+function SelectContent(props: { children: JSX.Element }) {
+  return props.children as JSX.Element
+}
 function SelectItem(props: { value: string; children: JSX.Element }) {
   return <option value={props.value}>{props.children}</option>
 }
 
-export const Select = { Root: SelectRoot, Trigger: SelectTrigger, Content: SelectContent, Item: SelectItem }
+export const Select = {
+  Root: SelectRoot,
+  Trigger: SelectTrigger,
+  Content: SelectContent,
+  Item: SelectItem,
+}

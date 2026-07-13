@@ -3,7 +3,7 @@ import { SettingsButton } from "./components"
 import { Drill, Navigation, Tool } from "./model"
 import { Flex, Grid, Heading, Button, Box, Separator } from "./ui"
 
-export function MenuView(props: { drills: Drill[], tools: Tool[], nav: Navigation }) {
+export function MenuView(props: { drills: Drill[]; tools: Tool[]; nav: Navigation }) {
   return (
     <Flex direction="column" gap="6">
       <Flex align="center" justify="between" gap="3">
@@ -31,10 +31,7 @@ export function MenuView(props: { drills: Drill[], tools: Tool[], nav: Navigatio
       <Grid columns={{ initial: "1", sm: "2" }} gap="4">
         <For each={props.drills}>
           {(drill) => (
-            <Button
-              size="4"
-              onClick={() => props.nav.selectActivity({ type: "drill", ...drill })}
-            >
+            <Button size="4" onClick={() => props.nav.selectActivity({ type: "drill", ...drill })}>
               {drill.title}
             </Button>
           )}
@@ -44,10 +41,7 @@ export function MenuView(props: { drills: Drill[], tools: Tool[], nav: Navigatio
       <Grid columns={{ initial: "1", sm: "2" }} gap="4">
         <For each={props.tools}>
           {(tool) => (
-            <Button
-              size="4"
-              onClick={() => props.nav.selectActivity({ type: "tool", ...tool })}
-            >
+            <Button size="4" onClick={() => props.nav.selectActivity({ type: "tool", ...tool })}>
               {tool.title}
             </Button>
           )}

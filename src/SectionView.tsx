@@ -32,15 +32,22 @@ export function SectionView(props: {
         <Flex direction="column">
           <For each={props.section.lines}>
             {(line, ll) => (
-              <Flex direction="row" wrap="wrap" justify="center" style={{ gap: `${config().measureGap}px` }}>
+              <Flex
+                direction="row"
+                wrap="wrap"
+                justify="center"
+                style={{ gap: `${config().measureGap}px` }}
+              >
                 <For each={line.measures}>
                   {(measure, mm) => (
                     <MeasureView
                       measure={measure}
                       strokeSize={config().strokeSize}
                       highlightBeat={
-                        props.isHighlighted && props.highlight &&
-                        props.highlight.line == ll() && props.highlight.measure === mm()
+                        props.isHighlighted &&
+                        props.highlight &&
+                        props.highlight.line == ll() &&
+                        props.highlight.measure === mm()
                           ? props.highlight.offset
                           : undefined
                       }

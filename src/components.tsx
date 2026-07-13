@@ -4,7 +4,12 @@ import { Flex, Text, Button } from "./ui"
 
 export function BackButton(props: { nav: Navigation; style?: JSX.CSSProperties }) {
   return (
-    <Button variant="soft" onClick={props.nav.back} aria-label="Back" style={{ "flex-shrink": 0, ...props.style }}>
+    <Button
+      variant="soft"
+      onClick={props.nav.back}
+      aria-label="Back"
+      style={{ "flex-shrink": 0, ...props.style }}
+    >
       ←
     </Button>
   )
@@ -50,13 +55,14 @@ export function HighlightedCard(props: {
   )
 }
 
-export function CenteredContainer(props: {
-  children: JSX.Element
-  maxWidth?: string
-}) {
+export function CenteredContainer(props: { children: JSX.Element; maxWidth?: string }) {
   return (
     <div style={{ display: "flex", "justify-content": "center", width: "100%" }}>
-      <Flex direction="column" gap="4" style={{ width: "fit-content", "max-width": props.maxWidth }}>
+      <Flex
+        direction="column"
+        gap="4"
+        style={{ width: "fit-content", "max-width": props.maxWidth }}
+      >
         {props.children}
       </Flex>
     </div>
@@ -73,7 +79,9 @@ export function NumberInput(props: {
 }) {
   return (
     <Flex align="center" gap="2">
-      <Text size="2" weight="medium">{props.label}:</Text>
+      <Text size="2" weight="medium">
+        {props.label}:
+      </Text>
       <input
         type="number"
         value={props.value}
@@ -96,7 +104,9 @@ export function SectionHeader(props: {
     <Show when={props.label || props.repeatDisplay}>
       <Flex justify="between" align="center">
         <Show when={props.label}>
-          <Text size={props.labelSize ?? "2"} weight="bold">{props.label}</Text>
+          <Text size={props.labelSize ?? "2"} weight="bold">
+            {props.label}
+          </Text>
         </Show>
         <Show when={props.repeatDisplay}>
           <Text size={props.repeatSize ?? props.labelSize ?? "2"} weight="bold" color="gray">
@@ -111,9 +121,24 @@ export function SectionHeader(props: {
 export function EmptyBeatPlaceholder(props: { strokeSize?: number }) {
   const size = () => props.strokeSize ?? 28
   return (
-    <div style={{ width: `${size() + 8}px`, height: `${size() + 8}px`, display: "flex", "align-items": "center", "justify-content": "center" }}>
+    <div
+      style={{
+        width: `${size() + 8}px`,
+        height: `${size() + 8}px`,
+        display: "flex",
+        "align-items": "center",
+        "justify-content": "center",
+      }}
+    >
       <svg width={size() + 4} height={size() + 4} style={{ "pointer-events": "none" }}>
-        <circle cx={size() / 2 + 2} cy={size() / 2 + 2} r={size() / 4} fill="rgba(0,0,0,0.00)" stroke="rgba(0,0,0,0.10)" stroke-width={2} />
+        <circle
+          cx={size() / 2 + 2}
+          cy={size() / 2 + 2}
+          r={size() / 4}
+          fill="rgba(0,0,0,0.00)"
+          stroke="rgba(0,0,0,0.10)"
+          stroke-width={2}
+        />
       </svg>
     </div>
   )

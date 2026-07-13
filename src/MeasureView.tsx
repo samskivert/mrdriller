@@ -47,10 +47,7 @@ export function MeasureView(props: {
     <Flex direction="row">
       <For each={props.measure}>
         {(beatItem, i) => (
-          <Show
-            when={beatItem}
-            fallback={<EmptyBeatPlaceholder strokeSize={props.strokeSize} />}
-          >
+          <Show when={beatItem} fallback={<EmptyBeatPlaceholder strokeSize={props.strokeSize} />}>
             {(b) => (
               <BeatView
                 beat={b()}

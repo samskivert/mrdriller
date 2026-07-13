@@ -66,8 +66,8 @@ export type Line = {
 export const line = (...measures: Measure[]) => ({ measures })
 
 /** A section is a collection of lines, with an optional label. The lines in a section are rendered
-  * in a vertical list, with the label above it, and all surrounded by a box. Sections may be
-  * repeated one or more times. */
+ * in a vertical list, with the label above it, and all surrounded by a box. Sections may be
+ * repeated one or more times. */
 export type Section = {
   label?: string
   lines: Line[]
@@ -110,7 +110,7 @@ const swapStrokeHands = (stroke: Stroke | undefined): Stroke | undefined =>
 const swapBeatHands = (beat: Beat | undefined): Beat | undefined =>
   beat === undefined ? undefined : { ...beat, strokes: beat.strokes.map(swapStrokeHands) }
 const swapMeasureHands = (measure: Measure): Measure => measure.map(swapBeatHands)
-const swapLineHands = (line: Line) :Line => ({ measures: line.measures.map(swapMeasureHands) })
+const swapLineHands = (line: Line): Line => ({ measures: line.measures.map(swapMeasureHands) })
 
 /** Swaps the L and R hands in a section. */
 export const swapSectionHands = (section: Section): Section => ({
@@ -153,11 +153,12 @@ export function computeDrillDuration(
 
   for (let rep = 0; rep < drillRepeat; rep++) {
     const currentBpm = Math.min(MAX_BPM, bpm + bpmIncrease * rep)
-    const tickMs = (60 * 1000) / currentBpm / 4 * scale
+    const tickMs = ((60 * 1000) / currentBpm / 4) * scale
 
     // First repeat always has intro; subsequent repeats have intro if bpmIncrease > 0 (and the
     // setting allows it) or forceIntro
-    const hasIntro = rep === 0 || (bpmIncrease > 0 && replayIntroOnBpmIncrease) || (drill.forceIntro ?? false)
+    const hasIntro =
+      rep === 0 || (bpmIncrease > 0 && replayIntroOnBpmIncrease) || (drill.forceIntro ?? false)
     const beats = drillBeats + (hasIntro ? introBeats : 0)
     totalSeconds += (beats * tickMs) / 1000
   }
