@@ -1,5 +1,28 @@
 import { JSX, Show } from "solid-js"
-import { Flex, Text } from "./ui"
+import { Navigation } from "./model"
+import { Flex, Text, Button } from "./ui"
+
+export function BackButton(props: { nav: Navigation; style?: JSX.CSSProperties }) {
+  return (
+    <Button variant="soft" onClick={props.nav.back} aria-label="Back" style={{ "flex-shrink": 0, ...props.style }}>
+      ←
+    </Button>
+  )
+}
+
+export function SettingsButton(props: { nav: Navigation; style?: JSX.CSSProperties }) {
+  return (
+    <Button
+      variant="ghost"
+      size="2"
+      onClick={props.nav.openSettings}
+      aria-label="Settings"
+      style={{ "flex-shrink": 0, "font-size": "20px", ...props.style }}
+    >
+      ⚙
+    </Button>
+  )
+}
 
 export function HighlightedCard(props: {
   children: JSX.Element

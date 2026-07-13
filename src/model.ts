@@ -131,6 +131,7 @@ export function computeDrillDuration(
   bpm: number,
   bpmIncrease: number,
   drillRepeat: number,
+  replayIntroOnBpmIncrease = true,
 ): number {
   // Count the total beats for one pass through the drill (excluding intro)
   let drillBeats = 0
@@ -154,8 +155,9 @@ export function computeDrillDuration(
     const currentBpm = Math.min(MAX_BPM, bpm + bpmIncrease * rep)
     const tickMs = (60 * 1000) / currentBpm / 4 * scale
 
-    // First repeat always has intro; subsequent repeats have intro if bpmIncrease > 0 or forceIntro
-    const hasIntro = rep === 0 || bpmIncrease > 0 || (drill.forceIntro ?? false)
+    // First repeat always has intro; subsequent repeats have intro if bpmIncrease > 0 (and the
+    // setting allows it) or forceIntro
+    const hasIntro = rep === 0 || (bpmIncrease > 0 && replayIntroOnBpmIncrease) || (drill.forceIntro ?? false)
     const beats = drillBeats + (hasIntro ? introBeats : 0)
     totalSeconds += (beats * tickMs) / 1000
   }
@@ -173,3 +175,11 @@ export type Tool = {
 // defines a data model for activities (tools or drills)
 
 export type Activity = ({ type: "tool" } & Tool) | ({ type: "drill" } & Drill)
+
+// the set of actions views use to move between screens
+
+export type Navigation = {
+  selectActivity: (activity: Activity) => void
+  openSettings: () => void
+  back: () => void
+}

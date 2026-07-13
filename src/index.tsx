@@ -3,18 +3,23 @@ import { render } from "solid-js/web"
 import { drills } from "./drills"
 import { DrillView } from "./DrillView"
 import { MenuView } from "./MenuView"
-import { Activity, Tool } from "./model"
+import { Activity, Navigation, Tool } from "./model"
 import { PatternTrainerView } from "./PatternTrainerView"
+import { SettingsView } from "./SettingsView"
 
 const tools: Tool[] = [{ id: "pattern-trainer", title: "Pattern Trainer" }]
 
 type AppState =
   | { view: "menu" }
+  | { view: "settings" }
   | { view: "activity"; activity: Activity }
   | { view: "unknown"; id: string }
 
 function stateFromSearch(search: string): AppState {
-  const id = new URLSearchParams(search).get("id")
+  const params = new URLSearchParams(search)
+  if (params.has("settings")) return { view: "settings" }
+
+  const id = params.get("id")
   if (!id) return { view: "menu" }
 
   const drill = drills.find((d) => d.id === id)
@@ -51,16 +56,21 @@ const menuCSS = `
 
 function App() {
   const [appState, setAppState] = createSignal<AppState>(stateFromSearch(window.location.search))
+  const setAppStateFromSearch = () => setAppState(stateFromSearch(window.location.search))
 
   createEffect(() => {
-    const onPopState = () => setAppState(stateFromSearch(window.location.search))
-    window.addEventListener("popstate", onPopState)
-    return () => window.removeEventListener("popstate", onPopState)
+    window.addEventListener("popstate", setAppStateFromSearch)
+    return () => window.removeEventListener("popstate", setAppStateFromSearch)
   })
 
   const handleSelectActivity = (activity: Activity) => {
     history.pushState({ fromApp: true }, "", `?id=${activity.id}`)
-    setAppState({ view: "activity", activity })
+    setAppStateFromSearch()
+  }
+
+  const handleOpenSettings = () => {
+    history.pushState({ fromApp: true }, "", "?settings=1")
+    setAppStateFromSearch()
   }
 
   const handleBack = () => {
@@ -68,13 +78,19 @@ function App() {
       history.back()
     } else {
       history.pushState(null, "", window.location.pathname)
-      setAppState({ view: "menu" })
+      setAppStateFromSearch()
     }
   }
 
+  const nav: Navigation = {
+    selectActivity: handleSelectActivity,
+    openSettings: handleOpenSettings,
+    back: handleBack,
+  }
+
   function mkActivityView(activity: Activity) {
-    if (activity.type === "drill") return <DrillView drill={activity} onBack={handleBack} />
-    if (activity.id === "pattern-trainer") return <PatternTrainerView onBack={handleBack} />
+    if (activity.type === "drill") return <DrillView drill={activity} nav={nav} />
+    if (activity.id === "pattern-trainer") return <PatternTrainerView nav={nav} />
     return <p>TODO: {activity.title}</p>
   }
 
@@ -85,10 +101,14 @@ function App() {
         <div class="menu-bg">
           <div class="menu-content" style={{ display: "flex", "justify-content": "center" }}>
             <div style={{ padding: "16px", width: "100%", "max-width": "512px", "box-sizing": "border-box" }}>
-              <MenuView drills={drills} tools={tools} onSelectActivity={handleSelectActivity} />
+              <MenuView drills={drills} tools={tools} nav={nav} />
             </div>
           </div>
         </div>
+      </Match>
+
+      <Match when={appState().view === "settings"}>
+        <SettingsView nav={nav} />
       </Match>
 
       <Match when={appState().view === "activity"}>
@@ -98,9 +118,7 @@ function App() {
       <Match when={appState().view === "unknown"}>
         <div style={{ display: "flex", "flex-direction": "column", "align-items": "center", "justify-content": "center", gap: "16px", "min-height": "100dvh", padding: "24px" }}>
           <p>Unknown drill or tool: {(appState() as { view: "unknown"; id: string }).id}</p>
-          <button onClick={() => { history.pushState(null, "", window.location.pathname); setAppState({ view: "menu" }) }}>
-            ← Back
-          </button>
+          <button onClick={nav.back}>← Back</button>
         </div>
       </Match>
     </Switch>

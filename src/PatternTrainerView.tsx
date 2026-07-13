@@ -1,9 +1,9 @@
 import { createSignal, createEffect, createMemo, onMount, onCleanup, on, Show, Switch, Match } from "solid-js"
-import { Flex, Text, Heading, Button, Toggle, Select, Box } from "./ui"
-import { NumberInput, CenteredContainer, CountdownSection, HighlightedCard } from "./components"
+import { NumberInput, CenteredContainer, CountdownSection, HighlightedCard, BackButton } from "./components"
 import { MetronomeSounds } from "./MetronomeSounds"
-import { Stroke, Section, Measure, hit, Pos, beat, swapSectionHands, section, line } from "./model"
+import { Stroke, Section, Measure, hit, Pos, beat, swapSectionHands, section, line, Navigation } from "./model"
 import { SectionView } from "./SectionView"
+import { Flex, Text, Heading, Button, Toggle, Select, Box } from "./ui"
 
 type Difficulty = "easy" | "medium" | "hard"
 
@@ -133,7 +133,7 @@ function flatMeasures(pattern: Section): Measure[] {
   return pattern.lines.flatMap((l) => l.measures)
 }
 
-export function PatternTrainerView(props: { onBack: () => void }) {
+export function PatternTrainerView(props: { nav: Navigation }) {
   const [bpm, setBpm] = createSignal(60)
   const [difficulty, setDifficulty] = createSignal<Difficulty>("easy")
   const [numPatterns, setNumPatterns] = createSignal(5)
@@ -338,9 +338,7 @@ export function PatternTrainerView(props: { onBack: () => void }) {
       style={{ padding: "24px", "min-height": "100dvh", "background-color": "white" }}
     >
       <Flex align="center" justify="between" wrap="wrap" gap="3">
-        <Button variant="soft" onClick={props.onBack} style={{ "flex-shrink": 0 }}>
-          ← Back
-        </Button>
+        <BackButton nav={props.nav} />
         <Heading size="6" style={{ flex: 1, "text-align": "center" }}>
           Pattern Trainer
         </Heading>

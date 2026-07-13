@@ -6,6 +6,7 @@ import { Drill, Section, swapSectionHands, computeDrillDuration, MAX_BPM } from 
 import { DrillOverView } from "./DrillOverviewView"
 import { SectionView } from "./SectionView"
 import { computeDrillSizeLevel } from "./sizeConfig"
+import { settings } from "./settings"
 
 // A signal that exposes the current width of the browser window.
 function useWindowWidth() {
@@ -78,7 +79,9 @@ function DrillControls(props: {
   setSwapHands: (v: boolean) => void
   onStart: () => void
 }) {
-  const duration = () => formatDuration(computeDrillDuration(props.drill, props.bpm, props.bpmIncrease, props.drillRepeat))
+  const duration = () => formatDuration(
+    computeDrillDuration(props.drill, props.bpm, props.bpmIncrease, props.drillRepeat, settings().replayIntroOnBpmIncrease)
+  )
   return (
     <Flex align="center" justify="center" wrap="wrap" gap="6">
       <NumberInput label="BPM" value={props.bpm} onChange={props.setBpm} min={30} max={MAX_BPM} width={60} />
@@ -231,7 +234,7 @@ export function PracticeView(props: { drill: Drill }) {
         next.drillRepeat = prev.drillRepeat + 1
         if (next.drillRepeat < drillRepeat()) {
           next.bpm = Math.min(MAX_BPM, prev.bpm + prev.bpmIncrease)
-          if (prev.bpmIncrease > 0 || props.drill.forceIntro) {
+          if ((prev.bpmIncrease > 0 && settings().replayIntroOnBpmIncrease) || props.drill.forceIntro) {
             next.beat = 0
             next.intro = true
           }
@@ -267,7 +270,10 @@ export function PracticeView(props: { drill: Drill }) {
   const idx = createMemo(() => (currentFlatIndex() >= 0 ? currentFlatIndex() : 0))
   // Determine if we will repeat after this drill pass
   const willRepeatDrill = createMemo(() => state().drillRepeat + 1 < drillRepeat())
-  const willRepeatWithIntro = createMemo(
+  // Whether the upcoming repeat should be flagged in the preview slot (a BPM bump or a forced
+  // intro). This is independent of whether the intro screen actually plays — even with the
+  // "replay intro on BPM increase" setting off, we still want to warn that BPM is about to jump.
+  const willAnnounceRepeat = createMemo(
     () => willRepeatDrill() && (state().bpmIncrease > 0 || (props.drill.forceIntro ?? false))
   )
   const isLastSection = createMemo(() => idx() === allSections.length - 1)
@@ -295,7 +301,7 @@ export function PracticeView(props: { drill: Drill }) {
         section={section}
         isHighlighted={isHighlighted}
         repeatDisplay={repeatDisplay}
-        highlight={isHighlighted && state().playing ? state() : undefined}
+        highlight={isHighlighted && state().playing && settings().showBouncingDot ? state() : undefined}
         sizeLevel={sizeLevel()}
       />
     )
@@ -323,14 +329,26 @@ export function PracticeView(props: { drill: Drill }) {
       : `section-${idx()}-${state().drillRepeat}`
   )
 
+  // While the last section before a repeat is playing, the bottom slot flags the repeat itself
+  // (BPM up / back to start) rather than previewing the next section as usual.
+  const showRepeatPreview = createMemo(() => isLastSection() && willAnnounceRepeat())
+
   const bottomKey = createMemo(() => {
     if (state().intro) return `section-${idx()}-${state().drillRepeat}-preview`
     if (isLastSection() && !willRepeatDrill()) return "all-done"
-    if (isLastSection() && willRepeatWithIntro()) return `countdown-next-${state().drillRepeat + 1}`
+    if (showRepeatPreview()) return `countdown-next-${state().drillRepeat + 1}`
     const nextIdx = (idx() + 1) % allSections.length
     const nextDR = nextIdx === 0 ? state().drillRepeat + 1 : state().drillRepeat
     return `section-${nextIdx}-${nextDR}-preview`
   })
+
+  // Beneath the "BPM up" flag, also preview the first section of the repeat itself, so the
+  // player can see what's coming right after the jump.
+  function firstSectionOfRepeatPreview() {
+    const first = allSections[0]
+    const section = swapHands() ? swapSectionHands(first.section) : first.section
+    return mkSectionView(section, false)
+  }
 
   function topContent() {
     if (state().intro) return countdownSectionEl()
@@ -430,6 +448,9 @@ export function PracticeView(props: { drill: Drill }) {
         <Flex direction="column" gap="4">
           <div ref={(r) => (topSlotRef = r)}>{topContent()}</div>
           <div ref={(r) => (bottomSlotRef = r)}>{bottomContent()}</div>
+          <Show when={showRepeatPreview()}>
+            <div>{firstSectionOfRepeatPreview()}</div>
+          </Show>
         </Flex>
       </Show>
     </CenteredContainer>
