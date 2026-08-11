@@ -343,14 +343,13 @@ export function PracticeView(props: { drill: Drill }) {
   })
 
   function mkSectionView(section: Section, isHighlighted: boolean) {
-    const repeatDisplay = isHighlighted
-      ? mkRepeat(state().repeat, section.repeat ?? 1)
-      : empty.repeat(section.repeat ?? 1)
     return (
       <SectionView
         section={section}
         isHighlighted={isHighlighted}
-        repeatDisplay={repeatDisplay}
+        repeatDisplay={
+          isHighlighted ? mkRepeat(state().repeat, section.repeat ?? 1) : empty.repeat(section.repeat ?? 1)
+        }
         highlight={isHighlighted && state().playing && settings().showBouncingDot ? state() : undefined}
         sizeLevel={sizeLevel()}
       />
@@ -358,15 +357,18 @@ export function PracticeView(props: { drill: Drill }) {
   }
 
   function countdownSectionEl() {
-    const s = state()
-    const isBpmUp = s.drillRepeat > 0 && s.bpmIncrease > 0
-    const isRepeat = s.drillRepeat > 0
     return (
       <CountdownSection
-        beat={s.beat}
+        beat={state().beat}
         beatsPerMeasure={props.drill.bpm}
-        intro={s.intro}
-        preText={isBpmUp ? "BPM up!" : isRepeat ? "Back to the start!" : "Get ready..."}
+        intro={state().intro}
+        preText={
+          state().drillRepeat > 0 && state().bpmIncrease > 0
+            ? "BPM up!"
+            : state().drillRepeat > 0
+              ? "Back to the start!"
+              : "Get ready..."
+        }
       />
     )
   }
@@ -431,6 +433,13 @@ export function PracticeView(props: { drill: Drill }) {
     const nextSection = swapHands() ? swapSectionHands(nextItem.section) : nextItem.section
     return mkSectionView(nextSection, false)
   }
+
+  // Only rebuild the top/bottom DOM subtrees when the section identity actually changes
+  // (topKey/bottomKey), not on every metronome tick. The frequently-changing highlight
+  // data is still read live via state()/settings() calls inline in JSX attributes above,
+  // so it keeps updating fine-grained without forcing a full subtree rebuild here.
+  const topContentMemo = createMemo(on([topKey, sizeLevel], topContent))
+  const bottomContentMemo = createMemo(on([bottomKey, sizeLevel], bottomContent))
 
   // Two persistent DOM slots — always mounted while playing, never recreated on
   // transitions. This means we can measure heights from a stable DOM and animate
@@ -505,8 +514,8 @@ export function PracticeView(props: { drill: Drill }) {
           </Button>
         </Flex>
         <Flex direction="column" gap="4">
-          <div ref={(r) => (topSlotRef = r)}>{topContent()}</div>
-          <div ref={(r) => (bottomSlotRef = r)}>{bottomContent()}</div>
+          <div ref={(r) => (topSlotRef = r)}>{topContentMemo()}</div>
+          <div ref={(r) => (bottomSlotRef = r)}>{bottomContentMemo()}</div>
           <Show when={showRepeatPreview()}>
             <div>{firstSectionOfRepeatPreview()}</div>
           </Show>

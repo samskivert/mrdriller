@@ -147,6 +147,9 @@ export function PatternTrainerView(props: { nav: Navigation }) {
   const [sectionVisibility, setSectionVisibility] = createSignal<SectionVisibility>("show-all")
   const [state, setState] = createSignal<State>(NotPlaying)
   const [patterns, setPatterns] = createSignal<Section[]>([])
+  // Bumped each time a new set of patterns is generated, so patternIdentity below picks up a
+  // fresh patterns() array even when the pattern index and swapHands happen to stay the same.
+  const [sessionId, setSessionId] = createSignal(0)
 
   // Load config on mount
   onMount(() => {
@@ -298,6 +301,7 @@ export function PatternTrainerView(props: { nav: Navigation }) {
       newPatterns.push(generatePattern(difficulty(), measurePool))
     }
     setPatterns(newPatterns)
+    setSessionId((n) => n + 1)
     setState({ ...Playing, bpm: bpm(), mode: "listen" as Mode })
   }
 
@@ -349,6 +353,23 @@ export function PatternTrainerView(props: { nav: Navigation }) {
       (sv === "show-repeat" && s.mode === "repeat")
     )
   }
+
+  // patternIdentity is a createMemo, so it only notifies downstream when its *value* actually
+  // changes, even though its body re-runs on every tick (since it reads state()). Gating
+  // patternViewMemo on this deduped value — rather than on state() directly — is what stops
+  // the pattern's DOM subtree from being rebuilt on every tick.
+  const patternIdentity = createMemo(() => `${sessionId()}-${state().pattern}-${swapHands()}`)
+
+  // Only rebuild the pattern's DOM subtree when the pattern identity changes, not on
+  // every metronome tick. mkPatternView's isHighlighted/highlight/repeatDisplay props
+  // are passed as live function calls, so they keep updating fine-grained per tick.
+  const patternViewMemo = createMemo(
+    on(patternIdentity, () => {
+      const raw = patterns()[state().pattern]
+      if (!raw) return null
+      return mkPatternView(swapHands() ? swapSectionHands(raw) : raw, state().pattern)
+    }),
+  )
 
   return (
     <Flex direction="column" gap="6" style={{ padding: "24px", "min-height": "100dvh", "background-color": "white" }}>
@@ -423,12 +444,7 @@ export function PatternTrainerView(props: { nav: Navigation }) {
           <Match when={patterns().length > 0 && state().pattern < patterns().length}>
             <Flex direction="column" gap="4">
               <ModeView mode={state().mode} />
-              <Show when={visibilityOk()}>
-                {mkPatternView(
-                  swapHands() ? swapSectionHands(patterns()[state().pattern]) : patterns()[state().pattern],
-                  state().pattern,
-                )}
-              </Show>
+              <Show when={visibilityOk()}>{patternViewMemo()}</Show>
             </Flex>
           </Match>
         </Switch>
