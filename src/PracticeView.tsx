@@ -187,10 +187,18 @@ export function PracticeView(props: { drill: Drill }) {
     })
   })
 
-  // Project out the playing and bpm values into separate signals. "Memoizing" means they'll
-  // only fire when their value actually changes, not every time state()'s value changes.
+  // Project out individual state() fields into separate memos. "Memoizing" means they'll only
+  // notify downstream when their value actually changes, not every time state() itself changes
+  // (state() is replaced with a new object on every metronome tick, so any JSX prop that reads
+  // state() directly — even just to grab a rarely-changing field — gets re-evaluated every tick
+  // even though it almost never affects the DOM. That's wasted CPU work, multiplied by however
+  // many stroke/measure elements read it, even when nothing visually changes.)
   const playing = createMemo(() => state().playing)
   const stateBpm = createMemo(() => state().bpm)
+  const stateIntro = createMemo(() => state().intro)
+  const stateRepeat = createMemo(() => state().repeat)
+  const stateDrillRepeat = createMemo(() => state().drillRepeat)
+  const stateBpmIncrease = createMemo(() => state().bpmIncrease)
 
   // Pause the silent audio (used to keep iOS in playback mode) when stopped.
   createEffect(() => {
@@ -321,12 +329,12 @@ export function PracticeView(props: { drill: Drill }) {
   )
   const idx = createMemo(() => (currentFlatIndex() >= 0 ? currentFlatIndex() : 0))
   // Determine if we will repeat after this drill pass
-  const willRepeatDrill = createMemo(() => state().drillRepeat + 1 < drillRepeat())
+  const willRepeatDrill = createMemo(() => stateDrillRepeat() + 1 < drillRepeat())
   // Whether the upcoming repeat should be flagged in the preview slot (a BPM bump or a forced
   // intro). This is independent of whether the intro screen actually plays — even with the
   // "replay intro on BPM increase" setting off, we still want to warn that BPM is about to jump.
   const willAnnounceRepeat = createMemo(
-    () => willRepeatDrill() && (state().bpmIncrease > 0 || (props.drill.forceIntro ?? false)),
+    () => willRepeatDrill() && (stateBpmIncrease() > 0 || (props.drill.forceIntro ?? false)),
   )
   const isLastSection = createMemo(() => idx() === allSections.length - 1)
 
@@ -348,9 +356,12 @@ export function PracticeView(props: { drill: Drill }) {
         section={section}
         isHighlighted={isHighlighted}
         repeatDisplay={
-          isHighlighted ? mkRepeat(state().repeat, section.repeat ?? 1) : empty.repeat(section.repeat ?? 1)
+          isHighlighted ? mkRepeat(stateRepeat(), section.repeat ?? 1) : empty.repeat(section.repeat ?? 1)
         }
-        highlight={isHighlighted && state().playing && settings().showBouncingDot ? state() : undefined}
+        // Check the settings/isHighlighted gate *before* touching state() at all: with the
+        // bouncing-dot setting off, this must never read the ticking state() signal, or every
+        // stroke's highlight binding would still re-evaluate (for nothing) on every tick.
+        highlight={isHighlighted && settings().showBouncingDot && playing() ? state() : undefined}
         sizeLevel={sizeLevel()}
       />
     )
@@ -361,11 +372,11 @@ export function PracticeView(props: { drill: Drill }) {
       <CountdownSection
         beat={state().beat}
         beatsPerMeasure={props.drill.bpm}
-        intro={state().intro}
+        intro={stateIntro()}
         preText={
-          state().drillRepeat > 0 && state().bpmIncrease > 0
+          stateDrillRepeat() > 0 && stateBpmIncrease() > 0
             ? "BPM up!"
-            : state().drillRepeat > 0
+            : stateDrillRepeat() > 0
               ? "Back to the start!"
               : "Get ready..."
         }
@@ -376,7 +387,7 @@ export function PracticeView(props: { drill: Drill }) {
   // Keys for the two animated display slots (top = current/countdown, bottom = preview).
   // When a key changes, <Presence> + <For> animate the old element out and the new one in.
   const topKey = createMemo(() =>
-    state().intro ? `countdown-${state().drillRepeat}` : `section-${idx()}-${state().drillRepeat}`,
+    stateIntro() ? `countdown-${stateDrillRepeat()}` : `section-${idx()}-${stateDrillRepeat()}`,
   )
 
   // While the last section before a repeat is playing, the bottom slot flags the repeat itself
@@ -384,11 +395,11 @@ export function PracticeView(props: { drill: Drill }) {
   const showRepeatPreview = createMemo(() => isLastSection() && willAnnounceRepeat())
 
   const bottomKey = createMemo(() => {
-    if (state().intro) return `section-${idx()}-${state().drillRepeat}-preview`
+    if (stateIntro()) return `section-${idx()}-${stateDrillRepeat()}-preview`
     if (isLastSection() && !willRepeatDrill()) return "all-done"
-    if (showRepeatPreview()) return `countdown-next-${state().drillRepeat + 1}`
+    if (showRepeatPreview()) return `countdown-next-${stateDrillRepeat() + 1}`
     const nextIdx = (idx() + 1) % allSections.length
-    const nextDR = nextIdx === 0 ? state().drillRepeat + 1 : state().drillRepeat
+    const nextDR = nextIdx === 0 ? stateDrillRepeat() + 1 : stateDrillRepeat()
     return `section-${nextIdx}-${nextDR}-preview`
   })
 
@@ -424,7 +435,7 @@ export function PracticeView(props: { drill: Drill }) {
           beat={0}
           beatsPerMeasure={props.drill.bpm}
           intro={false}
-          preText={state().bpmIncrease > 0 ? "BPM up!" : "Back to the start!"}
+          preText={stateBpmIncrease() > 0 ? "BPM up!" : "Back to the start!"}
         />
       )
     }
@@ -483,7 +494,7 @@ export function PracticeView(props: { drill: Drill }) {
   return (
     <CenteredContainer>
       <Show
-        when={state().playing}
+        when={playing()}
         fallback={
           <>
             <DrillControls
@@ -504,10 +515,10 @@ export function PracticeView(props: { drill: Drill }) {
       >
         <Flex align="center" justify="center" wrap="wrap" gap="4">
           <StatusView
-            bpm={state().bpm}
-            bpmIncrease={state().bpmIncrease}
+            bpm={stateBpm()}
+            bpmIncrease={stateBpmIncrease()}
             drillRepeat={drillRepeat()}
-            drillRepeatCount={state().drillRepeat}
+            drillRepeatCount={stateDrillRepeat()}
           />
           <Button color="red" size="2" onClick={() => setState(NotPlaying)}>
             Stop

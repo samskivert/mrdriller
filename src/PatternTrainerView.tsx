@@ -313,7 +313,9 @@ export function PatternTrainerView(props: { nav: Navigation }) {
   }
 
   function mkPatternView(pattern: Section, patternIndex: number) {
-    const isHighlighted = () => state().playing && state().pattern === patternIndex
+    // Gate on the ptPlaying memo (deduped) before touching state() itself, so that once
+    // playback stops these closures stop re-subscribing to the ticking state() signal.
+    const isHighlighted = () => ptPlaying() && state().pattern === patternIndex
     const repeatDisplay = () => {
       const total = pattern.repeat ?? 1
       if (total <= 1) return undefined
@@ -321,7 +323,7 @@ export function PatternTrainerView(props: { nav: Navigation }) {
     }
 
     const highlight = (): Pos | undefined =>
-      state().playing && state().pattern === patternIndex
+      ptPlaying() && state().pattern === patternIndex
         ? {
             row: 0,
             section: 0,
@@ -426,11 +428,11 @@ export function PatternTrainerView(props: { nav: Navigation }) {
             </Select.Root>
           </Flex>
 
-          <Button color="green" size="2" onClick={handleStart} disabled={state().playing}>
+          <Button color="green" size="2" onClick={handleStart} disabled={ptPlaying()}>
             Start
           </Button>
 
-          <Show when={state().playing}>
+          <Show when={ptPlaying()}>
             <Button color="red" size="2" onClick={handleStop}>
               Stop
             </Button>
@@ -438,7 +440,7 @@ export function PatternTrainerView(props: { nav: Navigation }) {
         </Flex>
 
         <Switch>
-          <Match when={!state().playing || state().intro}>
+          <Match when={!ptPlaying() || state().intro}>
             <CountdownSection beat={state().beat} beatsPerMeasure={4} intro={state().intro} />
           </Match>
           <Match when={patterns().length > 0 && state().pattern < patterns().length}>
