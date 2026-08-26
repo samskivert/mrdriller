@@ -34,6 +34,9 @@ export class MetronomeSounds {
 
   pause() {
     this.silentAudio.pause()
+    // Suspend the context so its audio rendering thread stops doing continuous work (even just
+    // producing silence) once nothing needs to play — otherwise it keeps running indefinitely.
+    this.audioContext?.suspend()
   }
 
   private playSound(frequency: number, duration: number) {
